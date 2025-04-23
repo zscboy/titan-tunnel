@@ -104,8 +104,8 @@ func CreateHTTPServer(listenAddr string, wsPath string) {
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc(wsPath, wsHandler)
 	//proxy/{uuid}/{address}
-	http.HandleFunc("/libvirt", libvirtHandler)
-	http.HandleFunc("/vnc", webVncHandler)
+	http.HandleFunc("/proxy/libvirt", libvirtHandler)
+	http.HandleFunc("/proxy/vnc", webVncHandler)
 
 	log.Printf("server listen at:%s, path:%s", listenAddr, wsPath)
 	log.Fatal(http.ListenAndServe(listenAddr, nil))

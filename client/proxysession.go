@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"io"
 	"net"
 	"strings"
 
@@ -44,7 +45,7 @@ func (ps *ProxySession) proxyConn(t *Tunnel) {
 		n, err := conn.Read(buf)
 		if err != nil {
 			log.Debugf("serveProxyConn: %s", err.Error())
-			if strings.Contains(err.Error(), networkErrorCloseByRemoteHost) {
+			if err == io.EOF || strings.Contains(err.Error(), networkErrorCloseByRemoteHost) {
 				t.onProxyConnClose(ps.id)
 			}
 			return

@@ -3,10 +3,13 @@ package server
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 )
+
+const networkErrorCloseByRemoteHost = "An existing connection was forcibly closed by the remote host"
 
 type SessionType uint16
 
@@ -86,7 +89,7 @@ func (ps *ProxySession) proxyWebsocketConn(ct *CtrlTunnel) {
 		_, p, err := conn.ReadMessage()
 		if err != nil {
 			log.Debugf("serveProxyConn: %s", err.Error())
-			if err == io.EOF {
+			if err == io.EOF || strings.Contains(err.Error(), networkErrorCloseByRemoteHost) {
 				ct.onProxyConnClose(ps.id)
 			}
 			return
