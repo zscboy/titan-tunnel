@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "../pb";
+
+service  vms{
+}
+
+// 定义消息类型枚举
+enum MessageType {
+    UNKNOWN = 0;
+    CONTROL = 1;
+    PROXY_SESSION_CREATE = 2;
+    PROXY_SESSION_DATA = 3;
+    PROXY_SESSION_CLOSE = 4;
+}
+
+
+// 定义命令消息体
+message CtrlPayload {
+    string command = 1;
+    repeated string args = 2;
+}
+
+// 目标地址
+message DestAddr {
+    string network = 1;
+    string addr = 2;
+}
+
+
+// 定义通用消息体
+message Message {
+    MessageType type = 1;
+    string session_id = 2;
+    bytes payload = 3;
+}
+
