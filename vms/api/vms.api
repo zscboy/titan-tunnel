@@ -1,0 +1,100 @@
+// vms.api
+type (
+	VMOperationResponse {
+		Success bool   `json:"success"`
+		Message string `json:"message"`
+	}
+	CreateVMRequest {
+		Id       string `json:"id"`
+		VmName   string `json:"vm_name"`
+		Cpu      int32  `json:"cpu"`
+		Memory   int32  `json:"memory"`
+		DiskSize int32  `json:"disk_size"`
+		Image    string `json:"image"`
+	}
+	CreateVolWithLibvirtReqeust {
+		Id         string `json:"id"`
+		Name       string `json:"name"`
+		Pool       string `json:"pool"`
+		Capacity   int32  `json:"capacity"`
+		Allocation int32  `json:"allocation"`
+		Format     string `json:"format"`
+	}
+	CreateVolWithLibvirtResponse {
+		Pool string `json:"pool"`
+		Name string `json:"name"`
+		key  string `json:"key"`
+	}
+	StartVMRequest {
+		Id     string `json:"id"`
+		VmName string `json:"vm_name"`
+	}
+	StopVMRequest {
+		Id     string `json:"id"`
+		VmName string `json:"vm_name"`
+	}
+	DeleteVMRequest {
+		Id     string `json:"id"`
+		VmName string `json:"vm_name"`
+	}
+	UpdateVMRequest {
+		Id     string `json:"id"`
+		VmName string `json:"vm_name"`
+	}
+	ListVMInstanceReqeust {
+		Id string `json:"id"`
+	}
+	VMInfo {
+		Name  string `json:"name"`
+		State string `json:"state"`
+		Ip    string `json:"ip"`
+		Image string `json:"image"`
+	}
+	ListVMInstanceResponse {
+		VmInfos []VMInfo `json:"vm_infos"`
+	}
+	ListImageRequest {
+		Id string `json:"id"`
+	}
+	ListImageResponse {
+		Images []string `json:"images"`
+	}
+	multipassExecRequest {
+		Id           string `json:"id"`
+		InstanceName string `json:"instance_name"`
+		Command      string `json:"command"`
+	}
+	multipassExecResponse {
+		Output string `json:"output"`
+	}
+)
+
+service vms-api {
+	@handler createVM
+	post /vm/create (CreateVMRequest) returns (VMOperationResponse)
+
+	@handler createVolWithLibvirt
+	post /vm/libvirt/volume/create (CreateVolWithLibvirtReqeust) returns (CreateVolWithLibvirtResponse)
+
+	@handler startVM
+	post /vm/start (StartVMRequest) returns (VMOperationResponse)
+
+	@handler stopVM
+	post /vm/stop (StopVMRequest) returns (VMOperationResponse)
+
+	@handler deleteVM
+	post /vm/delete (DeleteVMRequest) returns (VMOperationResponse)
+
+	@handler updateVM
+	post /vm/update (UpdateVMRequest) returns (VMOperationResponse)
+
+	@handler listVMInstance
+	get /vm/list (ListVMInstanceReqeust) returns (ListVMInstanceResponse)
+
+	@handler listImage
+	get /vm/image/list (ListImageRequest) returns (ListImageResponse)
+
+	@handler multipassExec
+	post /vm/multipass/exec (multipassExecRequest) returns (multipassExecResponse)
+}
+

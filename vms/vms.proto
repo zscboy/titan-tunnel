@@ -1,0 +1,186 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "./pb";
+
+service Vms {
+    // Libvirt
+    rpc CreateVMWithLibvirt (CreateVMWithLibvirtRequest) returns (VMOperationResponse);
+    rpc CreateVolWithLibvirt (CreateVolWithLibvirtReqeust) returns (CreateVolWithLibvirtResponse);
+    rpc GetVol(GetVolRequest) returns (GetVolResponse);
+
+    // common
+    rpc CreateVM (CreateVMRequest) returns (VMOperationResponse);
+    rpc StartVM (StartVMRequest) returns (VMOperationResponse);
+    rpc StopVM (StopVMRequest) returns (VMOperationResponse);
+    rpc DeleteVM (DeleteVMRequest) returns (VMOperationResponse);
+    rpc ListVMInstance (ListVMInstanceReqeust) returns (ListVMInstanceResponse);
+    rpc ListImage (ListImageRequest) returns (ListImageResponse);
+    // not implement now
+    rpc UpdateVM (UpdateVMRequest) returns (VMOperationResponse);
+
+    // Multipass
+    rpc CreateVMWithMultipass (CreateVMWithMultipassRequest) returns (VMOperationResponse);
+    rpc MultipassExec(multipassExecRequest) returns (multipassExecResponse); 
+
+    // node
+    rpc ListNode(ListNodeRequest) returns (ListNodeResponse);
+    rpc GetNode(GetNodeRequest) returns (GetNodeResponse);
+
+}
+
+// common response
+message VMOperationResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+// Libvirt 创建请求
+message CreateVMWithLibvirtRequest {
+    string id = 1;
+    string vm_name = 2;
+    int32 cpu = 3;          // 明确使用 int32 而非 int
+    int32 memory = 4;        // 内存单位建议注明（如 MB）
+    string disk_path = 5;
+    string iso_path = 6;
+}
+
+// Multipass 创建请求
+message CreateVMWithMultipassRequest {
+    string id = 1;
+    string vm_name = 2;
+    int32 cpu = 3;
+    // with K, M, G suffix.
+    string memory = 4;
+    // with K, M, G suffix.
+    string disk_size = 5;
+    // image name or path
+    string image = 6;
+}
+
+message CreateVMRequest {
+    string id = 1;
+    string vm_name = 2;
+    int32 cpu = 3;
+    // unit MB
+    int32 memory = 4;
+    // unit GB
+    int32 disk_size = 5;
+    // image name or path
+    string image = 6;
+}
+
+// 其他操作请求
+message StartVMRequest {
+    string id = 1;
+    string vm_name = 2;
+}
+
+message StopVMRequest {
+    string id = 1;
+    string vm_name = 2;
+}
+
+message DeleteVMRequest {
+    string id = 1;
+    string vm_name = 2;
+}
+
+message UpdateVMRequest {
+    string id = 1;
+    string vm_name = 2;
+}
+
+message ListVMInstanceReqeust {
+    string id = 1;
+}
+
+message VMInfo {
+    string name = 1;
+    string state = 2;
+    string ip = 3;
+    string image = 4;
+}
+ 
+message ListVMInstanceResponse {
+    repeated VMInfo vm_infos = 1;
+
+}
+
+message ListImageRequest {
+    string id = 1;
+}
+
+message ListImageResponse {
+    repeated string images = 1;
+}
+
+message multipassExecRequest {
+    string id = 1;
+    string instance_name = 2;
+    string command = 3;
+}
+
+message multipassExecResponse {
+    string output = 1;
+}
+
+message CreateVolWithLibvirtReqeust {
+    string id = 1;
+    string name = 2;
+    string pool = 3;
+    // unit GB 
+    int32 capacity = 4;
+    string format = 5;
+}
+
+message CreateVolWithLibvirtResponse {
+    string pool = 1;
+    string name = 2;
+    string key = 3;
+}
+
+message GetVolRequest {
+    string id = 1;
+    string pool_name = 2;
+    string vol_name =3;
+}
+
+message GetVolResponse {
+    string name = 2;
+    string pool = 3;
+    // unit GB 
+    int32 capacity = 4;
+    string path = 5;
+}
+
+message ListNodeRequest {
+    int32 start = 1;
+    int32 end = 2;
+}
+
+message Node {
+    string id = 1;
+    string os = 2;
+    // multipass or libvirt
+    string vm_type = 3;
+    int32 total_cpu = 4;
+    int32 total_memory = 5;
+    int32 system_disk_size = 6;
+    //int32 cpu_used = 6;
+    //int32 memory_used = 7;
+}
+
+message ListNodeResponse {
+    repeated Node nodes = 1;
+    int32 total = 2;
+}
+
+message GetNodeRequest {
+    string id = 1;
+}
+
+message GetNodeResponse {
+    Node node = 1;
+}

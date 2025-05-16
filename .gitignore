@@ -1,6 +1,4 @@
 # Go 编译文件
 *.exe
-vmc
-vms
-
+bin/
 test*

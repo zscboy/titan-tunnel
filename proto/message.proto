@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "../pb";
+
+service  message{
+}
+
+// 定义消息类型枚举
+enum MessageType {
+    UNKNOWN = 0;
+    CONTROL = 1;
+    PROXY_SESSION_CREATE = 2;
+    PROXY_SESSION_DATA = 3;
+    PROXY_SESSION_CLOSE = 4;
+}
+
+enum CommandType {
+    INVALID_COMMAND = 0;
+    DownloadImage =1;
+
+}
+
+
+// 定义命令消息体
+message Command {
+    CommandType type = 1;
+    bytes data = 2;
+}
+
+// 目标地址
+message DestAddr {
+    string network = 1;
+    string addr = 2;
+}
+
+
+// 定义通用消息体
+message Message {
+    MessageType type = 1;
+    string session_id = 2;
+    bytes payload = 3;
+}
+
+message CmdDownloadImageRequest {
+    string url = 1;
+    string md5 = 2;
+    string path = 3;
+}
+
+
+message CmdDownloadImageResponse {
+    bool success =1;
+    string message =2;
+}
+
+message DownloadTask {
+    string id = 1;
+    string url = 2;
+    string md5 = 3;
+    string path = 4;
+}
+
+message CmdDownloadTaskListResponse {
+    repeated DownloadTask tasks = 1;
+}
+
+
+message DownloadTaskDeleteRequest {
+    string id = 1;
+}
+
+message DownloadTaskDeleteResponse {
+    bool success =1;
+    string message =2;
+}
