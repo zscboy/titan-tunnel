@@ -18,15 +18,20 @@ RestConf:
   Port: 7777
   Log: 
     Level: debug
+  Timeout: 30000
 
-RpcServer:
+RpcClient:
   Target: localhost:8080
   NonBlock: true
+  Timeout: 30000
 
-CertFile: ./etc/ec_cert.pem
-KeyFile:  ./etc/ec_key.pem
+CertFile: ./etc/multipass_cert.pem
+KeyFile:  ./etc/multipass_key.pem
+SSHPriKey: ./etc/ssh_id_rsa
+SSHPubKey: ./etc/ssh_id_rsa.pub
+
 JwtAuth:
-  AccessSecret: ""  # 密钥
+  AccessSecret: "25018198-36fb-11f0-bc94-23569555de32"  # 密钥
   AccessExpire: 86400             # Token 有效期（秒）
 Log:
   Level: debug  # 可选值：debug/info/error/severe

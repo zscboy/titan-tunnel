@@ -10,6 +10,16 @@ service Vms {
     rpc CreateVolWithLibvirt (CreateVolWithLibvirtReqeust) returns (CreateVolWithLibvirtResponse);
     rpc GetVol(GetVolRequest) returns (GetVolResponse);
 
+    rpc ListHostNetworkInterfaceWithLibvirt(ListHostNetworkInterfaceRequest) returns (ListHostNetworkInterfaceResponse);
+    rpc ListVMNetwrokInterfaceWithLibvirt(ListVMNetwrokInterfaceReqeust) returns (ListVMNetworkInterfaceResponse);
+    rpc AddNetworkInterfaceWithLibvirt(AddNetworkInterfaceRequest) returns (VMOperationResponse);
+    rpc DeleteNetworkInterfaceWithLibvirt(DeleteNetworkInterfaceRequest) returns (VMOperationResponse);
+
+    rpc ListHostDiskWithLibvirt(ListHostDiskRequest) returns (ListDiskResponse);
+    rpc ListVMDiskWithLibvirt(ListVMDiskRequest) returns (ListVMDiskResponse);
+    rpc AddDiskWithLibvirt(AddDiskRequest) returns (VMOperationResponse);
+    rpc DeleteDiskWithLibvirt(DeleteDiskRequest) returns (VMOperationResponse);
+
     // common
     rpc CreateVM (CreateVMRequest) returns (VMOperationResponse);
     rpc StartVM (StartVMRequest) returns (VMOperationResponse);
@@ -17,6 +27,7 @@ service Vms {
     rpc DeleteVM (DeleteVMRequest) returns (VMOperationResponse);
     rpc ListVMInstance (ListVMInstanceReqeust) returns (ListVMInstanceResponse);
     rpc ListImage (ListImageRequest) returns (ListImageResponse);
+    rpc DeleteImage(DeleteImageRequest) returns (DeleteImageResponse);
     // not implement now
     rpc UpdateVM (UpdateVMRequest) returns (VMOperationResponse);
 
@@ -116,6 +127,16 @@ message ListImageResponse {
     repeated string images = 1;
 }
 
+message DeleteImageRequest {
+    string id = 1;
+    string path = 2;
+}
+
+message DeleteImageResponse {
+    bool success =1;
+    string message =2;
+}
+
 message multipassExecRequest {
     string id = 1;
     string instance_name = 2;
@@ -168,6 +189,8 @@ message Node {
     int32 total_cpu = 4;
     int32 total_memory = 5;
     int32 system_disk_size = 6;
+    string ip = 7;
+    bool online = 8;
     //int32 cpu_used = 6;
     //int32 memory_used = 7;
 }
@@ -183,4 +206,133 @@ message GetNodeRequest {
 
 message GetNodeResponse {
     Node node = 1;
+}
+
+enum InterfaceType {
+    INVALID_INTERFACE_TYPE = 0;
+    INTERFACE_TYPE_NETWORK = 1;
+    INTERFACE_TYPE_DIRECT = 2;
+}
+
+enum InterfaceSourceDirectModel {
+    INVALID_INTERFACE_SOURCE_DIRECT_MODEL = 0;
+    INTERFACE_SOURCE_DIRECT_MODEL_BRIDGE = 1;
+    INTERFACE_SOURCE_DIRECT_MODEL_PASSTHROUGH = 2;
+}
+
+
+message HostNetworkInterface {
+    string name = 1;
+    string mac = 2;
+    bool active = 3;
+}
+
+message ListHostNetworkInterfaceRequest {
+    string id = 1;
+}
+
+message ListHostNetworkInterfaceResponse {
+    repeated HostNetworkInterface interfaces = 1;
+}
+
+message AddNetworkInterfaceRequest {
+    string id = 1 ;
+    string vm_name = 2;
+    InterfaceType type = 3;
+    // Required only when type == INTERFACE_TYPE_DIRECT
+    string source_direct_dev = 4;
+    // Required only when type == INTERFACE_TYPE_DIRECT
+    InterfaceSourceDirectModel model = 5;
+}
+
+message DeleteNetworkInterfaceRequest {
+    string id = 1;
+    string vm_name = 2;
+    string mac = 3;
+}
+
+message ListVMNetwrokInterfaceReqeust {
+    string id = 1;
+    string vm_name = 2;
+}
+
+message VMNetworkInterface{
+    string name = 1;
+    string type = 2;
+    string source = 3;
+    string source_model = 4;
+    string model = 5;
+    string mac = 6;
+}
+
+message ListVMNetworkInterfaceResponse {
+    repeated VMNetworkInterface interfaces = 1;
+}
+
+message ListHostDiskRequest {
+    string id = 1;
+}
+
+message Disk {
+    string source_path = 1;
+    int64 size = 2;
+}
+
+message ListDiskResponse {
+    repeated Disk disks = 1;
+}
+
+
+enum VMDiskType {
+    INVALID_DISK_TYPE = 0;
+    FILE = 1;
+    BLOCK = 2;
+    NVME = 3;
+} 
+
+message AddDiskRequest {
+    string id = 1 ;
+    string vm_name = 2;
+    VMDiskType disk_type = 3;
+    // not required for disk_type=nvme 
+    string source_path = 4;
+    int32 source_pci_addr_bus = 5;
+    int32 source_pci_addr_slot = 6;
+    // example: hda, sda, vda
+    // not required for disk_type=nvme 
+    string target_dev = 7;
+    // virtio, scsi, default: virtio
+    // not required for disk_type=nvme 
+    string target_bus = 8;
+}
+
+message DeleteDiskRequest {
+    string id = 1;
+    string vm_name = 2;
+    VMDiskType disk_type = 3;
+    int32 source_pci_addr_bus = 4;
+    string target_dev = 5;
+}
+
+message ListVMDiskRequest {
+    string id = 1 ;
+    string vm_name = 2;
+}
+
+message VMDisk {
+    VMDiskType disk_type = 1;
+    string source_path = 2;
+    int32 source_pci_addr_bus =3;
+    int32 source_pci_addr_slot =4;
+    // example: hda, sda, vda
+    // not required for disk_type=nvme 
+    string target_dev = 5;
+    // virtio, scsi, default: virtio
+    // not required for disk_type=nvme 
+    string target_bus = 6;
+
+}
+
+message ListVMDiskResponse {
+    repeated VMDisk disks = 1;
 }

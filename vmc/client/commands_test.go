@@ -21,7 +21,7 @@ func TestProto(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	msg := &pb.Message{Type: pb.MessageType_CONTROL, SessionId: uuid.NewString(), Payload: payloadData}
+	msg := &pb.Message{Type: pb.MessageType_COMMAND, SessionId: uuid.NewString(), Payload: payloadData}
 	msgBuf, err := proto.Marshal(msg)
 	if err != nil {
 		t.Fatal(err.Error())

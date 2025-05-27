@@ -8,7 +8,6 @@ import (
 	"titan-vm/vms/internal/server"
 	"titan-vm/vms/internal/svc"
 	"titan-vm/vms/pb"
-	"titan-vm/vms/ws"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
@@ -30,7 +29,7 @@ func main() {
 	defer restServer.Stop()
 
 	ctx := svc.NewServiceContext(c)
-	ws.NewServer(restServer, ctx)
+	// ws.NewServer(restServer, ctx)
 	api.RegisterHandlers(restServer, c)
 
 	group := service.NewServiceGroup()

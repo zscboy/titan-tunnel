@@ -4,38 +4,187 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"reflect"
 	"testing"
 	"titan-vm/vms/pb"
 
 	"github.com/digitalocean/go-libvirt"
+	libvirtxml "github.com/libvirt/libvirt-go-xml"
 )
 
 const serverAddr = "ws://localhost:7777/vm?uuid=b9a3a90e-2b14-11f0-884e-57cfb3f3dd63&transport=raw&vmapi=libvirt"
 
 func TestListVM(t *testing.T) {
-	l, err := newLibvirt(serverAddr)
-	if err != nil {
-		log.Fatalf("new Libvirt failed:%s", err.Error())
-	}
-	defer l.Disconnect()
+	const serverURL = "ws://localhost:7777/vm"
+	const hostID = "30ad25ce-3610-11f0-8a84-8b2a4d0acbcf"
 
-	v, err := l.ConnectGetVersion()
-	if err != nil {
-		log.Fatalf("failed to retrieve libvirt version: %v", err)
-	}
-	fmt.Println("Version:", v)
+	// goLibvirt := GoLibvirt{serverURL: serverURL}
 
-	// Return both running and stopped VMs
-	flags := libvirt.ConnectListDomainsActive | libvirt.ConnectListDomainsInactive
-	domains, _, err := l.ConnectListAllDomains(1, flags)
+	goLibvirt := NewGoLibvirt(serverURL)
+	rsp, err := goLibvirt.ListVMInstance(context.Background(), &pb.ListVMInstanceReqeust{
+		Id: hostID,
+	})
+
 	if err != nil {
-		log.Fatalf("failed to retrieve domains: %v", err)
+		t.Fatal(err.Error())
 	}
 
-	fmt.Println("ID\tName\t\tUUID")
-	fmt.Println("--------------------------------------------------------")
-	for _, d := range domains {
-		fmt.Printf("%d\t%s\t%x\n", d.ID, d.Name, d.UUID)
+	for _, vm := range rsp.VmInfos {
+		t.Logf("name:%s, state:%s", vm.Name, vm.State)
+	}
+}
+
+func TestDomainListNetwork(t *testing.T) {
+	const serverURL = "ws://localhost:7777/vm"
+	const hostID = "b9a3a90e-2b14-11f0-884e-57cfb3f3dd63"
+
+	// goLibvirt := GoLibvirt{serverURL: serverURL}
+
+	goLibvirt := NewGoLibvirt(serverURL)
+	rsp, err := goLibvirt.ListVMNetwrokInterfaceWithLibvirt(context.Background(), &pb.ListVMNetwrokInterfaceReqeust{
+		Id:     hostID,
+		VmName: "Test",
+	})
+
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	for _, iface := range rsp.Interfaces {
+		t.Logf("Name:%s, Type:%s, source:%s, source model:%s model:%s, mac:%s", iface.Name, iface.Type, iface.Source, iface.SourceModel, iface.Model, iface.Mac)
+	}
+}
+
+func TestHostListNetwork(t *testing.T) {
+	const serverURL = "ws://localhost:7777/vm"
+	const hostID = "b9a3a90e-2b14-11f0-884e-57cfb3f3dd63"
+
+	// goLibvirt := GoLibvirt{serverURL: serverURL}
+
+	goLibvirt := NewGoLibvirt(serverURL)
+	rsp, err := goLibvirt.ListHostNetworkInterfaceWithLibvirt(context.Background(), &pb.ListHostNetworkInterfaceRequest{
+		Id: hostID,
+	})
+
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	for _, iface := range rsp.Interfaces {
+		t.Logf("Name:%s, mac:%s, active:%v", iface.Name, iface.Mac, iface.Active)
+	}
+}
+
+func TestDomainAddInterface(t *testing.T) {
+	const serverURL = "ws://localhost:7777/vm"
+	const hostID = "b9a3a90e-2b14-11f0-884e-57cfb3f3dd63"
+
+	// goLibvirt := GoLibvirt{serverURL: serverURL}
+
+	goLibvirt := NewGoLibvirt(serverURL)
+
+	err := goLibvirt.AddNetworkInterfaceWithLibvirt(context.Background(), &pb.AddNetworkInterfaceRequest{
+		Id:              hostID,
+		VmName:          "Test",
+		Type:            pb.InterfaceType_INTERFACE_TYPE_DIRECT,
+		SourceDirectDev: "virbr0",
+		Model:           pb.InterfaceSourceDirectModel_INTERFACE_SOURCE_DIRECT_MODEL_PASSTHROUGH,
+	})
+	if err != nil {
+		t.Log(err.Error())
+	}
+
+}
+
+func TestDomainDeleteInterface(t *testing.T) {
+	const serverURL = "ws://localhost:7777/vm"
+	const hostID = "b9a3a90e-2b14-11f0-884e-57cfb3f3dd63"
+
+	// goLibvirt := GoLibvirt{serverURL: serverURL}
+
+	goLibvirt := NewGoLibvirt(serverURL)
+
+	err := goLibvirt.DeleteNetworkInterfaceWithLibvirt(context.Background(), &pb.DeleteNetworkInterfaceRequest{
+		Id:     hostID,
+		VmName: "Test",
+		Mac:    "52:54:00:19:b7:7c",
+	})
+	if err != nil {
+		t.Log(err.Error())
+	}
+
+}
+
+func TestInterfaceCreate(t *testing.T) {
+	newInterface := libvirtxml.DomainInterface{
+		Model: &libvirtxml.DomainInterfaceModel{Type: "virtio"},
+		// Source: &libvirtxml.DomainInterfaceSource{Network: &libvirtxml.DomainInterfaceSourceNetwork{Network: "default"}},
+		Source: &libvirtxml.DomainInterfaceSource{Direct: &libvirtxml.DomainInterfaceSourceDirect{Dev: "eth0", Mode: "bridge"}},
+	}
+	xml, err := newInterface.Marshal()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	t.Logf("xml:%s", xml)
+}
+
+func TestListHostNetwork(t *testing.T) {
+	const serverURL = "ws://localhost:7777/vm"
+	const hostID = "b9a3a90e-2b14-11f0-884e-57cfb3f3dd63"
+
+	// goLibvirt := GoLibvirt{serverURL: serverURL}
+
+	goLibvirt := NewGoLibvirt(serverURL)
+	lv, err := goLibvirt.connectHost(hostID)
+	if err != nil {
+		t.Fatalf("connect %s", err.Error())
+	}
+
+	interfaces, _, err := lv.ConnectListAllInterfaces(1, libvirt.ConnectListInterfacesInactive)
+	if err != nil {
+		t.Fatalf("connect %s", err.Error())
+	}
+
+	for _, iface := range interfaces {
+		t.Logf("name:%s, mac:%s", iface.Name, iface.Mac)
+	}
+
+}
+
+func traverseStruct(v reflect.Value, prefix string) {
+	if v.Kind() == reflect.Ptr {
+		if v.IsNil() {
+			fmt.Printf("%s(nil)\n", prefix)
+			return
+		}
+		v = v.Elem()
+	}
+
+	if v.Kind() != reflect.Struct {
+		fmt.Printf("%s: %v\n", prefix, v.Interface())
+		return
+	}
+
+	t := v.Type()
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		fieldType := t.Field(i)
+		fieldName := fieldType.Name
+		tag := fieldType.Tag.Get("xml")
+
+		// 拼接路径（层级）
+		path := prefix
+		if path != "" {
+			path += "."
+		}
+		path += fieldName
+
+		// 输出基本类型或递归
+		if field.Kind() == reflect.Struct || field.Kind() == reflect.Ptr {
+			traverseStruct(field, path)
+		} else {
+			fmt.Printf("%s (%s, tag=%q): %v\n", path, field.Type(), tag, field.Interface())
+		}
 	}
 }
 
@@ -172,5 +321,71 @@ func TestGetDefaultPool(t *testing.T) {
 	}
 
 	t.Logf("vol %#v", storagePool)
+
+}
+
+func TestListVMDisk(t *testing.T) {
+	const serverURL = "ws://localhost:7777/vm"
+	// const hostID = "b9a3a90e-2b14-11f0-884e-57cfb3f3dd63"
+	const hostID = "30ad25ce-3610-11f0-8a84-8b2a4d0acbcf"
+
+	// goLibvirt := GoLibvirt{serverURL: serverURL}
+
+	goLibvirt := NewGoLibvirt(serverURL)
+	rsp, err := goLibvirt.ListVMDiskWithLibvirt(context.Background(), &pb.ListVMDiskRequest{Id: hostID, VmName: "centos"})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	for _, disk := range rsp.Disks {
+		t.Logf("diskType:%s, sourcePath:%s, targetDev:%s, targetBus:%s, SourcePciAddrBus:0x%x, SourcePciAddrSlot:0x%x",
+			disk.DiskType, disk.SourcePath, disk.TargetDev, disk.TargetBus, disk.SourcePciAddrBus, disk.SourcePciAddrSlot)
+	}
+
+}
+
+func TestVMAddDisk(t *testing.T) {
+	const serverURL = "ws://localhost:7777/vm"
+	// const hostID = "b9a3a90e-2b14-11f0-884e-57cfb3f3dd63"
+	const hostID = "30ad25ce-3610-11f0-8a84-8b2a4d0acbcf"
+
+	// goLibvirt := GoLibvirt{serverURL: serverURL}
+	request := &pb.AddDiskRequest{
+		Id:               hostID,
+		VmName:           "centos",
+		DiskType:         pb.VMDiskType_NVME,
+		SourcePciAddrBus: 0x0b,
+	}
+
+	goLibvirt := NewGoLibvirt(serverURL)
+	err := goLibvirt.AddDiskWithLibvirt(context.Background(), request)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	t.Logf("add disk success")
+
+}
+
+func TestVMDeleteDisk(t *testing.T) {
+	const serverURL = "ws://localhost:7777/vm"
+	// const hostID = "b9a3a90e-2b14-11f0-884e-57cfb3f3dd63"
+	const hostID = "30ad25ce-3610-11f0-8a84-8b2a4d0acbcf"
+
+	// goLibvirt := GoLibvirt{serverURL: serverURL}
+	request := &pb.DeleteDiskRequest{
+		Id:               hostID,
+		VmName:           "centos",
+		DiskType:         pb.VMDiskType_NVME,
+		SourcePciAddrBus: 0x3,
+	}
+
+	goLibvirt := NewGoLibvirt(serverURL)
+	err := goLibvirt.DeleteDiskWithLibvirt(context.Background(), request)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	t.Logf("delete disk success")
 
 }

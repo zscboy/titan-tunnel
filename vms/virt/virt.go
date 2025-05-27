@@ -19,6 +19,16 @@ type VirtInterface interface {
 	CreateVolWithLibvirt(ctx context.Context, in *pb.CreateVolWithLibvirtReqeust) (*pb.CreateVolWithLibvirtResponse, error)
 	GetVol(ctx context.Context, in *pb.GetVolRequest) (*pb.GetVolResponse, error)
 
+	ListHostNetworkInterfaceWithLibvirt(ctx context.Context, in *pb.ListHostNetworkInterfaceRequest) (*pb.ListHostNetworkInterfaceResponse, error)
+	ListVMNetwrokInterfaceWithLibvirt(ctx context.Context, in *pb.ListVMNetwrokInterfaceReqeust) (*pb.ListVMNetworkInterfaceResponse, error)
+	AddNetworkInterfaceWithLibvirt(ctx context.Context, in *pb.AddNetworkInterfaceRequest) error
+	DeleteNetworkInterfaceWithLibvirt(ctx context.Context, in *pb.DeleteNetworkInterfaceRequest) error
+
+	ListHostDiskWithLibvirt(ctx context.Context, in *pb.ListHostDiskRequest) (*pb.ListDiskResponse, error)
+	ListVMDiskWithLibvirt(ctx context.Context, in *pb.ListVMDiskRequest) (*pb.ListVMDiskResponse, error)
+	AddDiskWithLibvirt(ctx context.Context, in *pb.AddDiskRequest) error
+	DeleteDiskWithLibvirt(ctx context.Context, in *pb.DeleteDiskRequest) error
+
 	// libvirt 与multipass 通用
 	StartVM(ctx context.Context, in *pb.StartVMRequest) error
 	StopVM(ctx context.Context, in *pb.StopVMRequest) error
@@ -26,6 +36,7 @@ type VirtInterface interface {
 	UpdateVM(ctx context.Context, in *pb.UpdateVMRequest) error
 	ListVMInstance(ctx context.Context, in *pb.ListVMInstanceReqeust) (*pb.ListVMInstanceResponse, error)
 	ListImage(ctx context.Context, in *pb.ListImageRequest) (*pb.ListImageResponse, error)
+	DeleteImage(_ context.Context, request *pb.DeleteImageRequest) error
 
 	// Multipass 相关操作
 	// if return err, will not close progressChan
@@ -59,35 +70,3 @@ func (v *Virt) GetVMAPI(opts *VirtOptions) VirtInterface {
 		return nil
 	}
 }
-
-// func (v *Virt) CreateVM(request *pb.CreateVmWithLibvirtRequest, opts *VirtOptions) error {
-// 	switch opts.VMAPI {
-// 	case vmapiLibvirt:
-// 		return v.goLibvirt.CreateVM(request)
-// 	case vmapiMultipass:
-// 		return nil
-// 	default:
-// 		return fmt.Errorf("unsupport vmapi %s", opts.VMAPI)
-// 	}
-
-// }
-
-// func (v *Virt) StartVM(request *pb.StartVmRequest) error {
-// 	return nil
-// }
-
-// func (v *Virt) StopVM(request *pb.StopVmRequest) error {
-// 	return nil
-// }
-
-// func (v *Virt) DeleteVM(request *pb.DeleteVmRequest) error {
-// 	return nil
-// }
-
-// func (v *Virt) ListVM(lv *libvirt.Libvirt, vmName string) error {
-// 	return nil
-// }
-
-// func (v *Virt) UpdateVM(lv *libvirt.Libvirt, domainXML string) error {
-// 	return nil
-// }

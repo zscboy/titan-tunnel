@@ -18,3 +18,14 @@ func TestRedis(t *testing.T) {
 		t.Fatalf("register node %s", err.Error())
 	}
 }
+
+func TestGetAccount(t *testing.T) {
+	conf := redis.RedisConf{Host: "127.0.0.1:6379", Type: "node"}
+	rd := redis.MustNewRedis(conf)
+
+	ac, err := GetAccount(rd, "abc")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	t.Logf("account:%v", ac)
+}

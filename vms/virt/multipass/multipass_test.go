@@ -144,22 +144,3 @@ func TestMultipassCreateVM(t *testing.T) {
 	}
 
 }
-
-// func handleLaunchReply(reply *pb.LaunchReply) {
-// 	switch x := reply.CreateOneof.(type) {
-// 	case *pb.LaunchReply_VmInstanceName: // 处理 vm_instance_name
-// 		fmt.Println("VM实例名称:", x.VmInstanceName)
-// 	case *pb.LaunchReply_LaunchProgress: // 处理 launch_progress
-// 		progress := x.LaunchProgress
-// 		fmt.Printf("进度类型: %v, 完成百分比: %s\n", progress.Type, progress.PercentComplete)
-// 	case *pb.LaunchReply_CreateMessage: // 处理 create_message
-// 		fmt.Println("创建消息:", x.CreateMessage)
-// 	default:
-// 		fmt.Println("未知的 oneof 类型")
-// 	}
-
-// 	// 其他字段（如 log_line、update_info 等）
-// 	if reply.UpdateInfo != nil {
-// 		fmt.Printf("版本: %s, 标题: %s\n", reply.UpdateInfo.Version, reply.UpdateInfo.Title)
-// 	}
-// }

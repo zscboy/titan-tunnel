@@ -17,6 +17,7 @@ import (
 type TunOptions struct {
 	OS    string
 	VMAPI string
+	IP    string
 	// Driver string
 }
 
@@ -93,7 +94,7 @@ func (ct *CtrlTunnel) onMessage(data []byte) error {
 	}
 
 	switch msg.Type {
-	case pb.MessageType_CONTROL:
+	case pb.MessageType_COMMAND:
 		return ct.onControlMessage(msg.GetSessionId(), msg.Payload)
 	case pb.MessageType_PROXY_SESSION_DATA:
 		return ct.onProxySessionData(msg.GetSessionId(), msg.Payload)
@@ -252,7 +253,7 @@ func (ct *CtrlTunnel) sendCommand(ctx context.Context, in *pb.Command, out proto
 		return err
 	}
 
-	msg := &pb.Message{Type: pb.MessageType_CONTROL, SessionId: uuid.NewString(), Payload: bytes}
+	msg := &pb.Message{Type: pb.MessageType_COMMAND, SessionId: uuid.NewString(), Payload: bytes}
 	data, err := proto.Marshal(msg)
 	if err != nil {
 		return err

@@ -10,7 +10,7 @@ service  message{
 // 定义消息类型枚举
 enum MessageType {
     UNKNOWN = 0;
-    CONTROL = 1;
+    COMMAND = 1;
     PROXY_SESSION_CREATE = 2;
     PROXY_SESSION_DATA = 3;
     PROXY_SESSION_CLOSE = 4;
@@ -18,8 +18,10 @@ enum MessageType {
 
 enum CommandType {
     INVALID_COMMAND = 0;
-    DownloadImage =1;
-
+    DOWNLOAD_IMAGE = 1;
+    DOWNLOAD_TASK_DELETE = 2;
+    DOWNLOAD_TASK_LIST = 3;
+    DOWNLOAD_TASK_GET = 4;
 }
 
 
@@ -52,7 +54,8 @@ message CmdDownloadImageRequest {
 
 message CmdDownloadImageResponse {
     bool success =1;
-    string message =2;
+    string err_msg =2;
+    string task_id =3;
 }
 
 message DownloadTask {
@@ -60,6 +63,11 @@ message DownloadTask {
     string url = 2;
     string md5 = 3;
     string path = 4;
+    int64 total_size = 5;
+    int64 download_size = 6;
+    bool running = 7;
+    bool success = 8;
+    string err_msg = 9;
 }
 
 message CmdDownloadTaskListResponse {
@@ -67,11 +75,21 @@ message CmdDownloadTaskListResponse {
 }
 
 
-message DownloadTaskDeleteRequest {
-    string id = 1;
+message CmdDownloadTaskDeleteRequest {
+    string task_id = 1;
 }
 
-message DownloadTaskDeleteResponse {
+message CmdDownloadTaskDeleteResponse {
     bool success =1;
     string message =2;
+}
+
+message CmdDownloadTaskGetRequest{
+    string task_id = 1;
+}
+
+message CmdDownloadTaskGetResponse{
+    bool success =1;
+    string err_msg =2;
+    DownloadTask task =3;
 }

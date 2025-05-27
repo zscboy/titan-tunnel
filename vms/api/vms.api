@@ -42,7 +42,7 @@ type (
 		VmName string `json:"vm_name"`
 	}
 	ListVMInstanceReqeust {
-		Id string `json:"id"`
+		Id string `form:"id"`
 	}
 	VMInfo {
 		Name  string `json:"name"`
@@ -54,7 +54,7 @@ type (
 		VmInfos []VMInfo `json:"vm_infos"`
 	}
 	ListImageRequest {
-		Id string `json:"id"`
+		Id string `form:"id"`
 	}
 	ListImageResponse {
 		Images []string `json:"images"`
@@ -67,34 +67,158 @@ type (
 	multipassExecResponse {
 		Output string `json:"output"`
 	}
+	Node {
+		Id             string `json:"id"`
+		OS             string `json:"os"`
+		VmType         string `json:"vm_type"`
+		TotalCpu       int    `json:"total_cpu"`
+		TotalMemory    int    `json:"total_memory"`
+		SystemDiskSize int    `json:"system_disk_size"`
+		IP             string `json:"ip"`
+		Online         bool   `json:"online"`
+	}
+	ListNodeReqeust {
+		Start int `form:"start"`
+		End   int `form:"end"`
+	}
+	ListNodeResponse {
+		Nodes []*Node `json:"nodes"`
+		Total int32   `json:"total"`
+	}
+	LoginRequest {
+		UserName string `json:"user_name"`
+		Password string `json:"password"`
+	}
+	LoginResponse {
+		Token string `json:"token"`
+	}
+	DownloadImageRequest {
+		Id   string `json:"id"`
+		URL  string `json:"url"`
+		MD5  string `json:"md5"`
+		Path string `json:"path"`
+	}
+	DownloadImageResponse {
+		TaskId string `json:"task_id"`
+	}
+	DownloadTaskDeleteRequest {
+		Id     string `json:"id"`
+		TaskId string `json:"task_id"`
+	}
+	DownloadTaskDeleteResponse {
+		Success bool   `json:"success"`
+		ErrMsg  string `json:"err_msg"`
+	}
+	DownloadTaskListRequest {
+		Id string `json:"id"`
+	}
+	DownloadTask {
+		TaskId       string `json:"taskId"`
+		URL          string `json:"url"`
+		MD5          string `json:"md5"`
+		Path         string `json:"path"`
+		TotalSize    int64  `json:"total_size"`
+		DownloadSize int64  `json:"download_size"`
+		Running      bool   `json:"running"`
+		Success      bool   `json:"success"`
+		ErrMsg       string `json:"err_msg"`
+	}
+	DownloadTaskListResponse {
+		Tasks []*DownloadTask `json:"tasks"`
+	}
+	DownloadTaskGetRequest {
+		Id     string `json:"id"`
+		TaskId string `json:"taskId"`
+	}
+	NodeWSRequest {
+		NodeId string `form:"id"`
+		// windows, linux, macos
+		OS string `form:"os"`
+		// multipass or libvirt
+		VMAPI string `form:"vmapi"`
+	}
+	VMWSRequest {
+		NodeId  string `form:"id"`
+		Address string `form:"address"`
+		// 'multipass' r 'libvirt'
+		VMAPI string `form:"vmapi"`
+		// 'raw' or 'websocket'
+		Transport string `form:"transport"`
+	}
+	SSHWSReqeust {
+		NodeId string `form:"id"`
+		Type   string `form:"type"`
+		Addr   string `form:"addr"`
+	}
+	SSHWSMessage {
+		// 'error', 'stdin', 'stdout', 'resize'
+		Type string `json:"type"`
+		Data string `json:"data,omitempty"`
+		Cols uint   `json:"cols,omitempty"`
+		Rows uint   `json:"rows,omitempty"`
+	}
 )
 
 service vms-api {
+	@handler login
+	post /api/login (LoginRequest) returns (LoginResponse)
+}
+
+@server (
+	jwt: JwtAuth // Enable jwt authentication
+)
+service vms-api {
 	@handler createVM
-	post /vm/create (CreateVMRequest) returns (VMOperationResponse)
+	post /api/vm/create (CreateVMRequest) returns (VMOperationResponse)
 
 	@handler createVolWithLibvirt
-	post /vm/libvirt/volume/create (CreateVolWithLibvirtReqeust) returns (CreateVolWithLibvirtResponse)
+	post /api/vm/libvirt/volume/create (CreateVolWithLibvirtReqeust) returns (CreateVolWithLibvirtResponse)
 
 	@handler startVM
-	post /vm/start (StartVMRequest) returns (VMOperationResponse)
+	post /api/vm/start (StartVMRequest) returns (VMOperationResponse)
 
 	@handler stopVM
-	post /vm/stop (StopVMRequest) returns (VMOperationResponse)
+	post /api/vm/stop (StopVMRequest) returns (VMOperationResponse)
 
 	@handler deleteVM
-	post /vm/delete (DeleteVMRequest) returns (VMOperationResponse)
+	post /api/vm/delete (DeleteVMRequest) returns (VMOperationResponse)
 
 	@handler updateVM
-	post /vm/update (UpdateVMRequest) returns (VMOperationResponse)
+	post /api/vm/update (UpdateVMRequest) returns (VMOperationResponse)
 
 	@handler listVMInstance
-	get /vm/list (ListVMInstanceReqeust) returns (ListVMInstanceResponse)
+	get /api/vm/list
 
 	@handler listImage
-	get /vm/image/list (ListImageRequest) returns (ListImageResponse)
+	get /api/vm/image/list
 
 	@handler multipassExec
-	post /vm/multipass/exec (multipassExecRequest) returns (multipassExecResponse)
+	post /api/vm/multipass/exec (multipassExecRequest) returns (multipassExecResponse)
+
+	@handler listNode
+	get /api/node/list
+
+	@handler downloadImage
+	post /api/cmd/downloadImage (DownloadImageRequest) returns (DownloadImageResponse)
+
+	@handler downloadTaskList
+	post /api/cmd/downloadTaskList (DownloadTaskListRequest) returns (DownloadTaskListResponse)
+
+	@handler downloadTaskDelete
+	post /api/cmd/downloadTaskDelete (DownloadTaskDeleteRequest)
+
+	@handler downloadTaskGet
+	post /api/cmd/downloadTaskGet (DownloadTaskGetRequest) returns (DownloadTask)
+}
+
+service vms-api {
+	@handler vmWS
+	get /api/ws/vm
+
+	@handler nodeWS
+	get /api/ws/node
+
+	@handler sshWS
+	get /api/ws/ssh
 }
 

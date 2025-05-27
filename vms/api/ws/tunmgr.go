@@ -5,20 +5,21 @@ import (
 	"sync"
 	"time"
 	pb "titan-vm/pb"
-	"titan-vm/vms/internal/svc"
 	"titan-vm/vms/model"
 
 	"github.com/gorilla/websocket"
 	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/stores/redis"
 )
 
 type TunnelManager struct {
 	tunnels sync.Map
-	svcCtx  *svc.ServiceContext
+	// svcCtx  *svc.ServiceContext
+	redis *redis.Redis
 }
 
-func newTunnelManager(svcCtx *svc.ServiceContext) *TunnelManager {
-	tm := &TunnelManager{svcCtx: svcCtx}
+func NewTunnelManager(redis *redis.Redis) *TunnelManager {
+	tm := &TunnelManager{redis: redis}
 	go tm.keepalive()
 	return tm
 }
@@ -35,16 +36,17 @@ func (tm *TunnelManager) acceptWebsocket(conn *websocket.Conn, uuid string, opts
 	ctrlTun := newCtrlTunnel(uuid, conn, opts)
 	tm.tunnels.Store(uuid, ctrlTun)
 
-	node, err := model.GetNode(tm.svcCtx.Redis, uuid)
+	node, err := model.GetNode(tm.redis, uuid)
 	if err != nil {
 		logx.Errorf("TunnelManager.acceptWebsocket, get node %s", err.Error())
 		return
 	}
 
 	if node == nil {
-		node = &model.Node{Id: uuid, OS: opts.OS, VmAPI: opts.VMAPI, RegisterAt: time.Now().String()}
+		node = &model.Node{Id: uuid, OS: opts.OS, VmAPI: opts.VMAPI, IP: opts.IP, RegisterAt: time.Now().String()}
 		tm.registerNode(node)
 	} else {
+		node.IP = opts.IP
 		tm.setNodeOnline(node)
 	}
 
@@ -57,19 +59,19 @@ func (tm *TunnelManager) acceptWebsocket(conn *websocket.Conn, uuid string, opts
 func (tm *TunnelManager) registerNode(node *model.Node) {
 	node.LoginAt = time.Now().String()
 	node.Online = true
-	model.RegisterNode(context.Background(), tm.svcCtx.Redis, node)
+	model.RegisterNode(context.Background(), tm.redis, node)
 }
 
 func (tm *TunnelManager) setNodeOnline(node *model.Node) {
 	node.LoginAt = time.Now().String()
 	node.Online = true
-	model.SaveNode(tm.svcCtx.Redis, node)
+	model.SaveNode(tm.redis, node)
 }
 
 func (tm *TunnelManager) setNodeOffline(node *model.Node) {
 	node.OfflineAt = time.Now().String()
 	node.Online = false
-	model.SaveNode(tm.svcCtx.Redis, node)
+	model.SaveNode(tm.redis, node)
 }
 
 func (tm *TunnelManager) onVmClient(conn *websocket.Conn, uuid string, address *pb.DestAddr, transportType TransportType) {

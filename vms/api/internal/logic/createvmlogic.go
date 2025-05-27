@@ -25,7 +25,7 @@ func NewCreateVMLogic(ctx context.Context, svcCtx *svc.ServiceContext) *CreateVM
 }
 
 func (l *CreateVMLogic) CreateVM(req *types.CreateVMRequest) (resp *types.VMOperationResponse, err error) {
-	// todo: check params
+	logx.Debugf("CreateVMLogic.CreateVM request %#v", *req)
 	request := &vms.CreateVMRequest{
 		Id:       req.Id,
 		VmName:   req.VmName,

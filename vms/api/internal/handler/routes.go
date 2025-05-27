@@ -16,48 +16,104 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodPost,
-				Path:    "/vm/create",
+				Path:    "/api/login",
+				Handler: loginHandler(serverCtx),
+			},
+		},
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/cmd/downloadImage",
+				Handler: downloadImageHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/cmd/downloadTaskDelete",
+				Handler: downloadTaskDeleteHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/cmd/downloadTaskGet",
+				Handler: downloadTaskGetHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/cmd/downloadTaskList",
+				Handler: downloadTaskListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/api/node/list",
+				Handler: listNodeHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/vm/create",
 				Handler: createVMHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/vm/delete",
+				Path:    "/api/vm/delete",
 				Handler: deleteVMHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodGet,
-				Path:    "/vm/image/list",
+				Path:    "/api/vm/image/list",
 				Handler: listImageHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/vm/libvirt/volume/create",
+				Path:    "/api/vm/libvirt/volume/create",
 				Handler: createVolWithLibvirtHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodGet,
-				Path:    "/vm/list",
+				Path:    "/api/vm/list",
 				Handler: listVMInstanceHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/vm/multipass/exec",
+				Path:    "/api/vm/multipass/exec",
 				Handler: multipassExecHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/vm/start",
+				Path:    "/api/vm/start",
 				Handler: startVMHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/vm/stop",
+				Path:    "/api/vm/stop",
 				Handler: stopVMHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/vm/update",
+				Path:    "/api/vm/update",
 				Handler: updateVMHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.JwtAuth.AccessSecret),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/api/ws/node",
+				Handler: nodeWSHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/api/ws/ssh",
+				Handler: sshWSHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/api/ws/vm",
+				Handler: vmWSHandler(serverCtx),
 			},
 		},
 	)

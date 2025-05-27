@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"fmt"
+	"io"
 	"net"
 	"runtime"
 	"sync"
@@ -44,14 +45,18 @@ func NewTunnel(serverUrl, uuid, vmapi string) (*Tunnel, error) {
 }
 
 func (t *Tunnel) Connect() error {
-	url := fmt.Sprintf("%s?uuid=%s&os=%s&vmapi=%s", t.url, t.uuid, runtime.GOOS, t.vmapi)
+	url := fmt.Sprintf("%s?id=%s&os=%s&vmapi=%s", t.url, t.uuid, runtime.GOOS, t.vmapi)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	conn, _, err := websocket.DefaultDialer.DialContext(ctx, url, nil)
+	conn, resp, err := websocket.DefaultDialer.DialContext(ctx, url, nil)
 	if err != nil {
-		return fmt.Errorf("dial %s failed %s", url, err.Error())
+		var data []byte
+		if resp != nil {
+			data, _ = io.ReadAll(resp.Body)
+		}
+		return fmt.Errorf("dial %s failed %s, msg:%s", url, err.Error(), string(data))
 	}
 
 	conn.SetPingHandler(func(data string) error {
@@ -120,8 +125,8 @@ func (t *Tunnel) onTunnelMsg(message []byte) error {
 	log.Debugf("Tunnel.onTunnelMsg, msgType:%s, session id:%s", msg.Type.String(), msg.GetSessionId())
 
 	switch msg.Type {
-	case pb.MessageType_CONTROL:
-		return t.onControlMessage(msg)
+	case pb.MessageType_COMMAND:
+		return t.command.onCommandMessage(msg)
 	case pb.MessageType_PROXY_SESSION_CREATE:
 		return t.onProxySessionCreate(msg)
 	case pb.MessageType_PROXY_SESSION_DATA:
@@ -132,22 +137,6 @@ func (t *Tunnel) onTunnelMsg(message []byte) error {
 		log.Errorf("onTunnelMsg unsupoort message type %d", msg.Type)
 	}
 
-	return nil
-}
-
-func (t *Tunnel) onControlMessage(msg *pb.Message) error {
-	cmd := &pb.Command{}
-	err := proto.Unmarshal(msg.GetPayload(), cmd)
-	if err != nil {
-		return err
-	}
-
-	log.Debugf("Tunnel.onControlMessage, cmd type:%s", cmd.GetType().String())
-
-	switch cmd.GetType() {
-	case pb.CommandType_DownloadImage:
-		return t.command.downloadImage(msg.GetSessionId(), cmd.GetData())
-	}
 	return nil
 }
 

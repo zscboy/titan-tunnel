@@ -296,9 +296,39 @@ func (m *Multipass) ListImage(_ context.Context, request *pb.ListImageRequest) (
 	return nil, nil
 }
 
+func (m *Multipass) DeleteImage(_ context.Context, request *pb.DeleteImageRequest) error {
+	return nil
+}
+
 func (m *Multipass) CreateVolWithLibvirt(ctx context.Context, in *pb.CreateVolWithLibvirtReqeust) (*pb.CreateVolWithLibvirtResponse, error) {
 	return nil, fmt.Errorf("not implement")
 }
 func (m *Multipass) GetVol(ctx context.Context, in *pb.GetVolRequest) (*pb.GetVolResponse, error) {
 	return nil, fmt.Errorf("not implement")
+}
+
+func (m *Multipass) ListHostNetworkInterfaceWithLibvirt(ctx context.Context, in *pb.ListHostNetworkInterfaceRequest) (*pb.ListHostNetworkInterfaceResponse, error) {
+	return nil, nil
+}
+func (m *Multipass) ListVMNetwrokInterfaceWithLibvirt(ctx context.Context, in *pb.ListVMNetwrokInterfaceReqeust) (*pb.ListVMNetworkInterfaceResponse, error) {
+	return nil, nil
+}
+func (m *Multipass) AddNetworkInterfaceWithLibvirt(ctx context.Context, in *pb.AddNetworkInterfaceRequest) error {
+	return nil
+}
+func (m *Multipass) DeleteNetworkInterfaceWithLibvirt(ctx context.Context, in *pb.DeleteNetworkInterfaceRequest) error {
+	return nil
+}
+
+func (m *Multipass) ListHostDiskWithLibvirt(ctx context.Context, in *pb.ListHostDiskRequest) (*pb.ListDiskResponse, error) {
+	return nil, nil
+}
+func (m *Multipass) ListVMDiskWithLibvirt(ctx context.Context, in *pb.ListVMDiskRequest) (*pb.ListVMDiskResponse, error) {
+	return nil, nil
+}
+func (m *Multipass) AddDiskWithLibvirt(ctx context.Context, in *pb.AddDiskRequest) error {
+	return nil
+}
+func (m *Multipass) DeleteDiskWithLibvirt(ctx context.Context, in *pb.DeleteDiskRequest) error {
+	return nil
 }

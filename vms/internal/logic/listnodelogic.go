@@ -39,6 +39,8 @@ func (l *ListNodeLogic) ListNode(in *pb.ListNodeRequest) (*pb.ListNodeResponse, 
 			VmType:      modelNode.VmAPI,
 			TotalCpu:    int32(modelNode.CPU),
 			TotalMemory: int32(modelNode.Memory),
+			Ip:          modelNode.IP,
+			Online:      modelNode.Online,
 		}
 		nodes = append(nodes, node)
 	}

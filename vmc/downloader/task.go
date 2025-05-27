@@ -11,6 +11,8 @@ import (
 	"os"
 	"strconv"
 	"sync"
+
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type Task struct {
@@ -19,13 +21,14 @@ type Task struct {
 	md5  string
 	path string
 
-	mu        sync.Mutex
-	ctx       context.Context
-	cancel    context.CancelFunc
-	running   bool
-	offset    int64 // 当前已下载大小
-	totalSize int64
-	err       error
+	mu           sync.Mutex
+	ctx          context.Context
+	cancel       context.CancelFunc
+	running      bool
+	downloadSize int64 // 当前已下载大小
+	totalSize    int64
+	err          error
+	success      bool
 }
 
 type TaskOptions struct {
@@ -61,7 +64,8 @@ func (t *Task) Start() error {
 
 		if err = t.verify(file); err == nil {
 			t.totalSize = info.Size()
-			t.offset = info.Size()
+			t.downloadSize = info.Size()
+			t.success = true
 			return nil
 		}
 
@@ -88,6 +92,11 @@ func (t *Task) Stop() {
 // download 是下载的实际逻辑
 func (t *Task) download() {
 	defer t.setStopped()
+	defer func() {
+		if t.err != nil {
+			logx.Errorf("download failed:%s", t.err.Error())
+		}
+	}()
 
 	file, err := os.OpenFile(t.path, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
 	if err != nil {
@@ -119,18 +128,24 @@ func (t *Task) download() {
 	for {
 		select {
 		case <-t.ctx.Done():
+			t.err = fmt.Errorf("ctx cancel task")
 			return
 		default:
 			n, err := resp.Body.Read(buf)
 			if n > 0 {
-				file.Write(buf[:n])
-				t.offset += int64(n)
+				if _, err := file.Write(buf[:n]); err != nil {
+					t.err = err
+					return
+				}
+				t.downloadSize += int64(n)
 			}
 			if err != nil {
 				if err == io.EOF {
 					file.Seek(0, io.SeekStart)
 					if err = t.verify(file); err != nil {
 						os.RemoveAll(t.path)
+					} else {
+						t.success = true
 					}
 				}
 				t.err = err
@@ -159,4 +174,12 @@ func (t *Task) verify(file io.Reader) error {
 	}
 
 	return nil
+}
+
+func (t *Task) IsRunning() bool {
+	return t.running
+}
+
+func (t *Task) GetId() string {
+	return t.id
 }

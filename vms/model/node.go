@@ -19,6 +19,7 @@ type Node struct {
 	OfflineAt  string `redis:"offlineAt"`
 	RegisterAt string `redis:"registerAt"`
 	Online     bool   `redis:"online"`
+	IP         string `redis:"ip"`
 }
 
 func RegisterNode(ctx context.Context, redis *redis.Redis, node *Node) error {
@@ -97,14 +98,14 @@ func ListNode(ctx context.Context, redis *redis.Redis, start, end int) ([]*Node,
 	}
 
 	nodes := make([]*Node, 0, len(cmds))
-	for _, cmd := range cmds {
+	for i, cmd := range cmds {
 		result, err := cmd.(*goredis.MapStringStringCmd).Result()
 		if err != nil {
 			logx.Errorf("ListNode parse result failed:%s", err.Error())
 			continue
 		}
 
-		node := Node{}
+		node := Node{Id: ids[i]}
 		err = mapToStruct(result, &node)
 		if err != nil {
 			logx.Errorf("ListNode mapToStruct error:%s", err.Error())

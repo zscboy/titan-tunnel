@@ -32,20 +32,116 @@ type DeleteVMRequest struct {
 	VmName string `json:"vm_name"`
 }
 
-type ListImageRequest struct {
+type DownloadImageRequest struct {
+	Id   string `json:"id"`
+	URL  string `json:"url"`
+	MD5  string `json:"md5"`
+	Path string `json:"path"`
+}
+
+type DownloadImageResponse struct {
+	TaskId string `json:"task_id"`
+}
+
+type DownloadTask struct {
+	TaskId       string `json:"taskId"`
+	URL          string `json:"url"`
+	MD5          string `json:"md5"`
+	Path         string `json:"path"`
+	TotalSize    int64  `json:"total_size"`
+	DownloadSize int64  `json:"download_size"`
+	Running      bool   `json:"running"`
+	Success      bool   `json:"success"`
+	ErrMsg       string `json:"err_msg"`
+}
+
+type DownloadTaskDeleteRequest struct {
+	Id     string `json:"id"`
+	TaskId string `json:"task_id"`
+}
+
+type DownloadTaskDeleteResponse struct {
+	Success bool   `json:"success"`
+	ErrMsg  string `json:"err_msg"`
+}
+
+type DownloadTaskGetRequest struct {
+	Id     string `json:"id"`
+	TaskId string `json:"taskId"`
+}
+
+type DownloadTaskListRequest struct {
 	Id string `json:"id"`
+}
+
+type DownloadTaskListResponse struct {
+	Tasks []*DownloadTask `json:"tasks"`
+}
+
+type ListImageRequest struct {
+	Id string `form:"id"`
 }
 
 type ListImageResponse struct {
 	Images []string `json:"images"`
 }
 
+type ListNodeReqeust struct {
+	Start int `form:"start"`
+	End   int `form:"end"`
+}
+
+type ListNodeResponse struct {
+	Nodes []*Node `json:"nodes"`
+	Total int32   `json:"total"`
+}
+
 type ListVMInstanceReqeust struct {
-	Id string `json:"id"`
+	Id string `form:"id"`
 }
 
 type ListVMInstanceResponse struct {
 	VmInfos []VMInfo `json:"vm_infos"`
+}
+
+type LoginRequest struct {
+	UserName string `json:"user_name"`
+	Password string `json:"password"`
+}
+
+type LoginResponse struct {
+	Token string `json:"token"`
+}
+
+type Node struct {
+	Id             string `json:"id"`
+	OS             string `json:"os"`
+	VmType         string `json:"vm_type"`
+	TotalCpu       int    `json:"total_cpu"`
+	TotalMemory    int    `json:"total_memory"`
+	SystemDiskSize int    `json:"system_disk_size"`
+	IP             string `json:"ip"`
+	Online         bool   `json:"online"`
+}
+
+type NodeWSRequest struct {
+	NodeId string `form:"id"`
+	OS     string `form:"os"`
+	VMAPI  string `form:"vmapi"`
+}
+
+type SSHWSMessage struct {
+	Type string `json:"type"`
+	Data string `json:"data,omitempty"`
+	Cols uint   `json:"cols,omitempty"`
+	Rows uint   `json:"rows,omitempty"`
+}
+
+type SSHWSReqeust struct {
+	NodeId string `form:"id"`
+	// 'host' or 'vm'
+	Type   string `form:"type"`
+	Addr   string `form:"addr"`
 }
 
 type StartVMRequest struct {
@@ -73,6 +169,13 @@ type VMInfo struct {
 type VMOperationResponse struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
+}
+
+type VMWSRequest struct {
+	NodeId    string `form:"id"`
+	Address   string `form:"address"`
+	VMAPI     string `form:"vmapi"`
+	Transport string `form:"transport"`
 }
 
 type MultipassExecRequest struct {

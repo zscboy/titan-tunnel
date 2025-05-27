@@ -8,34 +8,36 @@ import (
 	"github.com/google/uuid"
 )
 
-func TestStructToMap(t *testing.T) {
+func TestDownloadTask(t *testing.T) {
 	opts := TaskOptions{
 		Id:   uuid.NewString(),
 		URL:  "http://192.168.0.132:5001/NiuLinkOS-v1.1.7-2411141913.iso",
 		MD5:  "a5b380ecd94622de13b5e8261e5afc15",
-		Path: "D:/codes/titan-vm/vmc/downloader/test-download-data/NiuLinkOS-v1.1.7-2411141913.iso",
+		Path: "var/lib/libvirt/images/NiuLinkOS-v1.1.7-2411141913.iso",
 	}
 	task := NewTask(&opts)
-	task.Start()
+	if err := task.Start(); err != nil {
+		t.Fatalf("task start failed:%s", err.Error())
+	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
 		for {
 			if task.totalSize != 0 {
-				t.Logf("download %d/%d", task.offset, task.totalSize)
+				t.Logf("download %d/%d", task.downloadSize, task.totalSize)
 
-				if task.totalSize == task.offset {
+				if task.totalSize == task.downloadSize {
 					cancel()
 					break
 				}
 			}
 
-			if task.err != nil {
+			if !task.IsRunning() {
 				cancel()
 				break
 			}
 
-			t.Logf("totalsize:%d, download %d", task.totalSize, task.offset)
+			t.Logf("totalsize:%d, download %d", task.totalSize, task.downloadSize)
 			time.Sleep(1 * time.Second)
 
 		}
@@ -48,7 +50,7 @@ func TestStructToMap(t *testing.T) {
 		return
 	}
 
-	if task.offset == task.totalSize {
+	if task.downloadSize == task.totalSize {
 		t.Logf("download complete")
 	}
 }

@@ -2,24 +2,22 @@ package logic
 
 import (
 	"fmt"
-	"strconv"
+	"titan-vm/vms/model"
 	"titan-vm/vms/virt"
 
 	"github.com/zeromicro/go-zero/core/stores/redis"
 )
 
 func getVirtOpts(redis *redis.Redis, id string) (*virt.VirtOptions, error) {
-	key := fmt.Sprintf("vms:host:%s", id)
-	results, err := redis.Hmget(key, "os", "vmapi", "online")
+	node, err := model.GetNode(redis, id)
 	if err != nil {
 		return nil, err
 	}
 
-	online, err := strconv.ParseBool(results[2])
-	if err != nil {
-		return nil, err
+	if node == nil {
+		return nil, fmt.Errorf("not found %s", id)
 	}
 
-	opts := &virt.VirtOptions{OS: results[0], VMAPI: results[1], Online: online}
+	opts := &virt.VirtOptions{OS: node.OS, VMAPI: node.VmAPI, Online: node.Online}
 	return opts, nil
 }

@@ -26,7 +26,7 @@ type MessageType int32
 
 const (
 	MessageType_UNKNOWN              MessageType = 0
-	MessageType_CONTROL              MessageType = 1
+	MessageType_COMMAND              MessageType = 1
 	MessageType_PROXY_SESSION_CREATE MessageType = 2
 	MessageType_PROXY_SESSION_DATA   MessageType = 3
 	MessageType_PROXY_SESSION_CLOSE  MessageType = 4
@@ -36,14 +36,14 @@ const (
 var (
 	MessageType_name = map[int32]string{
 		0: "UNKNOWN",
-		1: "CONTROL",
+		1: "COMMAND",
 		2: "PROXY_SESSION_CREATE",
 		3: "PROXY_SESSION_DATA",
 		4: "PROXY_SESSION_CLOSE",
 	}
 	MessageType_value = map[string]int32{
 		"UNKNOWN":              0,
-		"CONTROL":              1,
+		"COMMAND":              1,
 		"PROXY_SESSION_CREATE": 2,
 		"PROXY_SESSION_DATA":   3,
 		"PROXY_SESSION_CLOSE":  4,
@@ -80,8 +80,11 @@ func (MessageType) EnumDescriptor() ([]byte, []int) {
 type CommandType int32
 
 const (
-	CommandType_INVALID_COMMAND CommandType = 0
-	CommandType_DownloadImage   CommandType = 1
+	CommandType_INVALID_COMMAND    CommandType = 0
+	CommandType_DownloadImage      CommandType = 1
+	CommandType_DownloadTaskDelete CommandType = 2
+	CommandType_DownloadTaskList   CommandType = 3
+	CommandType_DownloadTaskGet    CommandType = 4
 )
 
 // Enum value maps for CommandType.
@@ -89,10 +92,16 @@ var (
 	CommandType_name = map[int32]string{
 		0: "INVALID_COMMAND",
 		1: "DownloadImage",
+		2: "DownloadTaskDelete",
+		3: "DownloadTaskList",
+		4: "DownloadTaskGet",
 	}
 	CommandType_value = map[string]int32{
-		"INVALID_COMMAND": 0,
-		"DownloadImage":   1,
+		"INVALID_COMMAND":    0,
+		"DownloadImage":      1,
+		"DownloadTaskDelete": 2,
+		"DownloadTaskList":   3,
+		"DownloadTaskGet":    4,
 	}
 )
 
@@ -121,58 +130,6 @@ func (x CommandType) Number() protoreflect.EnumNumber {
 // Deprecated: Use CommandType.Descriptor instead.
 func (CommandType) EnumDescriptor() ([]byte, []int) {
 	return file_message_proto_rawDescGZIP(), []int{1}
-}
-
-type DownloadTaskAction int32
-
-const (
-	DownloadTaskAction_ACTION_UNKNOWN DownloadTaskAction = 0
-	DownloadTaskAction_START          DownloadTaskAction = 1
-	DownloadTaskAction_STOP           DownloadTaskAction = 2
-	DownloadTaskAction_DELETE         DownloadTaskAction = 3
-)
-
-// Enum value maps for DownloadTaskAction.
-var (
-	DownloadTaskAction_name = map[int32]string{
-		0: "ACTION_UNKNOWN",
-		1: "START",
-		2: "STOP",
-		3: "DELETE",
-	}
-	DownloadTaskAction_value = map[string]int32{
-		"ACTION_UNKNOWN": 0,
-		"START":          1,
-		"STOP":           2,
-		"DELETE":         3,
-	}
-)
-
-func (x DownloadTaskAction) Enum() *DownloadTaskAction {
-	p := new(DownloadTaskAction)
-	*p = x
-	return p
-}
-
-func (x DownloadTaskAction) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (DownloadTaskAction) Descriptor() protoreflect.EnumDescriptor {
-	return file_message_proto_enumTypes[2].Descriptor()
-}
-
-func (DownloadTaskAction) Type() protoreflect.EnumType {
-	return &file_message_proto_enumTypes[2]
-}
-
-func (x DownloadTaskAction) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use DownloadTaskAction.Descriptor instead.
-func (DownloadTaskAction) EnumDescriptor() ([]byte, []int) {
-	return file_message_proto_rawDescGZIP(), []int{2}
 }
 
 // 定义命令消息体
@@ -402,28 +359,29 @@ func (x *CmdDownloadImageRequest) GetPath() string {
 	return ""
 }
 
-type CmdDownloadTaskControlResponse struct {
+type CmdDownloadImageResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	ErrMsg        string                 `protobuf:"bytes,2,opt,name=err_msg,json=errMsg,proto3" json:"err_msg,omitempty"`
+	TaskId        string                 `protobuf:"bytes,3,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CmdDownloadTaskControlResponse) Reset() {
-	*x = CmdDownloadTaskControlResponse{}
+func (x *CmdDownloadImageResponse) Reset() {
+	*x = CmdDownloadImageResponse{}
 	mi := &file_message_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CmdDownloadTaskControlResponse) String() string {
+func (x *CmdDownloadImageResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CmdDownloadTaskControlResponse) ProtoMessage() {}
+func (*CmdDownloadImageResponse) ProtoMessage() {}
 
-func (x *CmdDownloadTaskControlResponse) ProtoReflect() protoreflect.Message {
+func (x *CmdDownloadImageResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_message_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -435,21 +393,28 @@ func (x *CmdDownloadTaskControlResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CmdDownloadTaskControlResponse.ProtoReflect.Descriptor instead.
-func (*CmdDownloadTaskControlResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use CmdDownloadImageResponse.ProtoReflect.Descriptor instead.
+func (*CmdDownloadImageResponse) Descriptor() ([]byte, []int) {
 	return file_message_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *CmdDownloadTaskControlResponse) GetSuccess() bool {
+func (x *CmdDownloadImageResponse) GetSuccess() bool {
 	if x != nil {
 		return x.Success
 	}
 	return false
 }
 
-func (x *CmdDownloadTaskControlResponse) GetMessage() string {
+func (x *CmdDownloadImageResponse) GetErrMsg() string {
 	if x != nil {
-		return x.Message
+		return x.ErrMsg
+	}
+	return ""
+}
+
+func (x *CmdDownloadImageResponse) GetTaskId() string {
+	if x != nil {
+		return x.TaskId
 	}
 	return ""
 }
@@ -460,6 +425,11 @@ type DownloadTask struct {
 	Url           string                 `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
 	Md5           string                 `protobuf:"bytes,3,opt,name=md5,proto3" json:"md5,omitempty"`
 	Path          string                 `protobuf:"bytes,4,opt,name=path,proto3" json:"path,omitempty"`
+	TotalSize     int64                  `protobuf:"varint,5,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
+	DownloadSize  int64                  `protobuf:"varint,6,opt,name=download_size,json=downloadSize,proto3" json:"download_size,omitempty"`
+	Running       bool                   `protobuf:"varint,7,opt,name=running,proto3" json:"running,omitempty"`
+	Success       bool                   `protobuf:"varint,8,opt,name=success,proto3" json:"success,omitempty"`
+	ErrMsg        string                 `protobuf:"bytes,9,opt,name=err_msg,json=errMsg,proto3" json:"err_msg,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -522,6 +492,41 @@ func (x *DownloadTask) GetPath() string {
 	return ""
 }
 
+func (x *DownloadTask) GetTotalSize() int64 {
+	if x != nil {
+		return x.TotalSize
+	}
+	return 0
+}
+
+func (x *DownloadTask) GetDownloadSize() int64 {
+	if x != nil {
+		return x.DownloadSize
+	}
+	return 0
+}
+
+func (x *DownloadTask) GetRunning() bool {
+	if x != nil {
+		return x.Running
+	}
+	return false
+}
+
+func (x *DownloadTask) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *DownloadTask) GetErrMsg() string {
+	if x != nil {
+		return x.ErrMsg
+	}
+	return ""
+}
+
 type CmdDownloadTaskListResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Tasks         []*DownloadTask        `protobuf:"bytes,1,rep,name=tasks,proto3" json:"tasks,omitempty"`
@@ -566,28 +571,27 @@ func (x *CmdDownloadTaskListResponse) GetTasks() []*DownloadTask {
 	return nil
 }
 
-type DownloadTaskControlRequest struct {
+type CmdDownloadTaskDeleteRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Action        DownloadTaskAction     `protobuf:"varint,2,opt,name=action,proto3,enum=pb.DownloadTaskAction" json:"action,omitempty"`
+	TaskId        string                 `protobuf:"bytes,1,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *DownloadTaskControlRequest) Reset() {
-	*x = DownloadTaskControlRequest{}
+func (x *CmdDownloadTaskDeleteRequest) Reset() {
+	*x = CmdDownloadTaskDeleteRequest{}
 	mi := &file_message_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *DownloadTaskControlRequest) String() string {
+func (x *CmdDownloadTaskDeleteRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*DownloadTaskControlRequest) ProtoMessage() {}
+func (*CmdDownloadTaskDeleteRequest) ProtoMessage() {}
 
-func (x *DownloadTaskControlRequest) ProtoReflect() protoreflect.Message {
+func (x *CmdDownloadTaskDeleteRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_message_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -599,23 +603,172 @@ func (x *DownloadTaskControlRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DownloadTaskControlRequest.ProtoReflect.Descriptor instead.
-func (*DownloadTaskControlRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use CmdDownloadTaskDeleteRequest.ProtoReflect.Descriptor instead.
+func (*CmdDownloadTaskDeleteRequest) Descriptor() ([]byte, []int) {
 	return file_message_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *DownloadTaskControlRequest) GetId() string {
+func (x *CmdDownloadTaskDeleteRequest) GetTaskId() string {
 	if x != nil {
-		return x.Id
+		return x.TaskId
 	}
 	return ""
 }
 
-func (x *DownloadTaskControlRequest) GetAction() DownloadTaskAction {
+type CmdDownloadTaskDeleteResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CmdDownloadTaskDeleteResponse) Reset() {
+	*x = CmdDownloadTaskDeleteResponse{}
+	mi := &file_message_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CmdDownloadTaskDeleteResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CmdDownloadTaskDeleteResponse) ProtoMessage() {}
+
+func (x *CmdDownloadTaskDeleteResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_message_proto_msgTypes[8]
 	if x != nil {
-		return x.Action
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
 	}
-	return DownloadTaskAction_ACTION_UNKNOWN
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CmdDownloadTaskDeleteResponse.ProtoReflect.Descriptor instead.
+func (*CmdDownloadTaskDeleteResponse) Descriptor() ([]byte, []int) {
+	return file_message_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *CmdDownloadTaskDeleteResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *CmdDownloadTaskDeleteResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+type CmdDownloadTaskGetRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TaskId        string                 `protobuf:"bytes,1,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CmdDownloadTaskGetRequest) Reset() {
+	*x = CmdDownloadTaskGetRequest{}
+	mi := &file_message_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CmdDownloadTaskGetRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CmdDownloadTaskGetRequest) ProtoMessage() {}
+
+func (x *CmdDownloadTaskGetRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_message_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CmdDownloadTaskGetRequest.ProtoReflect.Descriptor instead.
+func (*CmdDownloadTaskGetRequest) Descriptor() ([]byte, []int) {
+	return file_message_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *CmdDownloadTaskGetRequest) GetTaskId() string {
+	if x != nil {
+		return x.TaskId
+	}
+	return ""
+}
+
+type CmdDownloadTaskGetResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	ErrMsg        string                 `protobuf:"bytes,2,opt,name=err_msg,json=errMsg,proto3" json:"err_msg,omitempty"`
+	Task          *DownloadTask          `protobuf:"bytes,3,opt,name=task,proto3" json:"task,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CmdDownloadTaskGetResponse) Reset() {
+	*x = CmdDownloadTaskGetResponse{}
+	mi := &file_message_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CmdDownloadTaskGetResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CmdDownloadTaskGetResponse) ProtoMessage() {}
+
+func (x *CmdDownloadTaskGetResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_message_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CmdDownloadTaskGetResponse.ProtoReflect.Descriptor instead.
+func (*CmdDownloadTaskGetResponse) Descriptor() ([]byte, []int) {
+	return file_message_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *CmdDownloadTaskGetResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *CmdDownloadTaskGetResponse) GetErrMsg() string {
+	if x != nil {
+		return x.ErrMsg
+	}
+	return ""
+}
+
+func (x *CmdDownloadTaskGetResponse) GetTask() *DownloadTask {
+	if x != nil {
+		return x.Task
+	}
+	return nil
 }
 
 var File_message_proto protoreflect.FileDescriptor
@@ -637,35 +790,47 @@ const file_message_proto_rawDesc = "" +
 	"\x17CmdDownloadImageRequest\x12\x10\n" +
 	"\x03url\x18\x01 \x01(\tR\x03url\x12\x10\n" +
 	"\x03md5\x18\x02 \x01(\tR\x03md5\x12\x12\n" +
-	"\x04path\x18\x03 \x01(\tR\x04path\"T\n" +
-	"\x1eCmdDownloadTaskControlResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"V\n" +
+	"\x04path\x18\x03 \x01(\tR\x04path\"f\n" +
+	"\x18CmdDownloadImageResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x17\n" +
+	"\aerr_msg\x18\x02 \x01(\tR\x06errMsg\x12\x17\n" +
+	"\atask_id\x18\x03 \x01(\tR\x06taskId\"\xe7\x01\n" +
 	"\fDownloadTask\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x10\n" +
 	"\x03url\x18\x02 \x01(\tR\x03url\x12\x10\n" +
 	"\x03md5\x18\x03 \x01(\tR\x03md5\x12\x12\n" +
-	"\x04path\x18\x04 \x01(\tR\x04path\"E\n" +
+	"\x04path\x18\x04 \x01(\tR\x04path\x12\x1d\n" +
+	"\n" +
+	"total_size\x18\x05 \x01(\x03R\ttotalSize\x12#\n" +
+	"\rdownload_size\x18\x06 \x01(\x03R\fdownloadSize\x12\x18\n" +
+	"\arunning\x18\a \x01(\bR\arunning\x12\x18\n" +
+	"\asuccess\x18\b \x01(\bR\asuccess\x12\x17\n" +
+	"\aerr_msg\x18\t \x01(\tR\x06errMsg\"E\n" +
 	"\x1bCmdDownloadTaskListResponse\x12&\n" +
-	"\x05tasks\x18\x01 \x03(\v2\x10.pb.DownloadTaskR\x05tasks\"\\\n" +
-	"\x1aDownloadTaskControlRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12.\n" +
-	"\x06action\x18\x02 \x01(\x0e2\x16.pb.DownloadTaskActionR\x06action*r\n" +
+	"\x05tasks\x18\x01 \x03(\v2\x10.pb.DownloadTaskR\x05tasks\"7\n" +
+	"\x1cCmdDownloadTaskDeleteRequest\x12\x17\n" +
+	"\atask_id\x18\x01 \x01(\tR\x06taskId\"S\n" +
+	"\x1dCmdDownloadTaskDeleteResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"4\n" +
+	"\x19CmdDownloadTaskGetRequest\x12\x17\n" +
+	"\atask_id\x18\x01 \x01(\tR\x06taskId\"u\n" +
+	"\x1aCmdDownloadTaskGetResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x17\n" +
+	"\aerr_msg\x18\x02 \x01(\tR\x06errMsg\x12$\n" +
+	"\x04task\x18\x03 \x01(\v2\x10.pb.DownloadTaskR\x04task*r\n" +
 	"\vMessageType\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\v\n" +
-	"\aCONTROL\x10\x01\x12\x18\n" +
+	"\aCOMMAND\x10\x01\x12\x18\n" +
 	"\x14PROXY_SESSION_CREATE\x10\x02\x12\x16\n" +
 	"\x12PROXY_SESSION_DATA\x10\x03\x12\x17\n" +
-	"\x13PROXY_SESSION_CLOSE\x10\x04*5\n" +
+	"\x13PROXY_SESSION_CLOSE\x10\x04*x\n" +
 	"\vCommandType\x12\x13\n" +
 	"\x0fINVALID_COMMAND\x10\x00\x12\x11\n" +
-	"\rDownloadImage\x10\x01*I\n" +
-	"\x12DownloadTaskAction\x12\x12\n" +
-	"\x0eACTION_UNKNOWN\x10\x00\x12\t\n" +
-	"\x05START\x10\x01\x12\b\n" +
-	"\x04STOP\x10\x02\x12\n" +
-	"\n" +
-	"\x06DELETE\x10\x032\t\n" +
+	"\rDownloadImage\x10\x01\x12\x16\n" +
+	"\x12DownloadTaskDelete\x10\x02\x12\x14\n" +
+	"\x10DownloadTaskList\x10\x03\x12\x13\n" +
+	"\x0fDownloadTaskGet\x10\x042\t\n" +
 	"\amessageB\aZ\x05../pbb\x06proto3"
 
 var (
@@ -680,26 +845,28 @@ func file_message_proto_rawDescGZIP() []byte {
 	return file_message_proto_rawDescData
 }
 
-var file_message_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_message_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_message_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_message_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_message_proto_goTypes = []any{
-	(MessageType)(0),                       // 0: pb.MessageType
-	(CommandType)(0),                       // 1: pb.CommandType
-	(DownloadTaskAction)(0),                // 2: pb.DownloadTaskAction
-	(*Command)(nil),                        // 3: pb.Command
-	(*DestAddr)(nil),                       // 4: pb.DestAddr
-	(*Message)(nil),                        // 5: pb.Message
-	(*CmdDownloadImageRequest)(nil),        // 6: pb.CmdDownloadImageRequest
-	(*CmdDownloadTaskControlResponse)(nil), // 7: pb.CmdDownloadTaskControlResponse
-	(*DownloadTask)(nil),                   // 8: pb.DownloadTask
-	(*CmdDownloadTaskListResponse)(nil),    // 9: pb.CmdDownloadTaskListResponse
-	(*DownloadTaskControlRequest)(nil),     // 10: pb.DownloadTaskControlRequest
+	(MessageType)(0),                      // 0: pb.MessageType
+	(CommandType)(0),                      // 1: pb.CommandType
+	(*Command)(nil),                       // 2: pb.Command
+	(*DestAddr)(nil),                      // 3: pb.DestAddr
+	(*Message)(nil),                       // 4: pb.Message
+	(*CmdDownloadImageRequest)(nil),       // 5: pb.CmdDownloadImageRequest
+	(*CmdDownloadImageResponse)(nil),      // 6: pb.CmdDownloadImageResponse
+	(*DownloadTask)(nil),                  // 7: pb.DownloadTask
+	(*CmdDownloadTaskListResponse)(nil),   // 8: pb.CmdDownloadTaskListResponse
+	(*CmdDownloadTaskDeleteRequest)(nil),  // 9: pb.CmdDownloadTaskDeleteRequest
+	(*CmdDownloadTaskDeleteResponse)(nil), // 10: pb.CmdDownloadTaskDeleteResponse
+	(*CmdDownloadTaskGetRequest)(nil),     // 11: pb.CmdDownloadTaskGetRequest
+	(*CmdDownloadTaskGetResponse)(nil),    // 12: pb.CmdDownloadTaskGetResponse
 }
 var file_message_proto_depIdxs = []int32{
 	1, // 0: pb.Command.type:type_name -> pb.CommandType
 	0, // 1: pb.Message.type:type_name -> pb.MessageType
-	8, // 2: pb.CmdDownloadTaskListResponse.tasks:type_name -> pb.DownloadTask
-	2, // 3: pb.DownloadTaskControlRequest.action:type_name -> pb.DownloadTaskAction
+	7, // 2: pb.CmdDownloadTaskListResponse.tasks:type_name -> pb.DownloadTask
+	7, // 3: pb.CmdDownloadTaskGetResponse.task:type_name -> pb.DownloadTask
 	4, // [4:4] is the sub-list for method output_type
 	4, // [4:4] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name
@@ -717,8 +884,8 @@ func file_message_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_message_proto_rawDesc), len(file_message_proto_rawDesc)),
-			NumEnums:      3,
-			NumMessages:   8,
+			NumEnums:      2,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

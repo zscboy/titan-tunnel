@@ -39,6 +39,46 @@ func (s *VmsServer) GetVol(ctx context.Context, in *pb.GetVolRequest) (*pb.GetVo
 	return l.GetVol(in)
 }
 
+func (s *VmsServer) ListHostNetworkInterfaceWithLibvirt(ctx context.Context, in *pb.ListHostNetworkInterfaceRequest) (*pb.ListHostNetworkInterfaceResponse, error) {
+	l := logic.NewListHostNetworkInterfaceWithLibvirtLogic(ctx, s.svcCtx)
+	return l.ListHostNetworkInterfaceWithLibvirt(in)
+}
+
+func (s *VmsServer) ListVMNetwrokInterfaceWithLibvirt(ctx context.Context, in *pb.ListVMNetwrokInterfaceReqeust) (*pb.ListVMNetworkInterfaceResponse, error) {
+	l := logic.NewListVMNetwrokInterfaceWithLibvirtLogic(ctx, s.svcCtx)
+	return l.ListVMNetwrokInterfaceWithLibvirt(in)
+}
+
+func (s *VmsServer) AddNetworkInterfaceWithLibvirt(ctx context.Context, in *pb.AddNetworkInterfaceRequest) (*pb.VMOperationResponse, error) {
+	l := logic.NewAddNetworkInterfaceWithLibvirtLogic(ctx, s.svcCtx)
+	return l.AddNetworkInterfaceWithLibvirt(in)
+}
+
+func (s *VmsServer) DeleteNetworkInterfaceWithLibvirt(ctx context.Context, in *pb.DeleteNetworkInterfaceRequest) (*pb.VMOperationResponse, error) {
+	l := logic.NewDeleteNetworkInterfaceWithLibvirtLogic(ctx, s.svcCtx)
+	return l.DeleteNetworkInterfaceWithLibvirt(in)
+}
+
+func (s *VmsServer) ListHostDiskWithLibvirt(ctx context.Context, in *pb.ListHostDiskRequest) (*pb.ListDiskResponse, error) {
+	l := logic.NewListHostDiskWithLibvirtLogic(ctx, s.svcCtx)
+	return l.ListHostDiskWithLibvirt(in)
+}
+
+func (s *VmsServer) ListVMDiskWithLibvirt(ctx context.Context, in *pb.ListVMDiskRequest) (*pb.ListVMDiskResponse, error) {
+	l := logic.NewListVMDiskWithLibvirtLogic(ctx, s.svcCtx)
+	return l.ListVMDiskWithLibvirt(in)
+}
+
+func (s *VmsServer) AddDiskWithLibvirt(ctx context.Context, in *pb.AddDiskRequest) (*pb.VMOperationResponse, error) {
+	l := logic.NewAddDiskWithLibvirtLogic(ctx, s.svcCtx)
+	return l.AddDiskWithLibvirt(in)
+}
+
+func (s *VmsServer) DeleteDiskWithLibvirt(ctx context.Context, in *pb.DeleteDiskRequest) (*pb.VMOperationResponse, error) {
+	l := logic.NewDeleteDiskWithLibvirtLogic(ctx, s.svcCtx)
+	return l.DeleteDiskWithLibvirt(in)
+}
+
 // common
 func (s *VmsServer) CreateVM(ctx context.Context, in *pb.CreateVMRequest) (*pb.VMOperationResponse, error) {
 	l := logic.NewCreateVMLogic(ctx, s.svcCtx)
@@ -68,6 +108,11 @@ func (s *VmsServer) ListVMInstance(ctx context.Context, in *pb.ListVMInstanceReq
 func (s *VmsServer) ListImage(ctx context.Context, in *pb.ListImageRequest) (*pb.ListImageResponse, error) {
 	l := logic.NewListImageLogic(ctx, s.svcCtx)
 	return l.ListImage(in)
+}
+
+func (s *VmsServer) DeleteImage(ctx context.Context, in *pb.DeleteImageRequest) (*pb.DeleteImageResponse, error) {
+	l := logic.NewDeleteImageLogic(ctx, s.svcCtx)
+	return l.DeleteImage(in)
 }
 
 // not implement now

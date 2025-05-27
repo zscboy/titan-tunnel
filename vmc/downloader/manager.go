@@ -1,6 +1,9 @@
 package downloader
 
-import "fmt"
+import (
+	"fmt"
+	"titan-vm/pb"
+)
 
 const (
 	maxTask = 5
@@ -21,19 +24,19 @@ func (tm *Manager) AddTask(t *Task) error {
 
 	for _, task := range tm.tasks {
 		if task.id == t.id {
-			return fmt.Errorf("id %s already exist", t.id)
+			return fmt.Errorf("similar task alrady exist, id %s", t.id)
 		}
 
 		if task.url == t.url {
-			return fmt.Errorf("url  %s already exist", t.md5)
+			return fmt.Errorf("similar task alrady exist, rul %s", t.url)
 		}
 
 		if task.md5 == t.md5 {
-			return fmt.Errorf("md5 %s already exist", t.md5)
+			return fmt.Errorf("similar task alrady exist, md5 %s", t.md5)
 		}
 
 		if task.path == t.path {
-			return fmt.Errorf("path  %s already exist", t.md5)
+			return fmt.Errorf("similar task alrady exist, path %s", t.md5)
 		}
 	}
 
@@ -58,4 +61,41 @@ func (tm *Manager) GetTask(id string) *Task {
 		}
 	}
 	return nil
+}
+
+func (tm *Manager) TasksToProto() []*pb.DownloadTask {
+	pbDownloadTasks := make([]*pb.DownloadTask, 0, len(tm.tasks))
+	for _, task := range tm.tasks {
+		pbDownloadTask := pb.DownloadTask{
+			Id:           task.id,
+			Url:          task.url,
+			Md5:          task.md5,
+			Path:         task.path,
+			TotalSize:    task.totalSize,
+			DownloadSize: task.downloadSize,
+			Running:      task.running,
+			Success:      task.success,
+		}
+
+		if task.err != nil {
+			pbDownloadTask.ErrMsg = task.err.Error()
+		}
+		pbDownloadTasks = append(pbDownloadTasks, &pbDownloadTask)
+	}
+	return pbDownloadTasks
+}
+
+func (tm *Manager) TaskToProto(task *Task) *pb.DownloadTask {
+	pbDownloadTask := &pb.DownloadTask{
+		Id:           task.id,
+		Url:          task.url,
+		Md5:          task.md5,
+		Path:         task.path,
+		TotalSize:    task.totalSize,
+		DownloadSize: task.downloadSize,
+		Running:      task.running,
+		Success:      task.success,
+	}
+
+	return pbDownloadTask
 }

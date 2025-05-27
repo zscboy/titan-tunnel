@@ -14,8 +14,8 @@ import (
 
 func main() {
 	app := &cli.App{
-		Name:  "titan-vm",
-		Usage: "Manager and update business process",
+		Name:  "titan-vmc",
+		Usage: "vms client",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "url",
