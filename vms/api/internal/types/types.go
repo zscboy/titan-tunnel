@@ -132,16 +132,15 @@ type NodeWSRequest struct {
 
 type SSHWSMessage struct {
 	Type string `json:"type"`
-	Data string `json:"data,omitempty"`
-	Cols uint   `json:"cols,omitempty"`
-	Rows uint   `json:"rows,omitempty"`
+	Data string `json:"data,optional"`
+	Cols uint   `json:"cols,optional"`
+	Rows uint   `json:"rows,optional"`
 }
 
 type SSHWSReqeust struct {
 	NodeId string `form:"id"`
-	// 'host' or 'vm'
-	Type   string `form:"type"`
-	Addr   string `form:"addr"`
+	Type   string `form:"type,optional"`
+	Addr   string `form:"addr,optional"`
 }
 
 type StartVMRequest struct {
@@ -173,8 +172,8 @@ type VMOperationResponse struct {
 
 type VMWSRequest struct {
 	NodeId    string `form:"id"`
-	Address   string `form:"address"`
-	VMAPI     string `form:"vmapi"`
+	Address   string `form:"address,optional"`
+	VMAPI     string `form:"vmapi,optional"`
 	Transport string `form:"transport"`
 }
 

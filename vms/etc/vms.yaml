@@ -25,10 +25,10 @@ RpcClient:
   NonBlock: true
   Timeout: 30000
 
-CertFile: ./etc/multipass_cert.pem
-KeyFile:  ./etc/multipass_key.pem
-SSHPriKey: ./etc/ssh_id_rsa
-SSHPubKey: ./etc/ssh_id_rsa.pub
+MultipassCert: d://codes//titan-vm//vms//etc//multipass_cert.pem
+MultipassKey:  d://codes//titan-vm//vms//etc//multipass_key.pem
+SSHPriKey: d://codes//titan-vm//vms//etc//ssh_id_rsa
+SSHPubKey: d://codes//titan-vm//vms//etc//ssh_id_rsa.pub
 
 JwtAuth:
   AccessSecret: "25018198-36fb-11f0-bc94-23569555de32"  # 密钥

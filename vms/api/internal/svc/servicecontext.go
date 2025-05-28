@@ -22,6 +22,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Config: c,
 		Vms:    vms.NewVms(zrpc.MustNewClient(c.RpcClient)),
 		Redis:  redis,
-		TunMgr: ws.NewTunnelManager(redis),
+		TunMgr: ws.NewTunnelManager(c, redis),
 	}
 }

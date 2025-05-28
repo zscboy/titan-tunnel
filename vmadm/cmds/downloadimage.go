@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 	"time"
-	wstypes "titan-vm/vms/ws/types"
+	types "titan-vm/vms/api/export"
 
 	"github.com/urfave/cli/v2"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -42,7 +42,7 @@ var downloadimage = &cli.Command{
 			return fmt.Errorf("need id, example: vmadm vm create <id> [options]")
 		}
 
-		request := wstypes.DownloadImageRequest{
+		request := types.DownloadImageRequest{
 			Id:   id,
 			URL:  cctx.String("url"),
 			MD5:  cctx.String("md5"),
@@ -74,14 +74,12 @@ var downloadimage = &cli.Command{
 			return fmt.Errorf("status code %d, error:%s", resp.StatusCode, string(body))
 		}
 
-		var result wstypes.DownloadImageResponse
+		var result types.DownloadImageResponse
 		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 			return err
 		}
 
-		if !result.Success {
-			return fmt.Errorf(result.ErrMsg)
-		}
+		fmt.Println("task id ", result.TaskId)
 		return nil
 	},
 }

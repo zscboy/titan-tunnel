@@ -32,7 +32,7 @@ func (cmd *CmdHandler) DownloadImage(ctx context.Context, req *types.DownloadIma
 	}
 
 	resp := &pb.CmdDownloadImageResponse{}
-	payload := &pb.Command{Type: pb.CommandType_DownloadImage, Data: bytes}
+	payload := &pb.Command{Type: pb.CommandType_DOWNLOAD_IMAGE, Data: bytes}
 	err = tun.sendCommand(ctx, payload, resp)
 	if err != nil {
 		return nil, err
@@ -58,7 +58,7 @@ func (cmd *CmdHandler) DownloadTaskDelete(ctx context.Context, req *types.Downlo
 	}
 
 	resp := &pb.CmdDownloadTaskDeleteResponse{}
-	payload := &pb.Command{Type: pb.CommandType_DownloadTaskDelete, Data: bytes}
+	payload := &pb.Command{Type: pb.CommandType_DOWNLOAD_TASK_DELETE, Data: bytes}
 	err = tun.sendCommand(ctx, payload, resp)
 	if err != nil {
 		return err
@@ -81,7 +81,7 @@ func (cmd *CmdHandler) DownloadTaskList(tx context.Context, req *types.DownloadT
 	defer cancel()
 
 	downloadTaskResp := &pb.CmdDownloadTaskListResponse{}
-	payload := &pb.Command{Type: pb.CommandType_DownloadTaskList}
+	payload := &pb.Command{Type: pb.CommandType_DOWNLOAD_TASK_LIST}
 	err := tun.sendCommand(ctx, payload, downloadTaskResp)
 	if err != nil {
 		return nil, err
@@ -118,7 +118,7 @@ func (cmd *CmdHandler) DownloadTaskGet(ctx context.Context, req *types.DownloadT
 	}
 
 	downloadTask := &pb.DownloadTask{}
-	payload := &pb.Command{Type: pb.CommandType_DownloadTaskGet, Data: bytes}
+	payload := &pb.Command{Type: pb.CommandType_DOWNLOAD_TASK_GET, Data: bytes}
 	err = tun.sendCommand(ctx, payload, downloadTask)
 	if err != nil {
 		return nil, err

@@ -42,7 +42,7 @@ func (ws *NodeWS) ServeWS(w http.ResponseWriter, r *http.Request, req *types.Nod
 	}
 	defer c.Close()
 
-	ws.tunMgr.acceptWebsocket(c, req.NodeId, &TunOptions{OS: req.OS, VMAPI: req.VMAPI, IP: ip})
+	ws.tunMgr.acceptWebsocket(c, &TunOptions{Id: req.NodeId, OS: req.OS, VMAPI: req.VMAPI, IP: ip})
 
 	return nil
 }

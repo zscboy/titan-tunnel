@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"titan-vm/pb"
 	"titan-vm/vms/api/internal/types"
+
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 const (
@@ -26,6 +28,7 @@ func NewVMWS(tunMgr *TunnelManager) *VMWS {
 }
 
 func (ws *VMWS) ServeWS(w http.ResponseWriter, r *http.Request, req *types.VMWSRequest) error {
+	logx.Debugf("ServeWS %v", *req)
 	if len(req.NodeId) == 0 {
 		return fmt.Errorf("require NodeId")
 	}

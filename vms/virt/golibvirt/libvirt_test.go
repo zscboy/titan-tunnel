@@ -15,7 +15,7 @@ import (
 const serverAddr = "ws://localhost:7777/vm?uuid=b9a3a90e-2b14-11f0-884e-57cfb3f3dd63&transport=raw&vmapi=libvirt"
 
 func TestListVM(t *testing.T) {
-	const serverURL = "ws://localhost:7777/vm"
+	const serverURL = "ws://localhost:7777/api/ws/vm"
 	const hostID = "30ad25ce-3610-11f0-8a84-8b2a4d0acbcf"
 
 	// goLibvirt := GoLibvirt{serverURL: serverURL}
@@ -35,7 +35,7 @@ func TestListVM(t *testing.T) {
 }
 
 func TestDomainListNetwork(t *testing.T) {
-	const serverURL = "ws://localhost:7777/vm"
+	const serverURL = "ws://localhost:7777/api/ws/vm"
 	const hostID = "b9a3a90e-2b14-11f0-884e-57cfb3f3dd63"
 
 	// goLibvirt := GoLibvirt{serverURL: serverURL}
@@ -325,7 +325,7 @@ func TestGetDefaultPool(t *testing.T) {
 }
 
 func TestListVMDisk(t *testing.T) {
-	const serverURL = "ws://localhost:7777/vm"
+	const serverURL = "ws://localhost:7777/api/ws/vm"
 	// const hostID = "b9a3a90e-2b14-11f0-884e-57cfb3f3dd63"
 	const hostID = "30ad25ce-3610-11f0-8a84-8b2a4d0acbcf"
 

@@ -15,7 +15,7 @@ func TestProto(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	cmd := &pb.Command{Type: pb.CommandType_DownloadImage, Data: bytes}
+	cmd := &pb.Command{Type: pb.CommandType_DOWNLOAD_IMAGE, Data: bytes}
 	payloadData, err := proto.Marshal(cmd)
 	if err != nil {
 		t.Fatal(err.Error())

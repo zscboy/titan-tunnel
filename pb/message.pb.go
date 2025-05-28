@@ -80,28 +80,31 @@ func (MessageType) EnumDescriptor() ([]byte, []int) {
 type CommandType int32
 
 const (
-	CommandType_INVALID_COMMAND    CommandType = 0
-	CommandType_DownloadImage      CommandType = 1
-	CommandType_DownloadTaskDelete CommandType = 2
-	CommandType_DownloadTaskList   CommandType = 3
-	CommandType_DownloadTaskGet    CommandType = 4
+	CommandType_INVALID_COMMAND      CommandType = 0
+	CommandType_DOWNLOAD_IMAGE       CommandType = 1
+	CommandType_DOWNLOAD_TASK_DELETE CommandType = 2
+	CommandType_DOWNLOAD_TASK_LIST   CommandType = 3
+	CommandType_DOWNLOAD_TASK_GET    CommandType = 4
+	CommandType_AUTH                 CommandType = 5
 )
 
 // Enum value maps for CommandType.
 var (
 	CommandType_name = map[int32]string{
 		0: "INVALID_COMMAND",
-		1: "DownloadImage",
-		2: "DownloadTaskDelete",
-		3: "DownloadTaskList",
-		4: "DownloadTaskGet",
+		1: "DOWNLOAD_IMAGE",
+		2: "DOWNLOAD_TASK_DELETE",
+		3: "DOWNLOAD_TASK_LIST",
+		4: "DOWNLOAD_TASK_GET",
+		5: "AUTH",
 	}
 	CommandType_value = map[string]int32{
-		"INVALID_COMMAND":    0,
-		"DownloadImage":      1,
-		"DownloadTaskDelete": 2,
-		"DownloadTaskList":   3,
-		"DownloadTaskGet":    4,
+		"INVALID_COMMAND":      0,
+		"DOWNLOAD_IMAGE":       1,
+		"DOWNLOAD_TASK_DELETE": 2,
+		"DOWNLOAD_TASK_LIST":   3,
+		"DOWNLOAD_TASK_GET":    4,
+		"AUTH":                 5,
 	}
 )
 
@@ -771,6 +774,110 @@ func (x *CmdDownloadTaskGetResponse) GetTask() *DownloadTask {
 	return nil
 }
 
+type CmdAuthSSHAndMultipassRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SshPubKey     []byte                 `protobuf:"bytes,1,opt,name=ssh_pub_key,json=sshPubKey,proto3" json:"ssh_pub_key,omitempty"`
+	MultipassCert []byte                 `protobuf:"bytes,2,opt,name=multipass_cert,json=multipassCert,proto3" json:"multipass_cert,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CmdAuthSSHAndMultipassRequest) Reset() {
+	*x = CmdAuthSSHAndMultipassRequest{}
+	mi := &file_message_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CmdAuthSSHAndMultipassRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CmdAuthSSHAndMultipassRequest) ProtoMessage() {}
+
+func (x *CmdAuthSSHAndMultipassRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_message_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CmdAuthSSHAndMultipassRequest.ProtoReflect.Descriptor instead.
+func (*CmdAuthSSHAndMultipassRequest) Descriptor() ([]byte, []int) {
+	return file_message_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *CmdAuthSSHAndMultipassRequest) GetSshPubKey() []byte {
+	if x != nil {
+		return x.SshPubKey
+	}
+	return nil
+}
+
+func (x *CmdAuthSSHAndMultipassRequest) GetMultipassCert() []byte {
+	if x != nil {
+		return x.MultipassCert
+	}
+	return nil
+}
+
+type CmdAuthSSHAndMultipassResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	ErrMsg        string                 `protobuf:"bytes,2,opt,name=err_msg,json=errMsg,proto3" json:"err_msg,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CmdAuthSSHAndMultipassResponse) Reset() {
+	*x = CmdAuthSSHAndMultipassResponse{}
+	mi := &file_message_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CmdAuthSSHAndMultipassResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CmdAuthSSHAndMultipassResponse) ProtoMessage() {}
+
+func (x *CmdAuthSSHAndMultipassResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_message_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CmdAuthSSHAndMultipassResponse.ProtoReflect.Descriptor instead.
+func (*CmdAuthSSHAndMultipassResponse) Descriptor() ([]byte, []int) {
+	return file_message_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *CmdAuthSSHAndMultipassResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *CmdAuthSSHAndMultipassResponse) GetErrMsg() string {
+	if x != nil {
+		return x.ErrMsg
+	}
+	return ""
+}
+
 var File_message_proto protoreflect.FileDescriptor
 
 const file_message_proto_rawDesc = "" +
@@ -818,19 +925,26 @@ const file_message_proto_rawDesc = "" +
 	"\x1aCmdDownloadTaskGetResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x17\n" +
 	"\aerr_msg\x18\x02 \x01(\tR\x06errMsg\x12$\n" +
-	"\x04task\x18\x03 \x01(\v2\x10.pb.DownloadTaskR\x04task*r\n" +
+	"\x04task\x18\x03 \x01(\v2\x10.pb.DownloadTaskR\x04task\"f\n" +
+	"\x1dCmdAuthSSHAndMultipassRequest\x12\x1e\n" +
+	"\vssh_pub_key\x18\x01 \x01(\fR\tsshPubKey\x12%\n" +
+	"\x0emultipass_cert\x18\x02 \x01(\fR\rmultipassCert\"S\n" +
+	"\x1eCmdAuthSSHAndMultipassResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x17\n" +
+	"\aerr_msg\x18\x02 \x01(\tR\x06errMsg*r\n" +
 	"\vMessageType\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\v\n" +
 	"\aCOMMAND\x10\x01\x12\x18\n" +
 	"\x14PROXY_SESSION_CREATE\x10\x02\x12\x16\n" +
 	"\x12PROXY_SESSION_DATA\x10\x03\x12\x17\n" +
-	"\x13PROXY_SESSION_CLOSE\x10\x04*x\n" +
+	"\x13PROXY_SESSION_CLOSE\x10\x04*\x89\x01\n" +
 	"\vCommandType\x12\x13\n" +
-	"\x0fINVALID_COMMAND\x10\x00\x12\x11\n" +
-	"\rDownloadImage\x10\x01\x12\x16\n" +
-	"\x12DownloadTaskDelete\x10\x02\x12\x14\n" +
-	"\x10DownloadTaskList\x10\x03\x12\x13\n" +
-	"\x0fDownloadTaskGet\x10\x042\t\n" +
+	"\x0fINVALID_COMMAND\x10\x00\x12\x12\n" +
+	"\x0eDOWNLOAD_IMAGE\x10\x01\x12\x18\n" +
+	"\x14DOWNLOAD_TASK_DELETE\x10\x02\x12\x16\n" +
+	"\x12DOWNLOAD_TASK_LIST\x10\x03\x12\x15\n" +
+	"\x11DOWNLOAD_TASK_GET\x10\x04\x12\b\n" +
+	"\x04AUTH\x10\x052\t\n" +
 	"\amessageB\aZ\x05../pbb\x06proto3"
 
 var (
@@ -846,21 +960,23 @@ func file_message_proto_rawDescGZIP() []byte {
 }
 
 var file_message_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_message_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_message_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_message_proto_goTypes = []any{
-	(MessageType)(0),                      // 0: pb.MessageType
-	(CommandType)(0),                      // 1: pb.CommandType
-	(*Command)(nil),                       // 2: pb.Command
-	(*DestAddr)(nil),                      // 3: pb.DestAddr
-	(*Message)(nil),                       // 4: pb.Message
-	(*CmdDownloadImageRequest)(nil),       // 5: pb.CmdDownloadImageRequest
-	(*CmdDownloadImageResponse)(nil),      // 6: pb.CmdDownloadImageResponse
-	(*DownloadTask)(nil),                  // 7: pb.DownloadTask
-	(*CmdDownloadTaskListResponse)(nil),   // 8: pb.CmdDownloadTaskListResponse
-	(*CmdDownloadTaskDeleteRequest)(nil),  // 9: pb.CmdDownloadTaskDeleteRequest
-	(*CmdDownloadTaskDeleteResponse)(nil), // 10: pb.CmdDownloadTaskDeleteResponse
-	(*CmdDownloadTaskGetRequest)(nil),     // 11: pb.CmdDownloadTaskGetRequest
-	(*CmdDownloadTaskGetResponse)(nil),    // 12: pb.CmdDownloadTaskGetResponse
+	(MessageType)(0),                       // 0: pb.MessageType
+	(CommandType)(0),                       // 1: pb.CommandType
+	(*Command)(nil),                        // 2: pb.Command
+	(*DestAddr)(nil),                       // 3: pb.DestAddr
+	(*Message)(nil),                        // 4: pb.Message
+	(*CmdDownloadImageRequest)(nil),        // 5: pb.CmdDownloadImageRequest
+	(*CmdDownloadImageResponse)(nil),       // 6: pb.CmdDownloadImageResponse
+	(*DownloadTask)(nil),                   // 7: pb.DownloadTask
+	(*CmdDownloadTaskListResponse)(nil),    // 8: pb.CmdDownloadTaskListResponse
+	(*CmdDownloadTaskDeleteRequest)(nil),   // 9: pb.CmdDownloadTaskDeleteRequest
+	(*CmdDownloadTaskDeleteResponse)(nil),  // 10: pb.CmdDownloadTaskDeleteResponse
+	(*CmdDownloadTaskGetRequest)(nil),      // 11: pb.CmdDownloadTaskGetRequest
+	(*CmdDownloadTaskGetResponse)(nil),     // 12: pb.CmdDownloadTaskGetResponse
+	(*CmdAuthSSHAndMultipassRequest)(nil),  // 13: pb.CmdAuthSSHAndMultipassRequest
+	(*CmdAuthSSHAndMultipassResponse)(nil), // 14: pb.CmdAuthSSHAndMultipassResponse
 }
 var file_message_proto_depIdxs = []int32{
 	1, // 0: pb.Command.type:type_name -> pb.CommandType
@@ -885,7 +1001,7 @@ func file_message_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_message_proto_rawDesc), len(file_message_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   11,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

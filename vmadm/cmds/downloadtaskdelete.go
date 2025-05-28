@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 	"time"
-	wstypes "titan-vm/vms/ws/types"
+	types "titan-vm/vms/api/export"
 
 	"github.com/urfave/cli/v2"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -29,7 +29,7 @@ var downloadTaskDelete = &cli.Command{
 			return fmt.Errorf("need id, example: vmadm vm create <id> [options]")
 		}
 
-		request := wstypes.DownloadTaskDeleteRequest{
+		request := types.DownloadTaskDeleteRequest{
 			Id:     id,
 			TaskId: cctx.String("task-id"),
 		}
@@ -59,7 +59,7 @@ var downloadTaskDelete = &cli.Command{
 			return fmt.Errorf("status code %d, error:%s", resp.StatusCode, string(body))
 		}
 
-		var result wstypes.DownloadTaskDeleteResponse
+		var result types.DownloadTaskDeleteResponse
 		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 			return err
 		}

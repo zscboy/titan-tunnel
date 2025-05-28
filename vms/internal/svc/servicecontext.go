@@ -16,10 +16,10 @@ type ServiceContext struct {
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	serverURL := fmt.Sprintf("ws://localhost:%d/vm", c.RestConf.Port)
+	serverURL := fmt.Sprintf("ws://localhost:%d/api/ws/vm", c.RestConf.Port)
 	return &ServiceContext{
 		Config: c,
-		Virt:   virt.NewVirt(serverURL, multipass.CertProvider{CertFile: c.CertFile, KeyFile: c.KeyFile}),
+		Virt:   virt.NewVirt(serverURL, multipass.CertProvider{CertFile: c.MultipassCert, KeyFile: c.MultipassKey}),
 		Redis:  redis.MustNewRedis(c.Redis.RedisConf),
 	}
 }

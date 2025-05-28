@@ -139,23 +139,23 @@ type (
 	}
 	VMWSRequest {
 		NodeId  string `form:"id"`
-		Address string `form:"address"`
+		Address string `form:"address,optional"`
 		// 'multipass' r 'libvirt'
-		VMAPI string `form:"vmapi"`
+		VMAPI string `form:"vmapi,optional"`
 		// 'raw' or 'websocket'
 		Transport string `form:"transport"`
 	}
 	SSHWSReqeust {
 		NodeId string `form:"id"`
-		Type   string `form:"type"`
-		Addr   string `form:"addr"`
+		Type   string `form:"type,optional"`
+		Addr   string `form:"addr,optional"`
 	}
 	SSHWSMessage {
 		// 'error', 'stdin', 'stdout', 'resize'
 		Type string `json:"type"`
-		Data string `json:"data,omitempty"`
-		Cols uint   `json:"cols,omitempty"`
-		Rows uint   `json:"rows,omitempty"`
+		Data string `json:"data,optional"`
+		Cols uint   `json:"cols,optional"`
+		Rows uint   `json:"rows,optional"`
 	}
 )
 

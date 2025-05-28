@@ -33,3 +33,17 @@ type MultipassExecResponse types.MultipassExecRequest
 type ListNodeReqeust types.ListNodeReqeust
 type ListNodeResponse types.ListNodeResponse
 type Node types.Node
+
+type DownloadImageRequest types.DownloadImageRequest
+type DownloadImageResponse types.DownloadImageResponse
+type DownloadTaskDeleteRequest types.DownloadTaskDeleteRequest
+type DownloadTaskDeleteResponse types.DownloadTaskDeleteResponse
+type DownloadTaskListRequest types.DownloadTaskListRequest
+type DownloadTask types.DownloadTask
+type DownloadTaskListResponse types.DownloadTaskListResponse
+type DownloadTaskGetRequest types.DownloadTaskGetRequest
+
+type NodeWSRequest types.NodeWSRequest
+type VMWSRequest types.VMWSRequest
+type SSHWSReqeust types.SSHWSReqeust
+type SSHWSMessage types.SSHWSMessage

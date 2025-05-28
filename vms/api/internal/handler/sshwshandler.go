@@ -3,15 +3,23 @@ package handler
 import (
 	"net/http"
 
-	"github.com/zeromicro/go-zero/rest/httpx"
 	"titan-vm/vms/api/internal/logic"
 	"titan-vm/vms/api/internal/svc"
+	"titan-vm/vms/api/internal/types"
+
+	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 func sshWSHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		var req types.SSHWSReqeust
+		if err := httpx.Parse(r, &req); err != nil {
+			httpx.ErrorCtx(r.Context(), w, err)
+			return
+		}
+
 		l := logic.NewSshWSLogic(r.Context(), svcCtx)
-		err := l.SshWS()
+		err := l.SshWS(w, r, &req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

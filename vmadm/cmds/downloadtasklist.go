@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 	"time"
-	wstypes "titan-vm/vms/ws/types"
+	types "titan-vm/vms/api/export"
 
 	"github.com/urfave/cli/v2"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -23,7 +23,7 @@ var downloadTaskList = &cli.Command{
 			return fmt.Errorf("need id, example: vmadm vm create <id> [options]")
 		}
 
-		request := wstypes.DownloadTaskListRequest{
+		request := types.DownloadTaskListRequest{
 			Id: id,
 		}
 
@@ -55,7 +55,7 @@ var downloadTaskList = &cli.Command{
 			return fmt.Errorf("status code %d, error:%s", resp.StatusCode, string(body))
 		}
 
-		var result wstypes.DownloadTaskListResponse
+		var result types.DownloadTaskListResponse
 		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 			return err
 		}

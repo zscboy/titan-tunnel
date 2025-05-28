@@ -81,10 +81,14 @@ var SshCmd = &cli.Command{
 		defer cancle()
 
 		remoteSshAddr := fmt.Sprintf("%s:%d", "localhost", sshPort)
-		url := fmt.Sprintf("ws://%s/vm?uuid=%s&transport=raw&address=%s", server, id, remoteSshAddr)
-		websocketConn, _, err := websocket.DefaultDialer.DialContext(ctx, url, nil)
+		url := fmt.Sprintf("ws://%s/api/ws/vm?id=%s&transport=raw&address=%s", server, id, remoteSshAddr)
+		websocketConn, resp, err := websocket.DefaultDialer.DialContext(ctx, url, nil)
 		if err != nil {
-			log.Fatal("Dial failed:", err)
+			var msg []byte
+			if resp != nil {
+				msg, _ = io.ReadAll(resp.Body)
+			}
+			log.Fatalf("Dial failed: %s, msg:%s", err, string(msg))
 		}
 
 		log.Printf("websocket connect to %s\n", url)

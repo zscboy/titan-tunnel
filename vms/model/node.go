@@ -20,6 +20,7 @@ type Node struct {
 	RegisterAt string `redis:"registerAt"`
 	Online     bool   `redis:"online"`
 	IP         string `redis:"ip"`
+	SSHPort    int    `redis:"sshPort"`
 }
 
 func RegisterNode(ctx context.Context, redis *redis.Redis, node *Node) error {

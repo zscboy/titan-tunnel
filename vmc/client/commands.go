@@ -25,12 +25,14 @@ func (c *Command) onCommandMessage(msg *pb.Message) error {
 	log.Debugf("Tunnel.onControlMessage, cmd type:%s", cmd.GetType().String())
 
 	switch cmd.GetType() {
-	case pb.CommandType_DownloadImage:
+	case pb.CommandType_DOWNLOAD_IMAGE:
 		return c.downloadImage(msg.GetSessionId(), cmd.GetData())
-	case pb.CommandType_DownloadTaskDelete:
+	case pb.CommandType_DOWNLOAD_TASK_DELETE:
 		return c.downloadTaskDelete(msg.GetSessionId(), cmd.GetData())
-	case pb.CommandType_DownloadTaskList:
+	case pb.CommandType_DOWNLOAD_TASK_LIST:
 		return c.downloadTaskList(msg.GetSessionId())
+	case pb.CommandType_AUTH:
+		return c.auth(msg.GetSessionId(), cmd.GetData())
 	}
 	return nil
 }
@@ -75,5 +77,12 @@ func (c *Command) downloadTaskList(sessionID string) error {
 
 	downloadTaskList := cmds.NewDownloadTaskList(c.downloadManager)
 	resp := downloadTaskList.ListDownloadTask()
+	return c.cmdReplay(sessionID, resp)
+}
+
+func (c *Command) auth(sessionID string, reqData []byte) error {
+	logx.Debugf("auth sessionID %s", sessionID)
+	auth := cmds.NewAuthSSHAndMultipass(c.tunnel.vmapi)
+	resp := auth.Auth(reqData)
 	return c.cmdReplay(sessionID, resp)
 }

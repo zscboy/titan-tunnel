@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/xml"
 	"fmt"
+	"io"
 	"strings"
 	"sync"
 	"titan-vm/vms/pb"
@@ -35,7 +36,7 @@ func (goLibvirt *GoLibvirt) connectHost(hostID string) (*libvirt.Libvirt, error)
 		goLibvirt.clients.Delete(hostID)
 	}
 
-	url := fmt.Sprintf("%s?transport=%s&vmapi=%s&uuid=%s", goLibvirt.serverURL, transport, vmapi, hostID)
+	url := fmt.Sprintf("%s?transport=%s&vmapi=%s&id=%s", goLibvirt.serverURL, transport, vmapi, hostID)
 	lv, err := newLibvirt(url)
 	if err != nil {
 		return nil, err
@@ -642,9 +643,13 @@ func (goLibvirt *GoLibvirt) DeleteDiskWithLibvirt(ctx context.Context, request *
 }
 
 func newLibvirt(urlStr string) (*libvirt.Libvirt, error) {
-	conn, _, err := websocket.DefaultDialer.Dial(urlStr, nil)
+	conn, resp, err := websocket.DefaultDialer.Dial(urlStr, nil)
 	if err != nil {
-		return nil, err
+		var msg []byte
+		if resp != nil {
+			msg, _ = io.ReadAll(resp.Body)
+		}
+		return nil, fmt.Errorf("websocket dial error: %s, msg:%s, url:%s", err.Error(), string(msg), urlStr)
 	}
 
 	l := libvirt.NewWithDialer(dialers.NewAlreadyConnected(conn.NetConn()))

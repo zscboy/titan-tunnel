@@ -22,6 +22,7 @@ enum CommandType {
     DOWNLOAD_TASK_DELETE = 2;
     DOWNLOAD_TASK_LIST = 3;
     DOWNLOAD_TASK_GET = 4;
+    AUTH = 5;
 }
 
 
@@ -92,4 +93,14 @@ message CmdDownloadTaskGetResponse{
     bool success =1;
     string err_msg =2;
     DownloadTask task =3;
+}
+
+message CmdAuthSSHAndMultipassRequest {
+    bytes ssh_pub_key = 1;
+    bytes multipass_cert = 2;
+}
+
+message CmdAuthSSHAndMultipassResponse {
+    bool success =1;
+    string err_msg =2;
 }

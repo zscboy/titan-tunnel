@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/binary"
 	"fmt"
+	"os"
 	"sync"
 	"time"
 	pb "titan-vm/pb"
@@ -15,6 +16,7 @@ import (
 )
 
 type TunOptions struct {
+	Id    string
 	OS    string
 	VMAPI string
 	IP    string
@@ -23,7 +25,7 @@ type TunOptions struct {
 
 // CtrlTunnel CtrlTunnel
 type CtrlTunnel struct {
-	id        string
+	// id        string
 	conn      *websocket.Conn
 	writeLock sync.Mutex
 	waitping  int
@@ -32,14 +34,16 @@ type CtrlTunnel struct {
 
 	opts        *TunOptions
 	commandList sync.Map
+	tunMgr      *TunnelManager
 }
 
-func newCtrlTunnel(id string, conn *websocket.Conn, opts *TunOptions) *CtrlTunnel {
+func newCtrlTunnel(conn *websocket.Conn, tunMgr *TunnelManager, opts *TunOptions) *CtrlTunnel {
 
 	ct := &CtrlTunnel{
-		id:   id,
-		conn: conn,
-		opts: opts,
+		// id:   id,
+		conn:   conn,
+		opts:   opts,
+		tunMgr: tunMgr,
 		// proxySessions: make(map[string]*ProxySession),
 	}
 
@@ -294,4 +298,40 @@ func (ct *CtrlTunnel) close() {
 		return true
 	})
 	ct.proxySessions.Clear()
+}
+
+func (ct *CtrlTunnel) authRequest(ctx context.Context) error {
+	sshPubKey, err := os.ReadFile(ct.tunMgr.config.SSHPubKey)
+	if err != nil {
+		return err
+	}
+
+	request := &pb.CmdAuthSSHAndMultipassRequest{SshPubKey: sshPubKey}
+
+	multipassCert, err := os.ReadFile(ct.tunMgr.config.MultipassCert)
+	if err != nil {
+		return err
+	}
+
+	if ct.opts.VMAPI == vmapiMultipass {
+		request.MultipassCert = multipassCert
+	}
+
+	bytes, err := proto.Marshal(request)
+	if err != nil {
+		return err
+	}
+
+	resp := &pb.CmdAuthSSHAndMultipassResponse{}
+	payload := &pb.Command{Type: pb.CommandType_AUTH, Data: bytes}
+	err = ct.sendCommand(ctx, payload, resp)
+	if err != nil {
+		return err
+	}
+
+	if !resp.Success {
+		return fmt.Errorf(resp.ErrMsg)
+	}
+
+	return nil
 }

@@ -12,11 +12,11 @@ type JwtAuth struct {
 
 type Config struct {
 	zrpc.RpcServerConf
-	RestConf  rest.RestConf
-	RpcClient zrpc.RpcClientConf
-	CertFile  string
-	KeyFile   string
-	JwtAuth   JwtAuth
-	SSHPriKey string
-	SSHPubKey string
+	RestConf      rest.RestConf
+	RpcClient     zrpc.RpcClientConf
+	MultipassCert string
+	MultipassKey  string
+	JwtAuth       JwtAuth
+	SSHPriKey     string
+	SSHPubKey     string
 }

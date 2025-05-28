@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 	pb "titan-vm/pb"
+	"titan-vm/vms/internal/config"
 	"titan-vm/vms/model"
 
 	"github.com/gorilla/websocket"
@@ -15,43 +16,53 @@ import (
 type TunnelManager struct {
 	tunnels sync.Map
 	// svcCtx  *svc.ServiceContext
-	redis *redis.Redis
+	redis  *redis.Redis
+	config config.Config
 }
 
-func NewTunnelManager(redis *redis.Redis) *TunnelManager {
-	tm := &TunnelManager{redis: redis}
+func NewTunnelManager(config config.Config, redis *redis.Redis) *TunnelManager {
+	tm := &TunnelManager{config: config, redis: redis}
 	go tm.keepalive()
 	return tm
 }
 
-func (tm *TunnelManager) acceptWebsocket(conn *websocket.Conn, uuid string, opts *TunOptions) {
-	logx.Debugf("TunnelManager:%s accept websocket ", uuid)
+func (tm *TunnelManager) acceptWebsocket(conn *websocket.Conn, opts *TunOptions) {
+	logx.Debugf("TunnelManager:%s accept websocket ", opts.Id)
 	// TODO: wait for old tunnel to disconnect
-	v, ok := tm.tunnels.Load(uuid)
+	v, ok := tm.tunnels.Load(opts.Id)
 	if ok {
 		oldTun := v.(*CtrlTunnel)
 		oldTun.close()
 	}
 
-	ctrlTun := newCtrlTunnel(uuid, conn, opts)
-	tm.tunnels.Store(uuid, ctrlTun)
+	ctrlTun := newCtrlTunnel(conn, tm, opts)
+	tm.tunnels.Store(opts.Id, ctrlTun)
 
-	node, err := model.GetNode(tm.redis, uuid)
+	node, err := model.GetNode(tm.redis, opts.Id)
 	if err != nil {
 		logx.Errorf("TunnelManager.acceptWebsocket, get node %s", err.Error())
 		return
 	}
 
 	if node == nil {
-		node = &model.Node{Id: uuid, OS: opts.OS, VmAPI: opts.VMAPI, IP: opts.IP, RegisterAt: time.Now().String()}
+		node = &model.Node{Id: opts.Id, OS: opts.OS, VmAPI: opts.VMAPI, IP: opts.IP, RegisterAt: time.Now().String()}
 		tm.registerNode(node)
 	} else {
 		node.IP = opts.IP
 		tm.setNodeOnline(node)
 	}
 
+	go func() {
+		if err = ctrlTun.authRequest(context.Background()); err != nil {
+			logx.Errorf("auth request failed:%v", err)
+		} else {
+			logx.Debugf("auth %s success", opts.Id)
+		}
+
+	}()
+
 	defer tm.setNodeOffline(node)
-	defer tm.tunnels.Delete(uuid)
+	defer tm.tunnels.Delete(opts.Id)
 
 	ctrlTun.serve()
 }
