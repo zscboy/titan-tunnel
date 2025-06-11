@@ -43,7 +43,7 @@ func NewSSHWS(tunMgr *TunnelManager) *SSHWS {
 	return &SSHWS{tunMgr: tunMgr}
 }
 
-// todo support multipass
+// todo support multipass and auth client
 func (ws *SSHWS) ServeWS(w http.ResponseWriter, r *http.Request, req *types.SSHWSReqeust) error {
 	logx.Debugf("sshHandler")
 	if len(req.NodeId) == 0 {
@@ -95,7 +95,7 @@ func (ws *SSHWS) ServeWS(w http.ResponseWriter, r *http.Request, req *types.SSHW
 	ctx, cancle := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancle()
 
-	url := fmt.Sprintf("ws://localhost:%d/api/ws/vm?id=%s&transport=raw&address=localhost:%d", ws.tunMgr.config.RestConf.Port, req.NodeId, sshPort)
+	url := fmt.Sprintf("ws://localhost:%d/ws/vm?id=%s&transport=raw&address=localhost:%d", ws.tunMgr.config.RestConf.Port, req.NodeId, sshPort)
 	websocketConn, resp, err := websocket.DefaultDialer.DialContext(ctx, url, nil)
 	if err != nil {
 		var msg []byte

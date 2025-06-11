@@ -23,6 +23,8 @@ enum CommandType {
     DOWNLOAD_TASK_LIST = 3;
     DOWNLOAD_TASK_GET = 4;
     AUTH = 5;
+    HOST_INFO = 6;
+    LIST_NVME = 7;
 }
 
 
@@ -103,4 +105,56 @@ message CmdAuthSSHAndMultipassRequest {
 message CmdAuthSSHAndMultipassResponse {
     bool success =1;
     string err_msg =2;
+}
+
+message CPU {
+    int32 num = 1;
+    float usage = 2;
+    string arch = 3;
+    string vendor = 4;
+}
+
+message Memory {
+    int64 total = 1;
+    int64 used = 2;
+}
+
+message Disk {
+    string name = 1;
+    string type = 2;
+    uint64 total = 3;
+    uint64 used = 4;
+    string mountPoint = 5;
+    string fs_type = 6;
+}
+
+enum NetworkInterfaceFlags {
+    INVALID = 0;
+    UP = 1;
+    BROADCAST = 2;
+    LOOPBACK = 3;
+    POINT_TO_POINT = 4;
+    MULTICAST = 5;
+    RUNNING = 6;
+}
+
+message NetwrokInterface {
+    string name = 1;
+    string mac = 2;
+    uint32 flags = 3;
+}
+
+message CmdHostInfoResponse {
+    CPU cpu = 1;
+    Memory memory = 2;
+    repeated Disk disks = 3;
+    repeated NetwrokInterface interfaces = 4;
+}
+
+message NvmeInfo {
+    string name = 1;
+    string pci_addr = 2;
+}
+message CmdListNvmeResponse {
+    repeated NvmeInfo nvmes = 1;
 }

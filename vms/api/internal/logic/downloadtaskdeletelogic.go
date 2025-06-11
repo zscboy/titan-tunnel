@@ -25,6 +25,6 @@ func NewDownloadTaskDeleteLogic(ctx context.Context, svcCtx *svc.ServiceContext)
 }
 
 func (l *DownloadTaskDeleteLogic) DownloadTaskDelete(req *types.DownloadTaskDeleteRequest) error {
-	cmd := ws.NewCmdHandler(l.svcCtx.TunMgr)
-	return cmd.DownloadTaskDelete(l.ctx, req)
+	task := ws.NewDownloadtask(l.svcCtx.TunMgr)
+	return task.Delete(l.ctx, req)
 }

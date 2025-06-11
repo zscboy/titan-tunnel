@@ -15,6 +15,7 @@ import (
 
 type (
 	AddDiskRequest                   = pb.AddDiskRequest
+	AddHostdevRequest                = pb.AddHostdevRequest
 	AddNetworkInterfaceRequest       = pb.AddNetworkInterfaceRequest
 	CreateVMRequest                  = pb.CreateVMRequest
 	CreateVMWithLibvirtRequest       = pb.CreateVMWithLibvirtRequest
@@ -22,18 +23,18 @@ type (
 	CreateVolWithLibvirtReqeust      = pb.CreateVolWithLibvirtReqeust
 	CreateVolWithLibvirtResponse     = pb.CreateVolWithLibvirtResponse
 	DeleteDiskRequest                = pb.DeleteDiskRequest
+	DeleteHostdevRequest             = pb.DeleteHostdevRequest
 	DeleteImageRequest               = pb.DeleteImageRequest
 	DeleteImageResponse              = pb.DeleteImageResponse
 	DeleteNetworkInterfaceRequest    = pb.DeleteNetworkInterfaceRequest
 	DeleteVMRequest                  = pb.DeleteVMRequest
-	Disk                             = pb.Disk
 	GetNodeRequest                   = pb.GetNodeRequest
 	GetNodeResponse                  = pb.GetNodeResponse
+	GetVMInfoRequest                 = pb.GetVMInfoRequest
+	GetVMInfoResponse                = pb.GetVMInfoResponse
 	GetVolRequest                    = pb.GetVolRequest
 	GetVolResponse                   = pb.GetVolResponse
 	HostNetworkInterface             = pb.HostNetworkInterface
-	ListDiskResponse                 = pb.ListDiskResponse
-	ListHostDiskRequest              = pb.ListHostDiskRequest
 	ListHostNetworkInterfaceRequest  = pb.ListHostNetworkInterfaceRequest
 	ListHostNetworkInterfaceResponse = pb.ListHostNetworkInterfaceResponse
 	ListImageRequest                 = pb.ListImageRequest
@@ -53,23 +54,26 @@ type (
 	StopVMRequest                    = pb.StopVMRequest
 	UpdateVMRequest                  = pb.UpdateVMRequest
 	VMDisk                           = pb.VMDisk
+	VMHostdev                        = pb.VMHostdev
 	VMInfo                           = pb.VMInfo
 	VMNetworkInterface               = pb.VMNetworkInterface
 	VMOperationResponse              = pb.VMOperationResponse
+	VMVncPortRequest                 = pb.VMVncPortRequest
+	VMVncPortResponse                = pb.VMVncPortResponse
 
 	Vms interface {
 		// Libvirt
 		CreateVMWithLibvirt(ctx context.Context, in *CreateVMWithLibvirtRequest, opts ...grpc.CallOption) (*VMOperationResponse, error)
 		CreateVolWithLibvirt(ctx context.Context, in *CreateVolWithLibvirtReqeust, opts ...grpc.CallOption) (*CreateVolWithLibvirtResponse, error)
 		GetVol(ctx context.Context, in *GetVolRequest, opts ...grpc.CallOption) (*GetVolResponse, error)
-		ListHostNetworkInterfaceWithLibvirt(ctx context.Context, in *ListHostNetworkInterfaceRequest, opts ...grpc.CallOption) (*ListHostNetworkInterfaceResponse, error)
-		ListVMNetwrokInterfaceWithLibvirt(ctx context.Context, in *ListVMNetwrokInterfaceReqeust, opts ...grpc.CallOption) (*ListVMNetworkInterfaceResponse, error)
+		// rpc ListHostNetworkInterfaceWithLibvirt(ListHostNetworkInterfaceRequest) returns (ListHostNetworkInterfaceResponse);
 		AddNetworkInterfaceWithLibvirt(ctx context.Context, in *AddNetworkInterfaceRequest, opts ...grpc.CallOption) (*VMOperationResponse, error)
 		DeleteNetworkInterfaceWithLibvirt(ctx context.Context, in *DeleteNetworkInterfaceRequest, opts ...grpc.CallOption) (*VMOperationResponse, error)
-		ListHostDiskWithLibvirt(ctx context.Context, in *ListHostDiskRequest, opts ...grpc.CallOption) (*ListDiskResponse, error)
-		ListVMDiskWithLibvirt(ctx context.Context, in *ListVMDiskRequest, opts ...grpc.CallOption) (*ListVMDiskResponse, error)
 		AddDiskWithLibvirt(ctx context.Context, in *AddDiskRequest, opts ...grpc.CallOption) (*VMOperationResponse, error)
 		DeleteDiskWithLibvirt(ctx context.Context, in *DeleteDiskRequest, opts ...grpc.CallOption) (*VMOperationResponse, error)
+		AddHostdevWithLibvirt(ctx context.Context, in *AddHostdevRequest, opts ...grpc.CallOption) (*VMOperationResponse, error)
+		DeleteHostdevWithLibvirt(ctx context.Context, in *DeleteHostdevRequest, opts ...grpc.CallOption) (*VMOperationResponse, error)
+		GetVncPortWithLibvirt(ctx context.Context, in *VMVncPortRequest, opts ...grpc.CallOption) (*VMVncPortResponse, error)
 		// common
 		CreateVM(ctx context.Context, in *CreateVMRequest, opts ...grpc.CallOption) (*VMOperationResponse, error)
 		StartVM(ctx context.Context, in *StartVMRequest, opts ...grpc.CallOption) (*VMOperationResponse, error)
@@ -80,6 +84,7 @@ type (
 		DeleteImage(ctx context.Context, in *DeleteImageRequest, opts ...grpc.CallOption) (*DeleteImageResponse, error)
 		// not implement now
 		UpdateVM(ctx context.Context, in *UpdateVMRequest, opts ...grpc.CallOption) (*VMOperationResponse, error)
+		GetVMInfo(ctx context.Context, in *GetVMInfoRequest, opts ...grpc.CallOption) (*GetVMInfoResponse, error)
 		// Multipass
 		CreateVMWithMultipass(ctx context.Context, in *CreateVMWithMultipassRequest, opts ...grpc.CallOption) (*VMOperationResponse, error)
 		MultipassExec(ctx context.Context, in *MultipassExecRequest, opts ...grpc.CallOption) (*MultipassExecResponse, error)
@@ -115,16 +120,7 @@ func (m *defaultVms) GetVol(ctx context.Context, in *GetVolRequest, opts ...grpc
 	return client.GetVol(ctx, in, opts...)
 }
 
-func (m *defaultVms) ListHostNetworkInterfaceWithLibvirt(ctx context.Context, in *ListHostNetworkInterfaceRequest, opts ...grpc.CallOption) (*ListHostNetworkInterfaceResponse, error) {
-	client := pb.NewVmsClient(m.cli.Conn())
-	return client.ListHostNetworkInterfaceWithLibvirt(ctx, in, opts...)
-}
-
-func (m *defaultVms) ListVMNetwrokInterfaceWithLibvirt(ctx context.Context, in *ListVMNetwrokInterfaceReqeust, opts ...grpc.CallOption) (*ListVMNetworkInterfaceResponse, error) {
-	client := pb.NewVmsClient(m.cli.Conn())
-	return client.ListVMNetwrokInterfaceWithLibvirt(ctx, in, opts...)
-}
-
+// rpc ListHostNetworkInterfaceWithLibvirt(ListHostNetworkInterfaceRequest) returns (ListHostNetworkInterfaceResponse);
 func (m *defaultVms) AddNetworkInterfaceWithLibvirt(ctx context.Context, in *AddNetworkInterfaceRequest, opts ...grpc.CallOption) (*VMOperationResponse, error) {
 	client := pb.NewVmsClient(m.cli.Conn())
 	return client.AddNetworkInterfaceWithLibvirt(ctx, in, opts...)
@@ -135,16 +131,6 @@ func (m *defaultVms) DeleteNetworkInterfaceWithLibvirt(ctx context.Context, in *
 	return client.DeleteNetworkInterfaceWithLibvirt(ctx, in, opts...)
 }
 
-func (m *defaultVms) ListHostDiskWithLibvirt(ctx context.Context, in *ListHostDiskRequest, opts ...grpc.CallOption) (*ListDiskResponse, error) {
-	client := pb.NewVmsClient(m.cli.Conn())
-	return client.ListHostDiskWithLibvirt(ctx, in, opts...)
-}
-
-func (m *defaultVms) ListVMDiskWithLibvirt(ctx context.Context, in *ListVMDiskRequest, opts ...grpc.CallOption) (*ListVMDiskResponse, error) {
-	client := pb.NewVmsClient(m.cli.Conn())
-	return client.ListVMDiskWithLibvirt(ctx, in, opts...)
-}
-
 func (m *defaultVms) AddDiskWithLibvirt(ctx context.Context, in *AddDiskRequest, opts ...grpc.CallOption) (*VMOperationResponse, error) {
 	client := pb.NewVmsClient(m.cli.Conn())
 	return client.AddDiskWithLibvirt(ctx, in, opts...)
@@ -153,6 +139,21 @@ func (m *defaultVms) AddDiskWithLibvirt(ctx context.Context, in *AddDiskRequest,
 func (m *defaultVms) DeleteDiskWithLibvirt(ctx context.Context, in *DeleteDiskRequest, opts ...grpc.CallOption) (*VMOperationResponse, error) {
 	client := pb.NewVmsClient(m.cli.Conn())
 	return client.DeleteDiskWithLibvirt(ctx, in, opts...)
+}
+
+func (m *defaultVms) AddHostdevWithLibvirt(ctx context.Context, in *AddHostdevRequest, opts ...grpc.CallOption) (*VMOperationResponse, error) {
+	client := pb.NewVmsClient(m.cli.Conn())
+	return client.AddHostdevWithLibvirt(ctx, in, opts...)
+}
+
+func (m *defaultVms) DeleteHostdevWithLibvirt(ctx context.Context, in *DeleteHostdevRequest, opts ...grpc.CallOption) (*VMOperationResponse, error) {
+	client := pb.NewVmsClient(m.cli.Conn())
+	return client.DeleteHostdevWithLibvirt(ctx, in, opts...)
+}
+
+func (m *defaultVms) GetVncPortWithLibvirt(ctx context.Context, in *VMVncPortRequest, opts ...grpc.CallOption) (*VMVncPortResponse, error) {
+	client := pb.NewVmsClient(m.cli.Conn())
+	return client.GetVncPortWithLibvirt(ctx, in, opts...)
 }
 
 // common
@@ -195,6 +196,11 @@ func (m *defaultVms) DeleteImage(ctx context.Context, in *DeleteImageRequest, op
 func (m *defaultVms) UpdateVM(ctx context.Context, in *UpdateVMRequest, opts ...grpc.CallOption) (*VMOperationResponse, error) {
 	client := pb.NewVmsClient(m.cli.Conn())
 	return client.UpdateVM(ctx, in, opts...)
+}
+
+func (m *defaultVms) GetVMInfo(ctx context.Context, in *GetVMInfoRequest, opts ...grpc.CallOption) (*GetVMInfoResponse, error) {
+	client := pb.NewVmsClient(m.cli.Conn())
+	return client.GetVMInfo(ctx, in, opts...)
 }
 
 // Multipass

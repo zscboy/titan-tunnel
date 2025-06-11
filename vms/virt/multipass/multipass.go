@@ -8,10 +8,12 @@ import (
 	"io"
 	"net"
 	"sync"
+	"time"
 	"titan-vm/vms/pb"
 
 	multipassPb "titan-vm/vms/virt/multipass/pb"
 
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/websocket"
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc"
@@ -39,6 +41,18 @@ type RpcClient struct {
 	client        multipassPb.RpcClient
 	conn          *grpc.ClientConn
 	websocketConn *websocket.Conn
+}
+
+func generateJwtToken(secret string, expire int64) (string, error) {
+	claims := jwt.MapClaims{
+		"user": "golibvirt",
+		"exp":  time.Now().Add(time.Second * time.Duration(expire)).Unix(),
+		"iat":  time.Now().Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(secret))
+
 }
 
 func NewMultipass(serverURL string, certProvider CertProvider) *Multipass {
@@ -307,12 +321,13 @@ func (m *Multipass) GetVol(ctx context.Context, in *pb.GetVolRequest) (*pb.GetVo
 	return nil, fmt.Errorf("not implement")
 }
 
-func (m *Multipass) ListHostNetworkInterfaceWithLibvirt(ctx context.Context, in *pb.ListHostNetworkInterfaceRequest) (*pb.ListHostNetworkInterfaceResponse, error) {
-	return nil, nil
-}
-func (m *Multipass) ListVMNetwrokInterfaceWithLibvirt(ctx context.Context, in *pb.ListVMNetwrokInterfaceReqeust) (*pb.ListVMNetworkInterfaceResponse, error) {
-	return nil, nil
-}
+//	func (m *Multipass) ListHostNetworkInterfaceWithLibvirt(ctx context.Context, in *pb.ListHostNetworkInterfaceRequest) (*pb.ListHostNetworkInterfaceResponse, error) {
+//		return nil, nil
+//	}
+//
+//	func (m *Multipass) ListVMNetwrokInterfaceWithLibvirt(ctx context.Context, in *pb.ListVMNetwrokInterfaceReqeust) (*pb.ListVMNetworkInterfaceResponse, error) {
+//		return nil, nil
+//	}
 func (m *Multipass) AddNetworkInterfaceWithLibvirt(ctx context.Context, in *pb.AddNetworkInterfaceRequest) error {
 	return nil
 }
@@ -320,10 +335,25 @@ func (m *Multipass) DeleteNetworkInterfaceWithLibvirt(ctx context.Context, in *p
 	return nil
 }
 
-func (m *Multipass) ListHostDiskWithLibvirt(ctx context.Context, in *pb.ListHostDiskRequest) (*pb.ListDiskResponse, error) {
+func (m *Multipass) AddHostdevWithLibvirt(ctx context.Context, in *pb.AddHostdevRequest) error {
+	return nil
+}
+func (m *Multipass) DeleteHostdevWithLibvirt(ctx context.Context, in *pb.DeleteHostdevRequest) error {
+	return nil
+}
+
+func (m *Multipass) GetVncPortWithLibvirt(ctx context.Context, in *pb.VMVncPortRequest) (*pb.VMVncPortResponse, error) {
 	return nil, nil
 }
-func (m *Multipass) ListVMDiskWithLibvirt(ctx context.Context, in *pb.ListVMDiskRequest) (*pb.ListVMDiskResponse, error) {
+
+//	func (m *Multipass) ListHostDiskWithLibvirt(ctx context.Context, in *pb.ListHostDiskRequest) (*pb.ListDiskResponse, error) {
+//		return nil, nil
+//	}
+//
+//	func (m *Multipass) ListVMDiskWithLibvirt(ctx context.Context, in *pb.ListVMDiskRequest) (*pb.ListVMDiskResponse, error) {
+//		return nil, nil
+//	}
+func (m *Multipass) GetVMInfo(ctx context.Context, in *pb.GetVMInfoRequest) (*pb.GetVMInfoResponse, error) {
 	return nil, nil
 }
 func (m *Multipass) AddDiskWithLibvirt(ctx context.Context, in *pb.AddDiskRequest) error {

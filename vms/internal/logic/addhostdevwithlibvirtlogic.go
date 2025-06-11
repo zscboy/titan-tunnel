@@ -10,21 +10,21 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type ListHostNetworkInterfaceWithLibvirtLogic struct {
+type AddHostdevWithLibvirtLogic struct {
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 	logx.Logger
 }
 
-func NewListHostNetworkInterfaceWithLibvirtLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListHostNetworkInterfaceWithLibvirtLogic {
-	return &ListHostNetworkInterfaceWithLibvirtLogic{
+func NewAddHostdevWithLibvirtLogic(ctx context.Context, svcCtx *svc.ServiceContext) *AddHostdevWithLibvirtLogic {
+	return &AddHostdevWithLibvirtLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
 		Logger: logx.WithContext(ctx),
 	}
 }
 
-func (l *ListHostNetworkInterfaceWithLibvirtLogic) ListHostNetworkInterfaceWithLibvirt(in *pb.ListHostNetworkInterfaceRequest) (*pb.ListHostNetworkInterfaceResponse, error) {
+func (l *AddHostdevWithLibvirtLogic) AddHostdevWithLibvirt(in *pb.AddHostdevRequest) (*pb.VMOperationResponse, error) {
 	opts, err := getVirtOpts(l.svcCtx.Redis, in.Id)
 	if err != nil {
 		return nil, err
@@ -35,5 +35,10 @@ func (l *ListHostNetworkInterfaceWithLibvirtLogic) ListHostNetworkInterfaceWithL
 		return nil, fmt.Errorf("can not find vm api:%s", opts.VMAPI)
 	}
 
-	return vmAPI.ListHostNetworkInterfaceWithLibvirt(l.ctx, in)
+	err = vmAPI.AddHostdevWithLibvirt(l.ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.VMOperationResponse{Success: true}, nil
 }

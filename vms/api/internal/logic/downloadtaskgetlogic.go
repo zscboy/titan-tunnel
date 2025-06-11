@@ -25,6 +25,6 @@ func NewDownloadTaskGetLogic(ctx context.Context, svcCtx *svc.ServiceContext) *D
 }
 
 func (l *DownloadTaskGetLogic) DownloadTaskGet(req *types.DownloadTaskGetRequest) (resp *types.DownloadTask, err error) {
-	cmd := ws.NewCmdHandler(l.svcCtx.TunMgr)
-	return cmd.DownloadTaskGet(l.ctx, req)
+	task := ws.NewDownloadtask(l.svcCtx.TunMgr)
+	return task.Get(l.ctx, req)
 }

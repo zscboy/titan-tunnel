@@ -10,15 +10,20 @@ service Vms {
     rpc CreateVolWithLibvirt (CreateVolWithLibvirtReqeust) returns (CreateVolWithLibvirtResponse);
     rpc GetVol(GetVolRequest) returns (GetVolResponse);
 
-    rpc ListHostNetworkInterfaceWithLibvirt(ListHostNetworkInterfaceRequest) returns (ListHostNetworkInterfaceResponse);
-    rpc ListVMNetwrokInterfaceWithLibvirt(ListVMNetwrokInterfaceReqeust) returns (ListVMNetworkInterfaceResponse);
+    //rpc ListHostNetworkInterfaceWithLibvirt(ListHostNetworkInterfaceRequest) returns (ListHostNetworkInterfaceResponse);
+    //rpc ListVMNetwrokInterfaceWithLibvirt(ListVMNetwrokInterfaceReqeust) returns (ListVMNetworkInterfaceResponse);
     rpc AddNetworkInterfaceWithLibvirt(AddNetworkInterfaceRequest) returns (VMOperationResponse);
     rpc DeleteNetworkInterfaceWithLibvirt(DeleteNetworkInterfaceRequest) returns (VMOperationResponse);
 
-    rpc ListHostDiskWithLibvirt(ListHostDiskRequest) returns (ListDiskResponse);
-    rpc ListVMDiskWithLibvirt(ListVMDiskRequest) returns (ListVMDiskResponse);
+    //rpc ListHostDiskWithLibvirt(ListHostDiskRequest) returns (ListDiskResponse);
+    //rpc ListVMDiskWithLibvirt(ListVMDiskRequest) returns (ListVMDiskResponse);
+
     rpc AddDiskWithLibvirt(AddDiskRequest) returns (VMOperationResponse);
     rpc DeleteDiskWithLibvirt(DeleteDiskRequest) returns (VMOperationResponse);
+    rpc AddHostdevWithLibvirt(AddHostdevRequest) returns (VMOperationResponse);
+    rpc DeleteHostdevWithLibvirt(DeleteHostdevRequest) returns (VMOperationResponse);
+
+    rpc GetVncPortWithLibvirt(VMVncPortRequest) returns (VMVncPortResponse);
 
     // common
     rpc CreateVM (CreateVMRequest) returns (VMOperationResponse);
@@ -30,6 +35,7 @@ service Vms {
     rpc DeleteImage(DeleteImageRequest) returns (DeleteImageResponse);
     // not implement now
     rpc UpdateVM (UpdateVMRequest) returns (VMOperationResponse);
+    rpc GetVMInfo(GetVMInfoRequest) returns (GetVMInfoResponse);
 
     // Multipass
     rpc CreateVMWithMultipass (CreateVMWithMultipassRequest) returns (VMOperationResponse);
@@ -269,19 +275,6 @@ message ListVMNetworkInterfaceResponse {
     repeated VMNetworkInterface interfaces = 1;
 }
 
-message ListHostDiskRequest {
-    string id = 1;
-}
-
-message Disk {
-    string source_path = 1;
-    int64 size = 2;
-}
-
-message ListDiskResponse {
-    repeated Disk disks = 1;
-}
-
 
 enum VMDiskType {
     INVALID_DISK_TYPE = 0;
@@ -322,17 +315,60 @@ message ListVMDiskRequest {
 message VMDisk {
     VMDiskType disk_type = 1;
     string source_path = 2;
-    int32 source_pci_addr_bus =3;
-    int32 source_pci_addr_slot =4;
     // example: hda, sda, vda
     // not required for disk_type=nvme 
-    string target_dev = 5;
+    string target_dev = 3;
     // virtio, scsi, default: virtio
     // not required for disk_type=nvme 
-    string target_bus = 6;
+    string target_bus = 4;
+}
 
+message VMHostdev {
+    int32 source_addr_domain =1;
+    int32 source_addr_bus =2;
+    int32 source_addr_slot =3;
 }
 
 message ListVMDiskResponse {
     repeated VMDisk disks = 1;
 }
+
+message GetVMInfoRequest {
+    string id = 1 ;
+    string vm_name = 2;
+}
+
+message GetVMInfoResponse {
+    uint32 cpu = 1;
+    uint64 memory = 2;
+    repeated VMDisk disks = 3;
+    repeated VMNetworkInterface interfaces = 4;
+    repeated VMHostdev hostdevs = 5;
+    int32 vnc_port = 6;
+}
+
+message VMVncPortRequest {
+    string id = 1 ;
+    string vm_name = 2;
+}
+
+message VMVncPortResponse {
+    int32 port = 1;
+}
+
+message AddHostdevRequest {
+    string id = 1 ;
+    string vm_name = 2;
+    int32 source_addr_domain = 3;
+    int32 source_addr_bus = 4;
+    int32 source_addr_slot = 5;
+}
+
+message DeleteHostdevRequest {
+    string id = 1;
+    string vm_name = 2;
+    int32 source_addr_domain = 3;
+    int32 source_addr_bus = 4;
+    int32 source_addr_slot = 5;
+}
+

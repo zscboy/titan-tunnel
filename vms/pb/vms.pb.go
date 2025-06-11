@@ -2170,146 +2170,6 @@ func (x *ListVMNetworkInterfaceResponse) GetInterfaces() []*VMNetworkInterface {
 	return nil
 }
 
-type ListHostDiskRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListHostDiskRequest) Reset() {
-	*x = ListHostDiskRequest{}
-	mi := &file_vms_proto_msgTypes[34]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListHostDiskRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListHostDiskRequest) ProtoMessage() {}
-
-func (x *ListHostDiskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_vms_proto_msgTypes[34]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListHostDiskRequest.ProtoReflect.Descriptor instead.
-func (*ListHostDiskRequest) Descriptor() ([]byte, []int) {
-	return file_vms_proto_rawDescGZIP(), []int{34}
-}
-
-func (x *ListHostDiskRequest) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
-type Disk struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SourcePath    string                 `protobuf:"bytes,1,opt,name=source_path,json=sourcePath,proto3" json:"source_path,omitempty"`
-	Size          int64                  `protobuf:"varint,2,opt,name=size,proto3" json:"size,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Disk) Reset() {
-	*x = Disk{}
-	mi := &file_vms_proto_msgTypes[35]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Disk) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Disk) ProtoMessage() {}
-
-func (x *Disk) ProtoReflect() protoreflect.Message {
-	mi := &file_vms_proto_msgTypes[35]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Disk.ProtoReflect.Descriptor instead.
-func (*Disk) Descriptor() ([]byte, []int) {
-	return file_vms_proto_rawDescGZIP(), []int{35}
-}
-
-func (x *Disk) GetSourcePath() string {
-	if x != nil {
-		return x.SourcePath
-	}
-	return ""
-}
-
-func (x *Disk) GetSize() int64 {
-	if x != nil {
-		return x.Size
-	}
-	return 0
-}
-
-type ListDiskResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Disks         []*Disk                `protobuf:"bytes,1,rep,name=disks,proto3" json:"disks,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListDiskResponse) Reset() {
-	*x = ListDiskResponse{}
-	mi := &file_vms_proto_msgTypes[36]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListDiskResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListDiskResponse) ProtoMessage() {}
-
-func (x *ListDiskResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_vms_proto_msgTypes[36]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListDiskResponse.ProtoReflect.Descriptor instead.
-func (*ListDiskResponse) Descriptor() ([]byte, []int) {
-	return file_vms_proto_rawDescGZIP(), []int{36}
-}
-
-func (x *ListDiskResponse) GetDisks() []*Disk {
-	if x != nil {
-		return x.Disks
-	}
-	return nil
-}
-
 type AddDiskRequest struct {
 	state    protoimpl.MessageState `protogen:"open.v1"`
 	Id       string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -2331,7 +2191,7 @@ type AddDiskRequest struct {
 
 func (x *AddDiskRequest) Reset() {
 	*x = AddDiskRequest{}
-	mi := &file_vms_proto_msgTypes[37]
+	mi := &file_vms_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2343,7 +2203,7 @@ func (x *AddDiskRequest) String() string {
 func (*AddDiskRequest) ProtoMessage() {}
 
 func (x *AddDiskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_vms_proto_msgTypes[37]
+	mi := &file_vms_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2356,7 +2216,7 @@ func (x *AddDiskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddDiskRequest.ProtoReflect.Descriptor instead.
 func (*AddDiskRequest) Descriptor() ([]byte, []int) {
-	return file_vms_proto_rawDescGZIP(), []int{37}
+	return file_vms_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *AddDiskRequest) GetId() string {
@@ -2428,7 +2288,7 @@ type DeleteDiskRequest struct {
 
 func (x *DeleteDiskRequest) Reset() {
 	*x = DeleteDiskRequest{}
-	mi := &file_vms_proto_msgTypes[38]
+	mi := &file_vms_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2440,7 +2300,7 @@ func (x *DeleteDiskRequest) String() string {
 func (*DeleteDiskRequest) ProtoMessage() {}
 
 func (x *DeleteDiskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_vms_proto_msgTypes[38]
+	mi := &file_vms_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2453,7 +2313,7 @@ func (x *DeleteDiskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteDiskRequest.ProtoReflect.Descriptor instead.
 func (*DeleteDiskRequest) Descriptor() ([]byte, []int) {
-	return file_vms_proto_rawDescGZIP(), []int{38}
+	return file_vms_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *DeleteDiskRequest) GetId() string {
@@ -2501,7 +2361,7 @@ type ListVMDiskRequest struct {
 
 func (x *ListVMDiskRequest) Reset() {
 	*x = ListVMDiskRequest{}
-	mi := &file_vms_proto_msgTypes[39]
+	mi := &file_vms_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2513,7 +2373,7 @@ func (x *ListVMDiskRequest) String() string {
 func (*ListVMDiskRequest) ProtoMessage() {}
 
 func (x *ListVMDiskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_vms_proto_msgTypes[39]
+	mi := &file_vms_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2526,7 +2386,7 @@ func (x *ListVMDiskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListVMDiskRequest.ProtoReflect.Descriptor instead.
 func (*ListVMDiskRequest) Descriptor() ([]byte, []int) {
-	return file_vms_proto_rawDescGZIP(), []int{39}
+	return file_vms_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *ListVMDiskRequest) GetId() string {
@@ -2544,24 +2404,22 @@ func (x *ListVMDiskRequest) GetVmName() string {
 }
 
 type VMDisk struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
-	DiskType          VMDiskType             `protobuf:"varint,1,opt,name=disk_type,json=diskType,proto3,enum=pb.VMDiskType" json:"disk_type,omitempty"`
-	SourcePath        string                 `protobuf:"bytes,2,opt,name=source_path,json=sourcePath,proto3" json:"source_path,omitempty"`
-	SourcePciAddrBus  int32                  `protobuf:"varint,3,opt,name=source_pci_addr_bus,json=sourcePciAddrBus,proto3" json:"source_pci_addr_bus,omitempty"`
-	SourcePciAddrSlot int32                  `protobuf:"varint,4,opt,name=source_pci_addr_slot,json=sourcePciAddrSlot,proto3" json:"source_pci_addr_slot,omitempty"`
+	state      protoimpl.MessageState `protogen:"open.v1"`
+	DiskType   VMDiskType             `protobuf:"varint,1,opt,name=disk_type,json=diskType,proto3,enum=pb.VMDiskType" json:"disk_type,omitempty"`
+	SourcePath string                 `protobuf:"bytes,2,opt,name=source_path,json=sourcePath,proto3" json:"source_path,omitempty"`
 	// example: hda, sda, vda
 	// not required for disk_type=nvme
-	TargetDev string `protobuf:"bytes,5,opt,name=target_dev,json=targetDev,proto3" json:"target_dev,omitempty"`
+	TargetDev string `protobuf:"bytes,3,opt,name=target_dev,json=targetDev,proto3" json:"target_dev,omitempty"`
 	// virtio, scsi, default: virtio
 	// not required for disk_type=nvme
-	TargetBus     string `protobuf:"bytes,6,opt,name=target_bus,json=targetBus,proto3" json:"target_bus,omitempty"`
+	TargetBus     string `protobuf:"bytes,4,opt,name=target_bus,json=targetBus,proto3" json:"target_bus,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *VMDisk) Reset() {
 	*x = VMDisk{}
-	mi := &file_vms_proto_msgTypes[40]
+	mi := &file_vms_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2573,7 +2431,7 @@ func (x *VMDisk) String() string {
 func (*VMDisk) ProtoMessage() {}
 
 func (x *VMDisk) ProtoReflect() protoreflect.Message {
-	mi := &file_vms_proto_msgTypes[40]
+	mi := &file_vms_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2586,7 +2444,7 @@ func (x *VMDisk) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VMDisk.ProtoReflect.Descriptor instead.
 func (*VMDisk) Descriptor() ([]byte, []int) {
-	return file_vms_proto_rawDescGZIP(), []int{40}
+	return file_vms_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *VMDisk) GetDiskType() VMDiskType {
@@ -2603,20 +2461,6 @@ func (x *VMDisk) GetSourcePath() string {
 	return ""
 }
 
-func (x *VMDisk) GetSourcePciAddrBus() int32 {
-	if x != nil {
-		return x.SourcePciAddrBus
-	}
-	return 0
-}
-
-func (x *VMDisk) GetSourcePciAddrSlot() int32 {
-	if x != nil {
-		return x.SourcePciAddrSlot
-	}
-	return 0
-}
-
 func (x *VMDisk) GetTargetDev() string {
 	if x != nil {
 		return x.TargetDev
@@ -2631,6 +2475,66 @@ func (x *VMDisk) GetTargetBus() string {
 	return ""
 }
 
+type VMHostdev struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	SourceAddrDomain int32                  `protobuf:"varint,1,opt,name=source_addr_domain,json=sourceAddrDomain,proto3" json:"source_addr_domain,omitempty"`
+	SourceAddrBus    int32                  `protobuf:"varint,2,opt,name=source_addr_bus,json=sourceAddrBus,proto3" json:"source_addr_bus,omitempty"`
+	SourceAddrSlot   int32                  `protobuf:"varint,3,opt,name=source_addr_slot,json=sourceAddrSlot,proto3" json:"source_addr_slot,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *VMHostdev) Reset() {
+	*x = VMHostdev{}
+	mi := &file_vms_proto_msgTypes[38]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *VMHostdev) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VMHostdev) ProtoMessage() {}
+
+func (x *VMHostdev) ProtoReflect() protoreflect.Message {
+	mi := &file_vms_proto_msgTypes[38]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VMHostdev.ProtoReflect.Descriptor instead.
+func (*VMHostdev) Descriptor() ([]byte, []int) {
+	return file_vms_proto_rawDescGZIP(), []int{38}
+}
+
+func (x *VMHostdev) GetSourceAddrDomain() int32 {
+	if x != nil {
+		return x.SourceAddrDomain
+	}
+	return 0
+}
+
+func (x *VMHostdev) GetSourceAddrBus() int32 {
+	if x != nil {
+		return x.SourceAddrBus
+	}
+	return 0
+}
+
+func (x *VMHostdev) GetSourceAddrSlot() int32 {
+	if x != nil {
+		return x.SourceAddrSlot
+	}
+	return 0
+}
+
 type ListVMDiskResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Disks         []*VMDisk              `protobuf:"bytes,1,rep,name=disks,proto3" json:"disks,omitempty"`
@@ -2640,7 +2544,7 @@ type ListVMDiskResponse struct {
 
 func (x *ListVMDiskResponse) Reset() {
 	*x = ListVMDiskResponse{}
-	mi := &file_vms_proto_msgTypes[41]
+	mi := &file_vms_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2652,7 +2556,7 @@ func (x *ListVMDiskResponse) String() string {
 func (*ListVMDiskResponse) ProtoMessage() {}
 
 func (x *ListVMDiskResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_vms_proto_msgTypes[41]
+	mi := &file_vms_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2665,7 +2569,7 @@ func (x *ListVMDiskResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListVMDiskResponse.ProtoReflect.Descriptor instead.
 func (*ListVMDiskResponse) Descriptor() ([]byte, []int) {
-	return file_vms_proto_rawDescGZIP(), []int{41}
+	return file_vms_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *ListVMDiskResponse) GetDisks() []*VMDisk {
@@ -2673,6 +2577,390 @@ func (x *ListVMDiskResponse) GetDisks() []*VMDisk {
 		return x.Disks
 	}
 	return nil
+}
+
+type GetVMInfoRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	VmName        string                 `protobuf:"bytes,2,opt,name=vm_name,json=vmName,proto3" json:"vm_name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetVMInfoRequest) Reset() {
+	*x = GetVMInfoRequest{}
+	mi := &file_vms_proto_msgTypes[40]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetVMInfoRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetVMInfoRequest) ProtoMessage() {}
+
+func (x *GetVMInfoRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_vms_proto_msgTypes[40]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetVMInfoRequest.ProtoReflect.Descriptor instead.
+func (*GetVMInfoRequest) Descriptor() ([]byte, []int) {
+	return file_vms_proto_rawDescGZIP(), []int{40}
+}
+
+func (x *GetVMInfoRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *GetVMInfoRequest) GetVmName() string {
+	if x != nil {
+		return x.VmName
+	}
+	return ""
+}
+
+type GetVMInfoResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Cpu           uint32                 `protobuf:"varint,1,opt,name=cpu,proto3" json:"cpu,omitempty"`
+	Memory        uint64                 `protobuf:"varint,2,opt,name=memory,proto3" json:"memory,omitempty"`
+	Disks         []*VMDisk              `protobuf:"bytes,3,rep,name=disks,proto3" json:"disks,omitempty"`
+	Interfaces    []*VMNetworkInterface  `protobuf:"bytes,4,rep,name=interfaces,proto3" json:"interfaces,omitempty"`
+	Hostdevs      []*VMHostdev           `protobuf:"bytes,5,rep,name=hostdevs,proto3" json:"hostdevs,omitempty"`
+	VncPort       int32                  `protobuf:"varint,6,opt,name=vnc_port,json=vncPort,proto3" json:"vnc_port,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetVMInfoResponse) Reset() {
+	*x = GetVMInfoResponse{}
+	mi := &file_vms_proto_msgTypes[41]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetVMInfoResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetVMInfoResponse) ProtoMessage() {}
+
+func (x *GetVMInfoResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_vms_proto_msgTypes[41]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetVMInfoResponse.ProtoReflect.Descriptor instead.
+func (*GetVMInfoResponse) Descriptor() ([]byte, []int) {
+	return file_vms_proto_rawDescGZIP(), []int{41}
+}
+
+func (x *GetVMInfoResponse) GetCpu() uint32 {
+	if x != nil {
+		return x.Cpu
+	}
+	return 0
+}
+
+func (x *GetVMInfoResponse) GetMemory() uint64 {
+	if x != nil {
+		return x.Memory
+	}
+	return 0
+}
+
+func (x *GetVMInfoResponse) GetDisks() []*VMDisk {
+	if x != nil {
+		return x.Disks
+	}
+	return nil
+}
+
+func (x *GetVMInfoResponse) GetInterfaces() []*VMNetworkInterface {
+	if x != nil {
+		return x.Interfaces
+	}
+	return nil
+}
+
+func (x *GetVMInfoResponse) GetHostdevs() []*VMHostdev {
+	if x != nil {
+		return x.Hostdevs
+	}
+	return nil
+}
+
+func (x *GetVMInfoResponse) GetVncPort() int32 {
+	if x != nil {
+		return x.VncPort
+	}
+	return 0
+}
+
+type VMVncPortRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	VmName        string                 `protobuf:"bytes,2,opt,name=vm_name,json=vmName,proto3" json:"vm_name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *VMVncPortRequest) Reset() {
+	*x = VMVncPortRequest{}
+	mi := &file_vms_proto_msgTypes[42]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *VMVncPortRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VMVncPortRequest) ProtoMessage() {}
+
+func (x *VMVncPortRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_vms_proto_msgTypes[42]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VMVncPortRequest.ProtoReflect.Descriptor instead.
+func (*VMVncPortRequest) Descriptor() ([]byte, []int) {
+	return file_vms_proto_rawDescGZIP(), []int{42}
+}
+
+func (x *VMVncPortRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *VMVncPortRequest) GetVmName() string {
+	if x != nil {
+		return x.VmName
+	}
+	return ""
+}
+
+type VMVncPortResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Port          int32                  `protobuf:"varint,1,opt,name=port,proto3" json:"port,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *VMVncPortResponse) Reset() {
+	*x = VMVncPortResponse{}
+	mi := &file_vms_proto_msgTypes[43]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *VMVncPortResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VMVncPortResponse) ProtoMessage() {}
+
+func (x *VMVncPortResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_vms_proto_msgTypes[43]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VMVncPortResponse.ProtoReflect.Descriptor instead.
+func (*VMVncPortResponse) Descriptor() ([]byte, []int) {
+	return file_vms_proto_rawDescGZIP(), []int{43}
+}
+
+func (x *VMVncPortResponse) GetPort() int32 {
+	if x != nil {
+		return x.Port
+	}
+	return 0
+}
+
+type AddHostdevRequest struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	Id               string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	VmName           string                 `protobuf:"bytes,2,opt,name=vm_name,json=vmName,proto3" json:"vm_name,omitempty"`
+	SourceAddrDomain int32                  `protobuf:"varint,3,opt,name=source_addr_domain,json=sourceAddrDomain,proto3" json:"source_addr_domain,omitempty"`
+	SourceAddrBus    int32                  `protobuf:"varint,4,opt,name=source_addr_bus,json=sourceAddrBus,proto3" json:"source_addr_bus,omitempty"`
+	SourceAddrSlot   int32                  `protobuf:"varint,5,opt,name=source_addr_slot,json=sourceAddrSlot,proto3" json:"source_addr_slot,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *AddHostdevRequest) Reset() {
+	*x = AddHostdevRequest{}
+	mi := &file_vms_proto_msgTypes[44]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddHostdevRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddHostdevRequest) ProtoMessage() {}
+
+func (x *AddHostdevRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_vms_proto_msgTypes[44]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddHostdevRequest.ProtoReflect.Descriptor instead.
+func (*AddHostdevRequest) Descriptor() ([]byte, []int) {
+	return file_vms_proto_rawDescGZIP(), []int{44}
+}
+
+func (x *AddHostdevRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *AddHostdevRequest) GetVmName() string {
+	if x != nil {
+		return x.VmName
+	}
+	return ""
+}
+
+func (x *AddHostdevRequest) GetSourceAddrDomain() int32 {
+	if x != nil {
+		return x.SourceAddrDomain
+	}
+	return 0
+}
+
+func (x *AddHostdevRequest) GetSourceAddrBus() int32 {
+	if x != nil {
+		return x.SourceAddrBus
+	}
+	return 0
+}
+
+func (x *AddHostdevRequest) GetSourceAddrSlot() int32 {
+	if x != nil {
+		return x.SourceAddrSlot
+	}
+	return 0
+}
+
+type DeleteHostdevRequest struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	Id               string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	VmName           string                 `protobuf:"bytes,2,opt,name=vm_name,json=vmName,proto3" json:"vm_name,omitempty"`
+	SourceAddrDomain int32                  `protobuf:"varint,3,opt,name=source_addr_domain,json=sourceAddrDomain,proto3" json:"source_addr_domain,omitempty"`
+	SourceAddrBus    int32                  `protobuf:"varint,4,opt,name=source_addr_bus,json=sourceAddrBus,proto3" json:"source_addr_bus,omitempty"`
+	SourceAddrSlot   int32                  `protobuf:"varint,5,opt,name=source_addr_slot,json=sourceAddrSlot,proto3" json:"source_addr_slot,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *DeleteHostdevRequest) Reset() {
+	*x = DeleteHostdevRequest{}
+	mi := &file_vms_proto_msgTypes[45]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteHostdevRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteHostdevRequest) ProtoMessage() {}
+
+func (x *DeleteHostdevRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_vms_proto_msgTypes[45]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteHostdevRequest.ProtoReflect.Descriptor instead.
+func (*DeleteHostdevRequest) Descriptor() ([]byte, []int) {
+	return file_vms_proto_rawDescGZIP(), []int{45}
+}
+
+func (x *DeleteHostdevRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *DeleteHostdevRequest) GetVmName() string {
+	if x != nil {
+		return x.VmName
+	}
+	return ""
+}
+
+func (x *DeleteHostdevRequest) GetSourceAddrDomain() int32 {
+	if x != nil {
+		return x.SourceAddrDomain
+	}
+	return 0
+}
+
+func (x *DeleteHostdevRequest) GetSourceAddrBus() int32 {
+	if x != nil {
+		return x.SourceAddrBus
+	}
+	return 0
+}
+
+func (x *DeleteHostdevRequest) GetSourceAddrSlot() int32 {
+	if x != nil {
+		return x.SourceAddrSlot
+	}
+	return 0
 }
 
 var File_vms_proto protoreflect.FileDescriptor
@@ -2813,15 +3101,7 @@ const file_vms_proto_rawDesc = "" +
 	"\x1eListVMNetworkInterfaceResponse\x126\n" +
 	"\n" +
 	"interfaces\x18\x01 \x03(\v2\x16.pb.VMNetworkInterfaceR\n" +
-	"interfaces\"%\n" +
-	"\x13ListHostDiskRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\";\n" +
-	"\x04Disk\x12\x1f\n" +
-	"\vsource_path\x18\x01 \x01(\tR\n" +
-	"sourcePath\x12\x12\n" +
-	"\x04size\x18\x02 \x01(\x03R\x04size\"2\n" +
-	"\x10ListDiskResponse\x12\x1e\n" +
-	"\x05disks\x18\x01 \x03(\v2\b.pb.DiskR\x05disks\"\xa5\x02\n" +
+	"interfaces\"\xa5\x02\n" +
 	"\x0eAddDiskRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\avm_name\x18\x02 \x01(\tR\x06vmName\x12+\n" +
@@ -2843,20 +3123,52 @@ const file_vms_proto_rawDesc = "" +
 	"target_dev\x18\x05 \x01(\tR\ttargetDev\"<\n" +
 	"\x11ListVMDiskRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
-	"\avm_name\x18\x02 \x01(\tR\x06vmName\"\xf4\x01\n" +
+	"\avm_name\x18\x02 \x01(\tR\x06vmName\"\x94\x01\n" +
 	"\x06VMDisk\x12+\n" +
 	"\tdisk_type\x18\x01 \x01(\x0e2\x0e.pb.VMDiskTypeR\bdiskType\x12\x1f\n" +
 	"\vsource_path\x18\x02 \x01(\tR\n" +
-	"sourcePath\x12-\n" +
-	"\x13source_pci_addr_bus\x18\x03 \x01(\x05R\x10sourcePciAddrBus\x12/\n" +
-	"\x14source_pci_addr_slot\x18\x04 \x01(\x05R\x11sourcePciAddrSlot\x12\x1d\n" +
+	"sourcePath\x12\x1d\n" +
 	"\n" +
-	"target_dev\x18\x05 \x01(\tR\ttargetDev\x12\x1d\n" +
+	"target_dev\x18\x03 \x01(\tR\ttargetDev\x12\x1d\n" +
 	"\n" +
-	"target_bus\x18\x06 \x01(\tR\ttargetBus\"6\n" +
+	"target_bus\x18\x04 \x01(\tR\ttargetBus\"\x8b\x01\n" +
+	"\tVMHostdev\x12,\n" +
+	"\x12source_addr_domain\x18\x01 \x01(\x05R\x10sourceAddrDomain\x12&\n" +
+	"\x0fsource_addr_bus\x18\x02 \x01(\x05R\rsourceAddrBus\x12(\n" +
+	"\x10source_addr_slot\x18\x03 \x01(\x05R\x0esourceAddrSlot\"6\n" +
 	"\x12ListVMDiskResponse\x12 \n" +
 	"\x05disks\x18\x01 \x03(\v2\n" +
-	".pb.VMDiskR\x05disks*b\n" +
+	".pb.VMDiskR\x05disks\";\n" +
+	"\x10GetVMInfoRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
+	"\avm_name\x18\x02 \x01(\tR\x06vmName\"\xdd\x01\n" +
+	"\x11GetVMInfoResponse\x12\x10\n" +
+	"\x03cpu\x18\x01 \x01(\rR\x03cpu\x12\x16\n" +
+	"\x06memory\x18\x02 \x01(\x04R\x06memory\x12 \n" +
+	"\x05disks\x18\x03 \x03(\v2\n" +
+	".pb.VMDiskR\x05disks\x126\n" +
+	"\n" +
+	"interfaces\x18\x04 \x03(\v2\x16.pb.VMNetworkInterfaceR\n" +
+	"interfaces\x12)\n" +
+	"\bhostdevs\x18\x05 \x03(\v2\r.pb.VMHostdevR\bhostdevs\x12\x19\n" +
+	"\bvnc_port\x18\x06 \x01(\x05R\avncPort\";\n" +
+	"\x10VMVncPortRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
+	"\avm_name\x18\x02 \x01(\tR\x06vmName\"'\n" +
+	"\x11VMVncPortResponse\x12\x12\n" +
+	"\x04port\x18\x01 \x01(\x05R\x04port\"\xbc\x01\n" +
+	"\x11AddHostdevRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
+	"\avm_name\x18\x02 \x01(\tR\x06vmName\x12,\n" +
+	"\x12source_addr_domain\x18\x03 \x01(\x05R\x10sourceAddrDomain\x12&\n" +
+	"\x0fsource_addr_bus\x18\x04 \x01(\x05R\rsourceAddrBus\x12(\n" +
+	"\x10source_addr_slot\x18\x05 \x01(\x05R\x0esourceAddrSlot\"\xbf\x01\n" +
+	"\x14DeleteHostdevRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
+	"\avm_name\x18\x02 \x01(\tR\x06vmName\x12,\n" +
+	"\x12source_addr_domain\x18\x03 \x01(\x05R\x10sourceAddrDomain\x12&\n" +
+	"\x0fsource_addr_bus\x18\x04 \x01(\x05R\rsourceAddrBus\x12(\n" +
+	"\x10source_addr_slot\x18\x05 \x01(\x05R\x0esourceAddrSlot*b\n" +
 	"\rInterfaceType\x12\x1a\n" +
 	"\x16INVALID_INTERFACE_TYPE\x10\x00\x12\x1a\n" +
 	"\x16INTERFACE_TYPE_NETWORK\x10\x01\x12\x19\n" +
@@ -2870,19 +3182,18 @@ const file_vms_proto_rawDesc = "" +
 	"\x11INVALID_DISK_TYPE\x10\x00\x12\b\n" +
 	"\x04FILE\x10\x01\x12\t\n" +
 	"\x05BLOCK\x10\x02\x12\b\n" +
-	"\x04NVME\x10\x032\xfd\f\n" +
+	"\x04NVME\x10\x032\xa5\f\n" +
 	"\x03Vms\x12N\n" +
 	"\x13CreateVMWithLibvirt\x12\x1e.pb.CreateVMWithLibvirtRequest\x1a\x17.pb.VMOperationResponse\x12Y\n" +
 	"\x14CreateVolWithLibvirt\x12\x1f.pb.CreateVolWithLibvirtReqeust\x1a .pb.CreateVolWithLibvirtResponse\x12/\n" +
-	"\x06GetVol\x12\x11.pb.GetVolRequest\x1a\x12.pb.GetVolResponse\x12p\n" +
-	"#ListHostNetworkInterfaceWithLibvirt\x12#.pb.ListHostNetworkInterfaceRequest\x1a$.pb.ListHostNetworkInterfaceResponse\x12j\n" +
-	"!ListVMNetwrokInterfaceWithLibvirt\x12!.pb.ListVMNetwrokInterfaceReqeust\x1a\".pb.ListVMNetworkInterfaceResponse\x12Y\n" +
+	"\x06GetVol\x12\x11.pb.GetVolRequest\x1a\x12.pb.GetVolResponse\x12Y\n" +
 	"\x1eAddNetworkInterfaceWithLibvirt\x12\x1e.pb.AddNetworkInterfaceRequest\x1a\x17.pb.VMOperationResponse\x12_\n" +
-	"!DeleteNetworkInterfaceWithLibvirt\x12!.pb.DeleteNetworkInterfaceRequest\x1a\x17.pb.VMOperationResponse\x12H\n" +
-	"\x17ListHostDiskWithLibvirt\x12\x17.pb.ListHostDiskRequest\x1a\x14.pb.ListDiskResponse\x12F\n" +
-	"\x15ListVMDiskWithLibvirt\x12\x15.pb.ListVMDiskRequest\x1a\x16.pb.ListVMDiskResponse\x12A\n" +
+	"!DeleteNetworkInterfaceWithLibvirt\x12!.pb.DeleteNetworkInterfaceRequest\x1a\x17.pb.VMOperationResponse\x12A\n" +
 	"\x12AddDiskWithLibvirt\x12\x12.pb.AddDiskRequest\x1a\x17.pb.VMOperationResponse\x12G\n" +
-	"\x15DeleteDiskWithLibvirt\x12\x15.pb.DeleteDiskRequest\x1a\x17.pb.VMOperationResponse\x128\n" +
+	"\x15DeleteDiskWithLibvirt\x12\x15.pb.DeleteDiskRequest\x1a\x17.pb.VMOperationResponse\x12G\n" +
+	"\x15AddHostdevWithLibvirt\x12\x15.pb.AddHostdevRequest\x1a\x17.pb.VMOperationResponse\x12M\n" +
+	"\x18DeleteHostdevWithLibvirt\x12\x18.pb.DeleteHostdevRequest\x1a\x17.pb.VMOperationResponse\x12D\n" +
+	"\x15GetVncPortWithLibvirt\x12\x14.pb.VMVncPortRequest\x1a\x15.pb.VMVncPortResponse\x128\n" +
 	"\bCreateVM\x12\x13.pb.CreateVMRequest\x1a\x17.pb.VMOperationResponse\x126\n" +
 	"\aStartVM\x12\x12.pb.StartVMRequest\x1a\x17.pb.VMOperationResponse\x124\n" +
 	"\x06StopVM\x12\x11.pb.StopVMRequest\x1a\x17.pb.VMOperationResponse\x128\n" +
@@ -2890,7 +3201,8 @@ const file_vms_proto_rawDesc = "" +
 	"\x0eListVMInstance\x12\x19.pb.ListVMInstanceReqeust\x1a\x1a.pb.ListVMInstanceResponse\x128\n" +
 	"\tListImage\x12\x14.pb.ListImageRequest\x1a\x15.pb.ListImageResponse\x12>\n" +
 	"\vDeleteImage\x12\x16.pb.DeleteImageRequest\x1a\x17.pb.DeleteImageResponse\x128\n" +
-	"\bUpdateVM\x12\x13.pb.UpdateVMRequest\x1a\x17.pb.VMOperationResponse\x12R\n" +
+	"\bUpdateVM\x12\x13.pb.UpdateVMRequest\x1a\x17.pb.VMOperationResponse\x128\n" +
+	"\tGetVMInfo\x12\x14.pb.GetVMInfoRequest\x1a\x15.pb.GetVMInfoResponse\x12R\n" +
 	"\x15CreateVMWithMultipass\x12 .pb.CreateVMWithMultipassRequest\x1a\x17.pb.VMOperationResponse\x12D\n" +
 	"\rMultipassExec\x12\x18.pb.multipassExecRequest\x1a\x19.pb.multipassExecResponse\x125\n" +
 	"\bListNode\x12\x13.pb.ListNodeRequest\x1a\x14.pb.ListNodeResponse\x122\n" +
@@ -2909,7 +3221,7 @@ func file_vms_proto_rawDescGZIP() []byte {
 }
 
 var file_vms_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_vms_proto_msgTypes = make([]protoimpl.MessageInfo, 42)
+var file_vms_proto_msgTypes = make([]protoimpl.MessageInfo, 46)
 var file_vms_proto_goTypes = []any{
 	(InterfaceType)(0),                       // 0: pb.InterfaceType
 	(InterfaceSourceDirectModel)(0),          // 1: pb.InterfaceSourceDirectModel
@@ -2948,14 +3260,18 @@ var file_vms_proto_goTypes = []any{
 	(*ListVMNetwrokInterfaceReqeust)(nil),    // 34: pb.ListVMNetwrokInterfaceReqeust
 	(*VMNetworkInterface)(nil),               // 35: pb.VMNetworkInterface
 	(*ListVMNetworkInterfaceResponse)(nil),   // 36: pb.ListVMNetworkInterfaceResponse
-	(*ListHostDiskRequest)(nil),              // 37: pb.ListHostDiskRequest
-	(*Disk)(nil),                             // 38: pb.Disk
-	(*ListDiskResponse)(nil),                 // 39: pb.ListDiskResponse
-	(*AddDiskRequest)(nil),                   // 40: pb.AddDiskRequest
-	(*DeleteDiskRequest)(nil),                // 41: pb.DeleteDiskRequest
-	(*ListVMDiskRequest)(nil),                // 42: pb.ListVMDiskRequest
-	(*VMDisk)(nil),                           // 43: pb.VMDisk
-	(*ListVMDiskResponse)(nil),               // 44: pb.ListVMDiskResponse
+	(*AddDiskRequest)(nil),                   // 37: pb.AddDiskRequest
+	(*DeleteDiskRequest)(nil),                // 38: pb.DeleteDiskRequest
+	(*ListVMDiskRequest)(nil),                // 39: pb.ListVMDiskRequest
+	(*VMDisk)(nil),                           // 40: pb.VMDisk
+	(*VMHostdev)(nil),                        // 41: pb.VMHostdev
+	(*ListVMDiskResponse)(nil),               // 42: pb.ListVMDiskResponse
+	(*GetVMInfoRequest)(nil),                 // 43: pb.GetVMInfoRequest
+	(*GetVMInfoResponse)(nil),                // 44: pb.GetVMInfoResponse
+	(*VMVncPortRequest)(nil),                 // 45: pb.VMVncPortRequest
+	(*VMVncPortResponse)(nil),                // 46: pb.VMVncPortResponse
+	(*AddHostdevRequest)(nil),                // 47: pb.AddHostdevRequest
+	(*DeleteHostdevRequest)(nil),             // 48: pb.DeleteHostdevRequest
 }
 var file_vms_proto_depIdxs = []int32{
 	12, // 0: pb.ListVMInstanceResponse.vm_infos:type_name -> pb.VMInfo
@@ -2965,62 +3281,64 @@ var file_vms_proto_depIdxs = []int32{
 	0,  // 4: pb.AddNetworkInterfaceRequest.type:type_name -> pb.InterfaceType
 	1,  // 5: pb.AddNetworkInterfaceRequest.model:type_name -> pb.InterfaceSourceDirectModel
 	35, // 6: pb.ListVMNetworkInterfaceResponse.interfaces:type_name -> pb.VMNetworkInterface
-	38, // 7: pb.ListDiskResponse.disks:type_name -> pb.Disk
-	2,  // 8: pb.AddDiskRequest.disk_type:type_name -> pb.VMDiskType
-	2,  // 9: pb.DeleteDiskRequest.disk_type:type_name -> pb.VMDiskType
-	2,  // 10: pb.VMDisk.disk_type:type_name -> pb.VMDiskType
-	43, // 11: pb.ListVMDiskResponse.disks:type_name -> pb.VMDisk
-	4,  // 12: pb.Vms.CreateVMWithLibvirt:input_type -> pb.CreateVMWithLibvirtRequest
-	20, // 13: pb.Vms.CreateVolWithLibvirt:input_type -> pb.CreateVolWithLibvirtReqeust
-	22, // 14: pb.Vms.GetVol:input_type -> pb.GetVolRequest
-	30, // 15: pb.Vms.ListHostNetworkInterfaceWithLibvirt:input_type -> pb.ListHostNetworkInterfaceRequest
-	34, // 16: pb.Vms.ListVMNetwrokInterfaceWithLibvirt:input_type -> pb.ListVMNetwrokInterfaceReqeust
+	2,  // 7: pb.AddDiskRequest.disk_type:type_name -> pb.VMDiskType
+	2,  // 8: pb.DeleteDiskRequest.disk_type:type_name -> pb.VMDiskType
+	2,  // 9: pb.VMDisk.disk_type:type_name -> pb.VMDiskType
+	40, // 10: pb.ListVMDiskResponse.disks:type_name -> pb.VMDisk
+	40, // 11: pb.GetVMInfoResponse.disks:type_name -> pb.VMDisk
+	35, // 12: pb.GetVMInfoResponse.interfaces:type_name -> pb.VMNetworkInterface
+	41, // 13: pb.GetVMInfoResponse.hostdevs:type_name -> pb.VMHostdev
+	4,  // 14: pb.Vms.CreateVMWithLibvirt:input_type -> pb.CreateVMWithLibvirtRequest
+	20, // 15: pb.Vms.CreateVolWithLibvirt:input_type -> pb.CreateVolWithLibvirtReqeust
+	22, // 16: pb.Vms.GetVol:input_type -> pb.GetVolRequest
 	32, // 17: pb.Vms.AddNetworkInterfaceWithLibvirt:input_type -> pb.AddNetworkInterfaceRequest
 	33, // 18: pb.Vms.DeleteNetworkInterfaceWithLibvirt:input_type -> pb.DeleteNetworkInterfaceRequest
-	37, // 19: pb.Vms.ListHostDiskWithLibvirt:input_type -> pb.ListHostDiskRequest
-	42, // 20: pb.Vms.ListVMDiskWithLibvirt:input_type -> pb.ListVMDiskRequest
-	40, // 21: pb.Vms.AddDiskWithLibvirt:input_type -> pb.AddDiskRequest
-	41, // 22: pb.Vms.DeleteDiskWithLibvirt:input_type -> pb.DeleteDiskRequest
-	6,  // 23: pb.Vms.CreateVM:input_type -> pb.CreateVMRequest
-	7,  // 24: pb.Vms.StartVM:input_type -> pb.StartVMRequest
-	8,  // 25: pb.Vms.StopVM:input_type -> pb.StopVMRequest
-	9,  // 26: pb.Vms.DeleteVM:input_type -> pb.DeleteVMRequest
-	11, // 27: pb.Vms.ListVMInstance:input_type -> pb.ListVMInstanceReqeust
-	14, // 28: pb.Vms.ListImage:input_type -> pb.ListImageRequest
-	16, // 29: pb.Vms.DeleteImage:input_type -> pb.DeleteImageRequest
-	10, // 30: pb.Vms.UpdateVM:input_type -> pb.UpdateVMRequest
-	5,  // 31: pb.Vms.CreateVMWithMultipass:input_type -> pb.CreateVMWithMultipassRequest
-	18, // 32: pb.Vms.MultipassExec:input_type -> pb.multipassExecRequest
-	24, // 33: pb.Vms.ListNode:input_type -> pb.ListNodeRequest
-	27, // 34: pb.Vms.GetNode:input_type -> pb.GetNodeRequest
-	3,  // 35: pb.Vms.CreateVMWithLibvirt:output_type -> pb.VMOperationResponse
-	21, // 36: pb.Vms.CreateVolWithLibvirt:output_type -> pb.CreateVolWithLibvirtResponse
-	23, // 37: pb.Vms.GetVol:output_type -> pb.GetVolResponse
-	31, // 38: pb.Vms.ListHostNetworkInterfaceWithLibvirt:output_type -> pb.ListHostNetworkInterfaceResponse
-	36, // 39: pb.Vms.ListVMNetwrokInterfaceWithLibvirt:output_type -> pb.ListVMNetworkInterfaceResponse
+	37, // 19: pb.Vms.AddDiskWithLibvirt:input_type -> pb.AddDiskRequest
+	38, // 20: pb.Vms.DeleteDiskWithLibvirt:input_type -> pb.DeleteDiskRequest
+	47, // 21: pb.Vms.AddHostdevWithLibvirt:input_type -> pb.AddHostdevRequest
+	48, // 22: pb.Vms.DeleteHostdevWithLibvirt:input_type -> pb.DeleteHostdevRequest
+	45, // 23: pb.Vms.GetVncPortWithLibvirt:input_type -> pb.VMVncPortRequest
+	6,  // 24: pb.Vms.CreateVM:input_type -> pb.CreateVMRequest
+	7,  // 25: pb.Vms.StartVM:input_type -> pb.StartVMRequest
+	8,  // 26: pb.Vms.StopVM:input_type -> pb.StopVMRequest
+	9,  // 27: pb.Vms.DeleteVM:input_type -> pb.DeleteVMRequest
+	11, // 28: pb.Vms.ListVMInstance:input_type -> pb.ListVMInstanceReqeust
+	14, // 29: pb.Vms.ListImage:input_type -> pb.ListImageRequest
+	16, // 30: pb.Vms.DeleteImage:input_type -> pb.DeleteImageRequest
+	10, // 31: pb.Vms.UpdateVM:input_type -> pb.UpdateVMRequest
+	43, // 32: pb.Vms.GetVMInfo:input_type -> pb.GetVMInfoRequest
+	5,  // 33: pb.Vms.CreateVMWithMultipass:input_type -> pb.CreateVMWithMultipassRequest
+	18, // 34: pb.Vms.MultipassExec:input_type -> pb.multipassExecRequest
+	24, // 35: pb.Vms.ListNode:input_type -> pb.ListNodeRequest
+	27, // 36: pb.Vms.GetNode:input_type -> pb.GetNodeRequest
+	3,  // 37: pb.Vms.CreateVMWithLibvirt:output_type -> pb.VMOperationResponse
+	21, // 38: pb.Vms.CreateVolWithLibvirt:output_type -> pb.CreateVolWithLibvirtResponse
+	23, // 39: pb.Vms.GetVol:output_type -> pb.GetVolResponse
 	3,  // 40: pb.Vms.AddNetworkInterfaceWithLibvirt:output_type -> pb.VMOperationResponse
 	3,  // 41: pb.Vms.DeleteNetworkInterfaceWithLibvirt:output_type -> pb.VMOperationResponse
-	39, // 42: pb.Vms.ListHostDiskWithLibvirt:output_type -> pb.ListDiskResponse
-	44, // 43: pb.Vms.ListVMDiskWithLibvirt:output_type -> pb.ListVMDiskResponse
-	3,  // 44: pb.Vms.AddDiskWithLibvirt:output_type -> pb.VMOperationResponse
-	3,  // 45: pb.Vms.DeleteDiskWithLibvirt:output_type -> pb.VMOperationResponse
-	3,  // 46: pb.Vms.CreateVM:output_type -> pb.VMOperationResponse
-	3,  // 47: pb.Vms.StartVM:output_type -> pb.VMOperationResponse
-	3,  // 48: pb.Vms.StopVM:output_type -> pb.VMOperationResponse
-	3,  // 49: pb.Vms.DeleteVM:output_type -> pb.VMOperationResponse
-	13, // 50: pb.Vms.ListVMInstance:output_type -> pb.ListVMInstanceResponse
-	15, // 51: pb.Vms.ListImage:output_type -> pb.ListImageResponse
-	17, // 52: pb.Vms.DeleteImage:output_type -> pb.DeleteImageResponse
-	3,  // 53: pb.Vms.UpdateVM:output_type -> pb.VMOperationResponse
-	3,  // 54: pb.Vms.CreateVMWithMultipass:output_type -> pb.VMOperationResponse
-	19, // 55: pb.Vms.MultipassExec:output_type -> pb.multipassExecResponse
-	26, // 56: pb.Vms.ListNode:output_type -> pb.ListNodeResponse
-	28, // 57: pb.Vms.GetNode:output_type -> pb.GetNodeResponse
-	35, // [35:58] is the sub-list for method output_type
-	12, // [12:35] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	3,  // 42: pb.Vms.AddDiskWithLibvirt:output_type -> pb.VMOperationResponse
+	3,  // 43: pb.Vms.DeleteDiskWithLibvirt:output_type -> pb.VMOperationResponse
+	3,  // 44: pb.Vms.AddHostdevWithLibvirt:output_type -> pb.VMOperationResponse
+	3,  // 45: pb.Vms.DeleteHostdevWithLibvirt:output_type -> pb.VMOperationResponse
+	46, // 46: pb.Vms.GetVncPortWithLibvirt:output_type -> pb.VMVncPortResponse
+	3,  // 47: pb.Vms.CreateVM:output_type -> pb.VMOperationResponse
+	3,  // 48: pb.Vms.StartVM:output_type -> pb.VMOperationResponse
+	3,  // 49: pb.Vms.StopVM:output_type -> pb.VMOperationResponse
+	3,  // 50: pb.Vms.DeleteVM:output_type -> pb.VMOperationResponse
+	13, // 51: pb.Vms.ListVMInstance:output_type -> pb.ListVMInstanceResponse
+	15, // 52: pb.Vms.ListImage:output_type -> pb.ListImageResponse
+	17, // 53: pb.Vms.DeleteImage:output_type -> pb.DeleteImageResponse
+	3,  // 54: pb.Vms.UpdateVM:output_type -> pb.VMOperationResponse
+	44, // 55: pb.Vms.GetVMInfo:output_type -> pb.GetVMInfoResponse
+	3,  // 56: pb.Vms.CreateVMWithMultipass:output_type -> pb.VMOperationResponse
+	19, // 57: pb.Vms.MultipassExec:output_type -> pb.multipassExecResponse
+	26, // 58: pb.Vms.ListNode:output_type -> pb.ListNodeResponse
+	28, // 59: pb.Vms.GetNode:output_type -> pb.GetNodeResponse
+	37, // [37:60] is the sub-list for method output_type
+	14, // [14:37] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_vms_proto_init() }
@@ -3034,7 +3352,7 @@ func file_vms_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_vms_proto_rawDesc), len(file_vms_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   42,
+			NumMessages:   46,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

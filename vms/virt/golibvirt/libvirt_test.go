@@ -6,13 +6,22 @@ import (
 	"log"
 	"reflect"
 	"testing"
+	"titan-vm/vms/internal/config"
 	"titan-vm/vms/pb"
 
 	"github.com/digitalocean/go-libvirt"
 	libvirtxml "github.com/libvirt/libvirt-go-xml"
+	"github.com/zeromicro/go-zero/core/conf"
 )
 
 const serverAddr = "ws://localhost:7777/vm?uuid=b9a3a90e-2b14-11f0-884e-57cfb3f3dd63&transport=raw&vmapi=libvirt"
+const configFile = "../../etc/vms.yaml"
+
+func loadConfig() config.Config {
+	var c config.Config
+	conf.MustLoad(configFile, &c)
+	return c
+}
 
 func TestListVM(t *testing.T) {
 	const serverURL = "ws://localhost:7777/api/ws/vm"
@@ -97,8 +106,8 @@ func TestDomainAddInterface(t *testing.T) {
 }
 
 func TestDomainDeleteInterface(t *testing.T) {
-	const serverURL = "ws://localhost:7777/vm"
-	const hostID = "b9a3a90e-2b14-11f0-884e-57cfb3f3dd63"
+	const serverURL = "ws://localhost:7777/api/ws/vm"
+	const hostID = "30ad25ce-3610-11f0-8a84-8b2a4d0acbcf"
 
 	// goLibvirt := GoLibvirt{serverURL: serverURL}
 
@@ -106,8 +115,8 @@ func TestDomainDeleteInterface(t *testing.T) {
 
 	err := goLibvirt.DeleteNetworkInterfaceWithLibvirt(context.Background(), &pb.DeleteNetworkInterfaceRequest{
 		Id:     hostID,
-		VmName: "Test",
-		Mac:    "52:54:00:19:b7:7c",
+		VmName: "test",
+		Mac:    "52:54:00:9d:8f:f4",
 	})
 	if err != nil {
 		t.Log(err.Error())
@@ -338,8 +347,8 @@ func TestListVMDisk(t *testing.T) {
 	}
 
 	for _, disk := range rsp.Disks {
-		t.Logf("diskType:%s, sourcePath:%s, targetDev:%s, targetBus:%s, SourcePciAddrBus:0x%x, SourcePciAddrSlot:0x%x",
-			disk.DiskType, disk.SourcePath, disk.TargetDev, disk.TargetBus, disk.SourcePciAddrBus, disk.SourcePciAddrSlot)
+		t.Logf("diskType:%s, sourcePath:%s, targetDev:%s, targetBus:%s",
+			disk.DiskType, disk.SourcePath, disk.TargetDev, disk.TargetBus)
 	}
 
 }
@@ -387,5 +396,18 @@ func TestVMDeleteDisk(t *testing.T) {
 	}
 
 	t.Logf("delete disk success")
+
+}
+
+func TestCreateTemplate(t *testing.T) {
+	domain := createInstanceXML("test", "/var/lib/libvirt/image/test.iso", "/var/lib/libvirt/image/test.qrcow2", 4, 8092)
+
+	xml, err := domain.Marshal()
+	if err != nil {
+		t.Error(err.Error())
+		return
+	}
+
+	t.Logf("xml:%s", xml)
 
 }

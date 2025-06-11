@@ -10,16 +10,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-type CmdHandler struct {
+type DownloadTask struct {
 	tunMgr *TunnelManager
 }
 
-func NewCmdHandler(tunMgr *TunnelManager) *CmdHandler {
-	return &CmdHandler{tunMgr: tunMgr}
+func NewDownloadtask(tunMgr *TunnelManager) *DownloadTask {
+	return &DownloadTask{tunMgr: tunMgr}
 
 }
 
-func (cmd *CmdHandler) DownloadImage(ctx context.Context, req *types.DownloadImageRequest) (*types.DownloadImageResponse, error) {
+func (cmd *DownloadTask) DownloadImage(ctx context.Context, req *types.DownloadImageRequest) (*types.DownloadImageResponse, error) {
 	tun := cmd.tunMgr.getTunnel(req.Id)
 	if tun == nil {
 		return nil, fmt.Errorf("not found %s", req.Id)
@@ -45,7 +45,7 @@ func (cmd *CmdHandler) DownloadImage(ctx context.Context, req *types.DownloadIma
 	return &types.DownloadImageResponse{TaskId: resp.TaskId}, nil
 }
 
-func (cmd *CmdHandler) DownloadTaskDelete(ctx context.Context, req *types.DownloadTaskDeleteRequest) error {
+func (cmd *DownloadTask) Delete(ctx context.Context, req *types.DownloadTaskDeleteRequest) error {
 	tun := cmd.tunMgr.getTunnel(req.Id)
 	if tun == nil {
 		return fmt.Errorf("not found task %s", req.Id)
@@ -71,7 +71,7 @@ func (cmd *CmdHandler) DownloadTaskDelete(ctx context.Context, req *types.Downlo
 	return nil
 }
 
-func (cmd *CmdHandler) DownloadTaskList(tx context.Context, req *types.DownloadTaskListRequest) (*types.DownloadTaskListResponse, error) {
+func (cmd *DownloadTask) List(tx context.Context, req *types.DownloadTaskListRequest) (*types.DownloadTaskListResponse, error) {
 	tun := cmd.tunMgr.getTunnel(req.Id)
 	if tun == nil {
 		return nil, fmt.Errorf("not found task %s", req.Id)
@@ -105,7 +105,7 @@ func (cmd *CmdHandler) DownloadTaskList(tx context.Context, req *types.DownloadT
 	return &types.DownloadTaskListResponse{Tasks: tasks}, nil
 }
 
-func (cmd *CmdHandler) DownloadTaskGet(ctx context.Context, req *types.DownloadTaskGetRequest) (*types.DownloadTask, error) {
+func (cmd *DownloadTask) Get(ctx context.Context, req *types.DownloadTaskGetRequest) (*types.DownloadTask, error) {
 	tun := cmd.tunMgr.getTunnel(req.Id)
 	if tun == nil {
 		return nil, fmt.Errorf("not found task %s", req.Id)

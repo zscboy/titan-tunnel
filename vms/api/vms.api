@@ -59,6 +59,10 @@ type (
 	ListImageResponse {
 		Images []string `json:"images"`
 	}
+	DeleteImageRequest {
+		Id   string `json:"id"`
+		Path string `json:"path"`
+	}
 	multipassExecRequest {
 		Id           string `json:"id"`
 		InstanceName string `json:"instance_name"`
@@ -110,7 +114,7 @@ type (
 		ErrMsg  string `json:"err_msg"`
 	}
 	DownloadTaskListRequest {
-		Id string `json:"id"`
+		Id string `form:"id"`
 	}
 	DownloadTask {
 		TaskId       string `json:"taskId"`
@@ -157,6 +161,123 @@ type (
 		Cols uint   `json:"cols,optional"`
 		Rows uint   `json:"rows,optional"`
 	}
+	HostInfoRequest {
+		NodeId string `form:"id"`
+	}
+	CPU {
+		Num    int32   `json:"num"`
+		Usage  float32 `json:"usage"`
+		Arch   string  `json:"arch"`
+		Vendor string  `json:"vendor"`
+	}
+	Memory {
+		Total int64 `json:"total"`
+		Used  int64 `json:"used"`
+	}
+	Disk {
+		Name       string `json:"name"`
+		Type       string `json:"type"`
+		Total      int64  `json:"total"`
+		Used       int64  `json:"used"`
+		MountPoint string `json:"mount_point"`
+		FsType     string `json:"fs_type"`
+	}
+	NetworkInterface {
+		Name  string `json:"name"`
+		Mac   string `json:"mac"`
+		State string `json:"state"`
+	}
+	HostInfoResponse {
+		CPU        CPU                `json:"cpu"`
+		Memory     Memory             `json:"memory"`
+		Disks      []Disk             `json:"disks"`
+		Interfaces []NetworkInterface `json:"network_interfaces"`
+	}
+	VMInfoReqeust {
+		Id     string `form:"id"`
+		VmName string `form:"vm_name"`
+	}
+	VMDisk {
+		// 1 file, 2 block, 3 nvme
+		DiskType          uint32 `json:"disk_type,options=1|2|3"`
+		SourcePath        string `json:"source_path"`
+		SourcePciAddrBus  uint32 `json:"source_pci_addr_bus"`
+		SourcePciAddrSlot uint32 `json:"source_pci_addr_slot"`
+		TargetDev         string `json:"target_dev"`
+		TargetBus         string `json:"target_bus"`
+	}
+	VMNetworkInterface {
+		Name        string `json:"name"`
+		Type        string `json:"type"`
+		Source      string `json:"source"`
+		SourceModel string `json:"source_model"`
+		Model       string `json:"model"`
+		Mac         string `json:"mac"`
+	}
+	VMHostdev {
+		SourceAddrDomain uint32 `json:"source_addr_domain"`
+		SourceAddrBus    uint32 `json:"source_addr_bus"`
+		SourceAddrSlot   uint32 `json:"source_addr_slot"`
+	}
+	VMInfoResponse {
+		CPU        uint32                `json:"cpu"`
+		Memroy     uint64                `json:"memory"`
+		Disks      []*VMDisk             `json:"disks"`
+		Interfaces []*VMNetworkInterface `json:"interfaces"`
+		Hostdevs   []*VMHostdev          `json:"hostdevs"`
+		VncPort    int32                 `json:"vnc_port"`
+	}
+	VMDiskAddRequest {
+		Id         string `json:"id"`
+		VmName     string `json:"vm_name"`
+		DiskType   uint32 `json:"disk_type"`
+		SourcePath string `json:"source_path,optional"`
+		TargetDev  string `json:"target_dev,optional"`
+		TargetBus  string `json:"target_bus,optional"`
+	}
+	VMDiskDeleteRequest {
+		Id               string `json:"id"`
+		VmName           string `json:"vm_name"`
+		DiskType         uint32 `json:"disk_type"`
+		SourcePciAddrBus uint32 `json:"source_pci_addr_bus,optional"`
+		TargetDev        string `json:"target_dev,optional"`
+	}
+	VMInterfaceAddRequest {
+		Id              string `json:"id"`
+		VmName          string `json:"vm_name"`
+		InterfaceType   uint32 `json:"interface_type"`
+		SourceDirectDev string `json:"source_direct_dev,optional"`
+		Model           uint32 `json:"model"`
+	}
+	VMInterfaceDeleteRequest {
+		Id     string `json:"id"`
+		VmName string `json:"vm_name"`
+		Mac    string `json:"mac"`
+	}
+	VMHostdevAddRequest {
+		Id               string `json:"id"`
+		VmName           string `json:"vm_name"`
+		SourceAddrDomain uint32 `json:"source_addr_domain,optional"`
+		SourceAddrBus    uint32 `json:"source_addr_bus"`
+		SourceAddrSlot   uint32 `json:"source_addr_slot,optional"`
+	}
+	VMHostdevDeleteRequest {
+		Id               string `json:"id"`
+		VmName           string `json:"vm_name"`
+		SourceAddrDomain uint32 `json:"source_addr_domain,optional"`
+		SourceAddrBus    uint32 `json:"source_addr_bus"`
+		SourceAddrSlot   uint32 `json:"source_addr_slot,optional"`
+	}
+	NvmeInfo {
+		Name    string `json:"name"`
+		PciAddr string `json:"pci_addr"`
+	}
+	ListNvmeRequest {
+		NodeId string `form:"id"`
+	}
+	ListNvmeResponse {
+		Nvmes []*NvmeInfo `json:"nvmes"`
+	}
 )
 
 service vms-api {
@@ -190,7 +311,10 @@ service vms-api {
 	get /api/vm/list
 
 	@handler listImage
-	get /api/vm/image/list
+	get /api/image/list
+
+	@handler deleteImage
+	post /api/image/delete (DeleteImageRequest)
 
 	@handler multipassExec
 	post /api/vm/multipass/exec (multipassExecRequest) returns (multipassExecResponse)
@@ -199,26 +323,58 @@ service vms-api {
 	get /api/node/list
 
 	@handler downloadImage
-	post /api/cmd/downloadImage (DownloadImageRequest) returns (DownloadImageResponse)
+	post /api/task/dwonloadimage (DownloadImageRequest) returns (DownloadImageResponse)
 
 	@handler downloadTaskList
-	post /api/cmd/downloadTaskList (DownloadTaskListRequest) returns (DownloadTaskListResponse)
+	get /api/task/list
 
 	@handler downloadTaskDelete
-	post /api/cmd/downloadTaskDelete (DownloadTaskDeleteRequest)
+	post /api/task/delete (DownloadTaskDeleteRequest)
 
 	@handler downloadTaskGet
-	post /api/cmd/downloadTaskGet (DownloadTaskGetRequest) returns (DownloadTask)
+	get /api/task/get (DownloadTaskGetRequest) returns (DownloadTask)
+
+	@handler getHostInfo
+	get /api/node/hostinfo
+
+	@handler getVMInfo
+	get /api/vm/info (VMInfoReqeust) returns (VMInfoResponse)
+
+	@handler vmDiskDelete
+	post /api/vm/disk/delete (VMDiskDeleteRequest)
+
+	@handler vmDiskAdd
+	post /api/vm/disk/add (VMDiskAddRequest)
+
+	@handler vmInterfaceDelete
+	post /api/vm/interface/delete (VMInterfaceDeleteRequest)
+
+	@handler vmInterfaceAdd
+	post /api/vm/interface/add (VMInterfaceAddRequest)
+
+	@handler vmHosthostAdd
+	post /api/vm/hostdev/add (VMHostdevAddRequest)
+
+	@handler vmHosthostDelete
+	post /api/vm/hostdev/delete (VMHostdevDeleteRequest)
+
+	@handler listNvme
+	get /api/node/nvme/list (ListNvmeRequest) returns (ListNvmeResponse)
+}
+
+@server (
+	middleware: JwtMiddleware // Enable jwt authentication
+)
+service vms-api {
+	@handler vmWS
+	get /ws/vm
+
+	@handler sshWS
+	get /ws/ssh
 }
 
 service vms-api {
-	@handler vmWS
-	get /api/ws/vm
-
 	@handler nodeWS
-	get /api/ws/node
-
-	@handler sshWS
-	get /api/ws/ssh
+	get /ws/node
 }
 

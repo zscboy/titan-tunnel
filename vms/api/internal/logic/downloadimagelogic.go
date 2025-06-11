@@ -25,6 +25,6 @@ func NewDownloadImageLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Dow
 }
 
 func (l *DownloadImageLogic) DownloadImage(req *types.DownloadImageRequest) (resp *types.DownloadImageResponse, err error) {
-	cmd := ws.NewCmdHandler(l.svcCtx.TunMgr)
-	return cmd.DownloadImage(l.ctx, req)
+	task := ws.NewDownloadtask(l.svcCtx.TunMgr)
+	return task.DownloadImage(l.ctx, req)
 }

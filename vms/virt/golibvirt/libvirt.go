@@ -7,10 +7,12 @@ import (
 	"io"
 	"strings"
 	"sync"
+	"time"
 	"titan-vm/vms/pb"
 
 	"github.com/digitalocean/go-libvirt"
 	"github.com/digitalocean/go-libvirt/socket/dialers"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/websocket"
 	libvirtxml "github.com/libvirt/libvirt-go-xml"
 
@@ -20,6 +22,18 @@ import (
 type GoLibvirt struct {
 	serverURL string
 	clients   sync.Map
+}
+
+func generateJwtToken(secret string, expire int64) (string, error) {
+	claims := jwt.MapClaims{
+		"user": "golibvirt",
+		"exp":  time.Now().Add(time.Second * time.Duration(expire)).Unix(),
+		"iat":  time.Now().Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(secret))
+
 }
 
 func NewGoLibvirt(serverURL string) *GoLibvirt {
@@ -124,14 +138,6 @@ func (goLibvirt *GoLibvirt) DeleteVM(_ context.Context, request *pb.DeleteVMRequ
 		return fmt.Errorf("can not delete the running vm")
 	}
 
-	if err := lv.DomainUndefine(dom); err != nil {
-		return err
-	}
-
-	return goLibvirt.deleteFirstDiskFromDomain(lv, dom)
-}
-
-func (goLibvirt *GoLibvirt) deleteFirstDiskFromDomain(lv *libvirt.Libvirt, dom libvirt.Domain) error {
 	xmlDesc, err := lv.DomainGetXMLDesc(dom, 0)
 	if err != nil {
 		return err
@@ -142,6 +148,14 @@ func (goLibvirt *GoLibvirt) deleteFirstDiskFromDomain(lv *libvirt.Libvirt, dom l
 		return err
 	}
 
+	if err := lv.DomainUndefine(dom); err != nil {
+		return err
+	}
+
+	return goLibvirt.deleteFirstDiskFromDomain(lv, domain)
+}
+
+func (goLibvirt *GoLibvirt) deleteFirstDiskFromDomain(lv *libvirt.Libvirt, domain libvirtxml.Domain) error {
 	for _, disk := range domain.Devices.Disks {
 		if disk.Device != "disk" && disk.Driver.Type != "qcow2" {
 			continue
@@ -350,16 +364,25 @@ func (goLibvirt *GoLibvirt) ListVMNetwrokInterfaceWithLibvirt(ctx context.Contex
 		return nil, err
 	}
 
+	interfaces := goLibvirt.listVMNetwrokInterfaces(&domain)
+	return &pb.ListVMNetworkInterfaceResponse{Interfaces: interfaces}, nil
+}
+
+func (goLibvirt *GoLibvirt) listVMNetwrokInterfaces(domain *libvirtxml.Domain) []*pb.VMNetworkInterface {
 	ifs := domain.Devices.Interfaces
 
 	interfaces := make([]*pb.VMNetworkInterface, 0, len(ifs))
 	for _, iface := range ifs {
 		// _ = iface
 		netInterface := &pb.VMNetworkInterface{
-			Name:  iface.Target.Dev,
 			Mac:   iface.MAC.Address,
 			Model: iface.Model.Type,
 		}
+
+		if iface.Target != nil {
+			netInterface.Name = iface.Target.Dev
+		}
+
 		if iface.Source.Network != nil {
 			netInterface.Type = interfaceTypeNetwork
 			netInterface.Source = iface.Source.Network.Network
@@ -377,7 +400,7 @@ func (goLibvirt *GoLibvirt) ListVMNetwrokInterfaceWithLibvirt(ctx context.Contex
 		interfaces = append(interfaces, netInterface)
 	}
 
-	return &pb.ListVMNetworkInterfaceResponse{Interfaces: interfaces}, nil
+	return interfaces
 }
 
 func (goLibvirt *GoLibvirt) AddNetworkInterfaceWithLibvirt(ctx context.Context, request *pb.AddNetworkInterfaceRequest) error {
@@ -390,6 +413,16 @@ func (goLibvirt *GoLibvirt) AddNetworkInterfaceWithLibvirt(ctx context.Context, 
 	dom, err := lv.DomainLookupByName(request.GetVmName())
 	if err != nil {
 		return err
+	}
+
+	state, _, _, _, _, err := lv.DomainGetInfo(dom)
+	if err != nil {
+		return err
+	}
+
+	flags := uint32(libvirt.DomainDeviceModifyConfig)
+	if state == uint8(libvirt.DomainRunning) {
+		flags = uint32(libvirt.DomainDeviceModifyLive) | flags
 	}
 
 	newInterface := libvirtxml.DomainInterface{
@@ -425,7 +458,7 @@ func (goLibvirt *GoLibvirt) AddNetworkInterfaceWithLibvirt(ctx context.Context, 
 		return err
 	}
 
-	return lv.DomainAttachDeviceFlags(dom, xml, uint32(libvirt.DomainDeviceModifyLive)|uint32(libvirt.DomainDeviceModifyConfig))
+	return lv.DomainAttachDeviceFlags(dom, xml, flags)
 }
 func (goLibvirt *GoLibvirt) DeleteNetworkInterfaceWithLibvirt(ctx context.Context, request *pb.DeleteNetworkInterfaceRequest) error {
 	lv, err := goLibvirt.connectHost(request.Id)
@@ -439,21 +472,53 @@ func (goLibvirt *GoLibvirt) DeleteNetworkInterfaceWithLibvirt(ctx context.Contex
 		return err
 	}
 
-	newInterface := libvirtxml.DomainInterface{
-		MAC: &libvirtxml.DomainInterfaceMAC{Address: request.Mac},
-	}
-
-	xml, err := newInterface.Marshal()
+	state, _, _, _, _, err := lv.DomainGetInfo(dom)
 	if err != nil {
 		return err
 	}
 
-	return lv.DomainDetachDeviceFlags(dom, xml, uint32(libvirt.DomainDeviceModifyLive)|uint32(libvirt.DomainDeviceModifyConfig))
+	xmlDesc, err := lv.DomainGetXMLDesc(dom, 0)
+	if err != nil {
+		return err
+	}
+
+	var domainXML libvirtxml.Domain
+	err = domainXML.Unmarshal(xmlDesc)
+	if err != nil {
+		return err
+	}
+
+	var targetInterface *libvirtxml.DomainInterface
+	for _, iface := range domainXML.Devices.Interfaces {
+		if iface.MAC != nil && iface.MAC.Address == request.Mac {
+			targetInterface = &iface
+			break
+		}
+	}
+	if targetInterface == nil {
+		return fmt.Errorf("interface with MAC %s not found", request.Mac)
+	}
+
+	xml, err := targetInterface.Marshal()
+	if err != nil {
+		return err
+	}
+
+	err = lv.DomainDetachDeviceFlags(dom, xml, uint32(libvirt.DomainDeviceModifyConfig))
+	if err != nil {
+		return err
+	}
+
+	if state == uint8(libvirt.DomainRunning) {
+		return lv.DomainDetachDeviceFlags(dom, xml, uint32(libvirt.DomainDeviceModifyLive))
+	}
+
+	return nil
 }
 
-func (goLibvirt *GoLibvirt) ListHostDiskWithLibvirt(ctx context.Context, request *pb.ListHostDiskRequest) (*pb.ListDiskResponse, error) {
-	return nil, nil
-}
+//	func (goLibvirt *GoLibvirt) ListHostDiskWithLibvirt(ctx context.Context, request *pb.ListHostDiskRequest) (*pb.ListDiskResponse, error) {
+//		return nil, nil
+//	}
 func (goLibvirt *GoLibvirt) ListVMDiskWithLibvirt(ctx context.Context, request *pb.ListVMDiskRequest) (*pb.ListVMDiskResponse, error) {
 	lv, err := goLibvirt.connectHost(request.Id)
 	if err != nil {
@@ -476,10 +541,15 @@ func (goLibvirt *GoLibvirt) ListVMDiskWithLibvirt(ctx context.Context, request *
 		return nil, err
 	}
 
-	disks := domain.Devices.Disks
-	hostDevs := domain.Devices.Hostdevs
+	disks := goLibvirt.listVMDisks(&domain)
 
-	vmDisks := make([]*pb.VMDisk, 0, len(disks)+len(hostDevs))
+	return &pb.ListVMDiskResponse{Disks: disks}, nil
+}
+
+func (goLibvirt *GoLibvirt) listVMDisks(domain *libvirtxml.Domain) []*pb.VMDisk {
+	disks := domain.Devices.Disks
+
+	vmDisks := make([]*pb.VMDisk, 0, len(disks))
 	for _, d := range disks {
 		if d.Source.File == nil && d.Source.Block == nil {
 			continue
@@ -500,20 +570,59 @@ func (goLibvirt *GoLibvirt) ListVMDiskWithLibvirt(ctx context.Context, request *
 		vmDisks = append(vmDisks, disk)
 	}
 
-	for _, d := range hostDevs {
-		if d.SubsysPCI == nil {
-			continue
+	return vmDisks
+
+}
+
+func (goLibvirt *GoLibvirt) listHostdev(domain *libvirtxml.Domain) []*pb.VMHostdev {
+	hostdevs := domain.Devices.Hostdevs
+
+	vmHostdevs := make([]*pb.VMHostdev, 0, len(hostdevs))
+	for _, d := range hostdevs {
+		hostdev := &pb.VMHostdev{
+			SourceAddrDomain: int32(*d.SubsysPCI.Source.Address.Domain),
+			SourceAddrBus:    int32(*d.SubsysPCI.Source.Address.Bus),
+			SourceAddrSlot:   int32(*d.SubsysPCI.Source.Address.Slot),
 		}
-		disk := &pb.VMDisk{
-			DiskType:          pb.VMDiskType_NVME,
-			SourcePciAddrBus:  int32(*d.SubsysPCI.Source.Address.Bus),
-			SourcePciAddrSlot: int32(*d.SubsysPCI.Source.Address.Slot),
-		}
-		vmDisks = append(vmDisks, disk)
+		vmHostdevs = append(vmHostdevs, hostdev)
 	}
 
-	return &pb.ListVMDiskResponse{Disks: vmDisks}, nil
+	return vmHostdevs
+
 }
+
+func (goLibvirt *GoLibvirt) GetVMInfo(ctx context.Context, request *pb.GetVMInfoRequest) (*pb.GetVMInfoResponse, error) {
+	lv, err := goLibvirt.connectHost(request.Id)
+	if err != nil {
+		return nil, err
+	}
+	defer lv.Disconnect()
+
+	dom, err := lv.DomainLookupByName(request.GetVmName())
+	if err != nil {
+		return nil, err
+	}
+
+	xmlDesc, err := lv.DomainGetXMLDesc(dom, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	var domain libvirtxml.Domain
+	if err := xml.Unmarshal([]byte(xmlDesc), &domain); err != nil {
+		return nil, err
+	}
+
+	cpu := domain.VCPU.Value
+	memory := domain.Memory.Value
+	disks := goLibvirt.listVMDisks(&domain)
+	interfaces := goLibvirt.listVMNetwrokInterfaces(&domain)
+	hostdevs := goLibvirt.listHostdev(&domain)
+	vncPort, _ := goLibvirt.getVncPort(&domain)
+
+	return &pb.GetVMInfoResponse{Cpu: uint32(cpu), Memory: uint64(memory), Disks: disks, Interfaces: interfaces, Hostdevs: hostdevs, VncPort: int32(vncPort)}, nil
+}
+
 func (goLibvirt *GoLibvirt) AddDiskWithLibvirt(ctx context.Context, request *pb.AddDiskRequest) error {
 	if request.DiskType != pb.VMDiskType_FILE && request.DiskType != pb.VMDiskType_BLOCK && request.DiskType != pb.VMDiskType_NVME {
 		return fmt.Errorf("unsupport disk type %d", request.DiskType)
@@ -530,28 +639,14 @@ func (goLibvirt *GoLibvirt) AddDiskWithLibvirt(ctx context.Context, request *pb.
 		return err
 	}
 
-	// add nvme disk
-	if request.DiskType == pb.VMDiskType_NVME {
-		addressPCIDomain := uint(0)
-		addressPCIBus := uint(request.SourcePciAddrBus)
-		addressPCISlot := uint(request.SourcePciAddrSlot)
-		hostDev := libvirtxml.DomainHostdev{
-			Managed: "yes",
-			SubsysPCI: &libvirtxml.DomainHostdevSubsysPCI{
-				Source: &libvirtxml.DomainHostdevSubsysPCISource{Address: &libvirtxml.DomainAddressPCI{
-					Domain: &addressPCIDomain,
-					Bus:    &addressPCIBus,
-					Slot:   &addressPCISlot,
-				}},
-			},
-		}
+	state, _, _, _, _, err := lv.DomainGetInfo(dom)
+	if err != nil {
+		return err
+	}
 
-		xml, err := hostDev.Marshal()
-		if err != nil {
-			return err
-		}
-
-		return lv.DomainAttachDeviceFlags(dom, xml, uint32(libvirt.DomainDeviceModifyLive)|uint32(libvirt.DomainDeviceModifyConfig))
+	flags := uint32(libvirt.DomainDeviceModifyConfig)
+	if state == uint8(libvirt.DomainRunning) {
+		flags = uint32(libvirt.DomainDeviceModifyLive) | flags
 	}
 
 	disk := libvirtxml.DomainDisk{
@@ -574,7 +669,7 @@ func (goLibvirt *GoLibvirt) AddDiskWithLibvirt(ctx context.Context, request *pb.
 		return err
 	}
 
-	return lv.DomainAttachDeviceFlags(dom, xml, uint32(libvirt.DomainDeviceModifyLive)|uint32(libvirt.DomainDeviceModifyConfig))
+	return lv.DomainAttachDeviceFlags(dom, xml, flags)
 }
 func (goLibvirt *GoLibvirt) DeleteDiskWithLibvirt(ctx context.Context, request *pb.DeleteDiskRequest) error {
 	if request.DiskType != pb.VMDiskType_FILE && request.DiskType != pb.VMDiskType_BLOCK && request.DiskType != pb.VMDiskType_NVME {
@@ -592,6 +687,106 @@ func (goLibvirt *GoLibvirt) DeleteDiskWithLibvirt(ctx context.Context, request *
 		return err
 	}
 
+	state, _, _, _, _, err := lv.DomainGetInfo(dom)
+	if err != nil {
+		return err
+	}
+
+	flags := uint32(libvirt.DomainDeviceModifyConfig)
+	if state == uint8(libvirt.DomainRunning) {
+		flags = uint32(libvirt.DomainDeviceModifyLive) | flags
+	}
+
+	xmlDesc, err := lv.DomainGetXMLDesc(dom, 0)
+	if err != nil {
+		return err
+	}
+
+	var domain libvirtxml.Domain
+	if err := xml.Unmarshal([]byte(xmlDesc), &domain); err != nil {
+		return err
+	}
+
+	disks := domain.Devices.Disks
+	for _, disk := range disks {
+		if disk.Target.Dev == request.TargetDev {
+			xml, err := disk.Marshal()
+			if err != nil {
+				return err
+			}
+			return lv.DomainDetachDeviceFlags(dom, xml, flags)
+		}
+	}
+
+	return fmt.Errorf("not found disk with target dev %s", request.TargetDev)
+}
+
+func (goLibvirt *GoLibvirt) AddHostdevWithLibvirt(ctx context.Context, request *pb.AddHostdevRequest) error {
+	lv, err := goLibvirt.connectHost(request.Id)
+	if err != nil {
+		return err
+	}
+	defer lv.Disconnect()
+
+	dom, err := lv.DomainLookupByName(request.GetVmName())
+	if err != nil {
+		return err
+	}
+
+	state, _, _, _, _, err := lv.DomainGetInfo(dom)
+	if err != nil {
+		return err
+	}
+
+	flags := uint32(libvirt.DomainDeviceModifyConfig)
+	if state == uint8(libvirt.DomainRunning) {
+		flags = uint32(libvirt.DomainDeviceModifyLive) | flags
+	}
+
+	addressPCIDomain := uint(0)
+	addressPCIBus := uint(request.SourceAddrBus)
+	addressPCISlot := uint(request.SourceAddrSlot)
+	hostDev := libvirtxml.DomainHostdev{
+		Managed: "yes",
+		SubsysPCI: &libvirtxml.DomainHostdevSubsysPCI{
+			Source: &libvirtxml.DomainHostdevSubsysPCISource{Address: &libvirtxml.DomainAddressPCI{
+				Domain: &addressPCIDomain,
+				Bus:    &addressPCIBus,
+				Slot:   &addressPCISlot,
+			}},
+		},
+	}
+
+	xml, err := hostDev.Marshal()
+	if err != nil {
+		return err
+	}
+
+	return lv.DomainAttachDeviceFlags(dom, xml, flags)
+}
+
+func (goLibvirt *GoLibvirt) DeleteHostdevWithLibvirt(ctx context.Context, request *pb.DeleteHostdevRequest) error {
+	lv, err := goLibvirt.connectHost(request.Id)
+	if err != nil {
+		return err
+	}
+	defer lv.Disconnect()
+
+	dom, err := lv.DomainLookupByName(request.GetVmName())
+	if err != nil {
+		return err
+	}
+
+	state, _, _, _, _, err := lv.DomainGetInfo(dom)
+	if err != nil {
+		return err
+	}
+
+	// flags := uint32(libvirt.DomainDeviceModifyConfig)
+	// if state == uint8(libvirt.DomainRunning) {
+	// 	flags = uint32(libvirt.DomainDeviceModifyLive) | flags
+	// }
+
 	xmlDesc, err := lv.DomainGetXMLDesc(dom, 0)
 	if err != nil {
 		return err
@@ -602,44 +797,90 @@ func (goLibvirt *GoLibvirt) DeleteDiskWithLibvirt(ctx context.Context, request *
 		return err
 	}
 	// add nvme disk
-	if request.DiskType == pb.VMDiskType_NVME {
-		hostDevs := domain.Devices.Hostdevs
-		for _, dev := range hostDevs {
-			if dev.SubsysPCI == nil || dev.SubsysPCI.Source == nil || dev.SubsysPCI.Source.Address == nil {
-				continue
-			}
-
-			if dev.SubsysPCI.Source.Address.Bus == nil {
-				continue
-			}
-
-			bus := dev.SubsysPCI.Source.Address.Bus
-			if *bus != uint(request.SourcePciAddrBus) {
-				continue
-			}
-
-			xml, err := dev.Marshal()
-			if err != nil {
-				return err
-			}
-			return lv.DomainDetachDeviceFlags(dom, xml, uint32(libvirt.DomainDeviceModifyLive)|uint32(libvirt.DomainDeviceModifyConfig))
+	hostDevs := domain.Devices.Hostdevs
+	for _, dev := range hostDevs {
+		if dev.SubsysPCI == nil || dev.SubsysPCI.Source == nil || dev.SubsysPCI.Source.Address == nil {
+			continue
 		}
 
-		return fmt.Errorf("not found nvme with bus %d", request.SourcePciAddrBus)
-	}
-
-	disks := domain.Devices.Disks
-	for _, disk := range disks {
-		if disk.Target.Dev == request.TargetDev {
-			xml, err := disk.Marshal()
-			if err != nil {
-				return err
-			}
-			return lv.DomainDetachDeviceFlags(dom, xml, uint32(libvirt.DomainDeviceModifyLive)|uint32(libvirt.DomainDeviceModifyConfig))
+		if dev.SubsysPCI.Source.Address.Bus == nil {
+			continue
 		}
+
+		domain := dev.SubsysPCI.Source.Address.Domain
+		bus := dev.SubsysPCI.Source.Address.Bus
+		slot := dev.SubsysPCI.Source.Address.Slot
+		if *domain != uint(request.SourceAddrDomain) ||
+			*bus != uint(request.SourceAddrBus) ||
+			*slot != uint(request.SourceAddrSlot) {
+			continue
+		}
+
+		xml, err := dev.Marshal()
+		if err != nil {
+			return err
+		}
+
+		err = lv.DomainDetachDeviceFlags(dom, xml, uint32(libvirt.DomainDeviceModifyConfig))
+		if err != nil {
+			return err
+		}
+
+		if state == uint8(libvirt.DomainRunning) {
+			return lv.DomainDetachDeviceFlags(dom, xml, uint32(libvirt.DomainDeviceModifyLive))
+		}
+
+		return nil
 	}
 
-	return fmt.Errorf("not found disk with target dev %s", request.TargetDev)
+	return fmt.Errorf("not found hostdev with domain %d, bus %d, slot %d", request.SourceAddrDomain, request.SourceAddrBus, request.SourceAddrSlot)
+}
+
+func (goLibvirt *GoLibvirt) GetVncPortWithLibvirt(ctx context.Context, request *pb.VMVncPortRequest) (*pb.VMVncPortResponse, error) {
+	lv, err := goLibvirt.connectHost(request.Id)
+	if err != nil {
+		return nil, err
+	}
+	defer lv.Disconnect()
+
+	dom, err := lv.DomainLookupByName(request.GetVmName())
+	if err != nil {
+		return nil, err
+	}
+
+	xmlDesc, err := lv.DomainGetXMLDesc(dom, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	var domain libvirtxml.Domain
+	if err := xml.Unmarshal([]byte(xmlDesc), &domain); err != nil {
+		return nil, err
+	}
+
+	port, err := goLibvirt.getVncPort(&domain)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.VMVncPortResponse{Port: int32(port)}, nil
+}
+
+func (goLibvirt *GoLibvirt) getVncPort(domain *libvirtxml.Domain) (int, error) {
+	if domain.Devices == nil {
+		return 0, nil
+	}
+
+	graphics := domain.Devices.Graphics
+	if len(graphics) == 0 {
+		return 0, nil
+	}
+
+	if graphics[0].VNC == nil {
+		return 0, nil
+	}
+
+	return graphics[0].VNC.Port, nil
 }
 
 func newLibvirt(urlStr string) (*libvirt.Libvirt, error) {
@@ -658,155 +899,6 @@ func newLibvirt(urlStr string) (*libvirt.Libvirt, error) {
 	}
 
 	return l, nil
-}
-
-func createInstanceXML(name, isoPath, diskPath string, vcpu uint, memoryMB uint) *libvirtxml.Domain {
-	domain := &libvirtxml.Domain{
-		Type: "kvm",
-		Name: name,
-		Metadata: &libvirtxml.DomainMetadata{
-			XML: `
-			<libosinfo:libosinfo xmlns:libosinfo="http://libosinfo.org/xmlns/libvirt/domain/1.0">
-			</libosinfo:libosinfo>`,
-			// <libosinfo:os id="http://centos.org/centos/7.0"/>
-		},
-		Memory: &libvirtxml.DomainMemory{
-			Unit:  "KiB",
-			Value: uint(memoryMB * 1024),
-		},
-		VCPU: &libvirtxml.DomainVCPU{
-			Placement: "static",
-			Value:     uint(vcpu),
-		},
-		OS: &libvirtxml.DomainOS{
-			Type: &libvirtxml.DomainOSType{
-				Arch:    "x86_64",
-				Machine: "pc-q35-6.2",
-				Type:    "hvm",
-			},
-			BootDevices: []libvirtxml.DomainBootDevice{
-				{Dev: "hd"},
-				{Dev: "cdrom"},
-			},
-		},
-		Features: &libvirtxml.DomainFeatureList{
-			ACPI: &libvirtxml.DomainFeature{},
-			APIC: &libvirtxml.DomainFeatureAPIC{},
-		},
-		CPU: &libvirtxml.DomainCPU{
-			Mode:       "host-passthrough",
-			Check:      "none",
-			Migratable: "on",
-		},
-		Clock: &libvirtxml.DomainClock{
-			Offset: "utc",
-			Timer: []libvirtxml.DomainTimer{
-				{Name: "rtc", TickPolicy: "catchup"},
-				{Name: "pit", TickPolicy: "delay"},
-				{Name: "hpet", Present: "no"},
-			},
-		},
-		OnPoweroff: "destroy",
-		OnReboot:   "restart",
-		OnCrash:    "destroy",
-		PM: &libvirtxml.DomainPM{
-			SuspendToMem:  &libvirtxml.DomainPMPolicy{Enabled: "no"},
-			SuspendToDisk: &libvirtxml.DomainPMPolicy{Enabled: "no"},
-		},
-		Devices: &libvirtxml.DomainDeviceList{
-			Disks: []libvirtxml.DomainDisk{
-				{
-					Device: "disk",
-					Driver: &libvirtxml.DomainDiskDriver{
-						Name: "qemu",
-						Type: "qcow2",
-					},
-					Source: &libvirtxml.DomainDiskSource{
-						File: &libvirtxml.DomainDiskSourceFile{
-							File: diskPath,
-						},
-					},
-					Target: &libvirtxml.DomainDiskTarget{
-						Dev: "vda",
-						Bus: "virtio",
-					},
-				},
-				{
-					Device: "cdrom",
-					Driver: &libvirtxml.DomainDiskDriver{
-						Name: "qemu",
-						Type: "raw",
-					},
-					Source: &libvirtxml.DomainDiskSource{
-						File: &libvirtxml.DomainDiskSourceFile{
-							File: isoPath,
-						},
-					},
-					Target: &libvirtxml.DomainDiskTarget{
-						Dev: "sda",
-						Bus: "sata",
-					},
-					ReadOnly: &libvirtxml.DomainDiskReadOnly{},
-				},
-			},
-			Controllers: []libvirtxml.DomainController{},
-			Interfaces: []libvirtxml.DomainInterface{
-				{
-					Source: &libvirtxml.DomainInterfaceSource{
-						Network: &libvirtxml.DomainInterfaceSourceNetwork{
-							Network: "default",
-						},
-					},
-					Model: &libvirtxml.DomainInterfaceModel{
-						Type: "virtio",
-					},
-				},
-			},
-			Serials: []libvirtxml.DomainSerial{
-				{Target: &libvirtxml.DomainSerialTarget{}},
-			},
-			Consoles: []libvirtxml.DomainConsole{
-				{Target: &libvirtxml.DomainConsoleTarget{}},
-			},
-			Inputs: []libvirtxml.DomainInput{
-				{Type: "tablet", Bus: "usb"},
-				{Type: "mouse", Bus: "ps2"},
-				{Type: "keyboard", Bus: "ps2"},
-			},
-
-			Graphics: []libvirtxml.DomainGraphic{
-				{
-					VNC: &libvirtxml.DomainGraphicVNC{
-						Port:     -1,
-						AutoPort: "yes",
-					},
-				},
-			},
-			Videos: []libvirtxml.DomainVideo{
-				{
-					Model: libvirtxml.DomainVideoModel{
-						Type:    "vga",
-						Primary: "yes",
-					},
-				},
-			},
-			MemBalloon: &libvirtxml.DomainMemBalloon{
-				Model: "virtio",
-			},
-			RNGs: []libvirtxml.DomainRNG{
-				{
-					Model: "virtio",
-					Backend: &libvirtxml.DomainRNGBackend{
-						Random: &libvirtxml.DomainRNGBackendRandom{
-							Device: "/dev/urandom",
-						},
-					},
-				},
-			},
-		},
-	}
-
-	return domain
 }
 
 func parseState(state libvirt.DomainState) string {

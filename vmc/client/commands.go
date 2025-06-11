@@ -33,6 +33,10 @@ func (c *Command) onCommandMessage(msg *pb.Message) error {
 		return c.downloadTaskList(msg.GetSessionId())
 	case pb.CommandType_AUTH:
 		return c.auth(msg.GetSessionId(), cmd.GetData())
+	case pb.CommandType_HOST_INFO:
+		return c.getHostInfo(msg.GetSessionId())
+	case pb.CommandType_LIST_NVME:
+		return c.listNvmes(msg.GetSessionId())
 	}
 	return nil
 }
@@ -85,4 +89,25 @@ func (c *Command) auth(sessionID string, reqData []byte) error {
 	auth := cmds.NewAuthSSHAndMultipass(c.tunnel.vmapi)
 	resp := auth.Auth(reqData)
 	return c.cmdReplay(sessionID, resp)
+}
+
+func (c *Command) getHostInfo(sessionID string) error {
+	logx.Debugf("getHostInfo sessionID %s", sessionID)
+	hostInfo := cmds.NewHostInfo()
+	resp := hostInfo.Get()
+	err := c.cmdReplay(sessionID, resp)
+	if err != nil {
+		logx.Debugf("getHostInfo cmdReplay failed:%v, %v", err, resp.String())
+	}
+	return err
+}
+
+func (c *Command) listNvmes(sessionID string) error {
+	nvmeInfo := cmds.NewNvmeInfo()
+	resp := nvmeInfo.List()
+	err := c.cmdReplay(sessionID, resp)
+	if err != nil {
+		logx.Debugf("getHostInfo cmdReplay failed:%v, %v", err, resp.String())
+	}
+	return err
 }

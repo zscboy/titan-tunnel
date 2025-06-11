@@ -25,5 +25,10 @@ func NewVmWSLogic(ctx context.Context, svcCtx *svc.ServiceContext) *VmWSLogic {
 
 func (l *VmWSLogic) VmWS(w http.ResponseWriter, r *http.Request, req *types.VMWSRequest) error {
 	vmws := ws.NewVMWS(l.svcCtx.TunMgr)
-	return vmws.ServeWS(w, r, req)
+	err := vmws.ServeWS(w, r, req)
+	if err != nil {
+		logx.Errorf("VmWSLogic.VmWS %s", err.Error())
+	}
+
+	return err
 }

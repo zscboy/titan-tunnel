@@ -12,7 +12,7 @@ import (
 
 const (
 	transportTypeRaw            = "raw"
-	transportTypeWebsocket      = "websoket"
+	transportTypeWebsocket      = "websocket"
 	vmapiMultipass              = "multipass"
 	vmapiLibvirt                = "libvirt"
 	unixSocketFilePathLibvirt   = "/var/run/libvirt/libvirt-sock"

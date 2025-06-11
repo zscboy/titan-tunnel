@@ -3,6 +3,13 @@
 
 package types
 
+type CPU struct {
+	Num    int32   `json:"num"`
+	Usage  float32 `json:"usage"`
+	Arch   string  `json:"arch"`
+	Vendor string  `json:"vendor"`
+}
+
 type CreateVMRequest struct {
 	Id       string `json:"id"`
 	VmName   string `json:"vm_name"`
@@ -27,9 +34,23 @@ type CreateVolWithLibvirtResponse struct {
 	Key  string `json:"key"`
 }
 
+type DeleteImageRequest struct {
+	Id   string `json:"id"`
+	Path string `json:"path"`
+}
+
 type DeleteVMRequest struct {
 	Id     string `json:"id"`
 	VmName string `json:"vm_name"`
+}
+
+type Disk struct {
+	Name       string `json:"name"`
+	Type       string `json:"type"`
+	Total      int64  `json:"total"`
+	Used       int64  `json:"used"`
+	MountPoint string `json:"mount_point"`
+	FsType     string `json:"fs_type"`
 }
 
 type DownloadImageRequest struct {
@@ -71,11 +92,22 @@ type DownloadTaskGetRequest struct {
 }
 
 type DownloadTaskListRequest struct {
-	Id string `json:"id"`
+	Id string `form:"id"`
 }
 
 type DownloadTaskListResponse struct {
 	Tasks []*DownloadTask `json:"tasks"`
+}
+
+type HostInfoRequest struct {
+	NodeId string `form:"id"`
+}
+
+type HostInfoResponse struct {
+	CPU        CPU                `json:"cpu"`
+	Memory     Memory             `json:"memory"`
+	Disks      []Disk             `json:"disks"`
+	Interfaces []NetworkInterface `json:"network_interfaces"`
 }
 
 type ListImageRequest struct {
@@ -96,6 +128,14 @@ type ListNodeResponse struct {
 	Total int32   `json:"total"`
 }
 
+type ListNvmeRequest struct {
+	NodeId string `form:"id"`
+}
+
+type ListNvmeResponse struct {
+	Nvmes []*NvmeInfo `json:"nvmes"`
+}
+
 type ListVMInstanceReqeust struct {
 	Id string `form:"id"`
 }
@@ -113,6 +153,17 @@ type LoginResponse struct {
 	Token string `json:"token"`
 }
 
+type Memory struct {
+	Total int64 `json:"total"`
+	Used  int64 `json:"used"`
+}
+
+type NetworkInterface struct {
+	Name  string `json:"name"`
+	Mac   string `json:"mac"`
+	State string `json:"state"`
+}
+
 type Node struct {
 	Id             string `json:"id"`
 	OS             string `json:"os"`
@@ -128,6 +179,11 @@ type NodeWSRequest struct {
 	NodeId string `form:"id"`
 	OS     string `form:"os"`
 	VMAPI  string `form:"vmapi"`
+}
+
+type NvmeInfo struct {
+	Name    string `json:"name"`
+	PciAddr string `json:"pci_addr"`
 }
 
 type SSHWSMessage struct {
@@ -158,11 +214,96 @@ type UpdateVMRequest struct {
 	VmName string `json:"vm_name"`
 }
 
+type VMDisk struct {
+	DiskType          uint32 `json:"disk_type,options=1|2|3"`
+	SourcePath        string `json:"source_path"`
+	SourcePciAddrBus  uint32 `json:"source_pci_addr_bus"`
+	SourcePciAddrSlot uint32 `json:"source_pci_addr_slot"`
+	TargetDev         string `json:"target_dev"`
+	TargetBus         string `json:"target_bus"`
+}
+
+type VMDiskAddRequest struct {
+	Id         string `json:"id"`
+	VmName     string `json:"vm_name"`
+	DiskType   uint32 `json:"disk_type"`
+	SourcePath string `json:"source_path,optional"`
+	TargetDev  string `json:"target_dev,optional"`
+	TargetBus  string `json:"target_bus,optional"`
+}
+
+type VMDiskDeleteRequest struct {
+	Id               string `json:"id"`
+	VmName           string `json:"vm_name"`
+	DiskType         uint32 `json:"disk_type"`
+	SourcePciAddrBus uint32 `json:"source_pci_addr_bus,optional"`
+	TargetDev        string `json:"target_dev,optional"`
+}
+
+type VMHostdev struct {
+	SourceAddrDomain uint32 `json:"source_addr_domain"`
+	SourceAddrBus    uint32 `json:"source_addr_bus"`
+	SourceAddrSlot   uint32 `json:"source_addr_slot"`
+}
+
+type VMHostdevAddRequest struct {
+	Id               string `json:"id"`
+	VmName           string `json:"vm_name"`
+	SourceAddrDomain uint32 `json:"source_addr_domain,optional"`
+	SourceAddrBus    uint32 `json:"source_addr_bus"`
+	SourceAddrSlot   uint32 `json:"source_addr_slot,optional"`
+}
+
+type VMHostdevDeleteRequest struct {
+	Id               string `json:"id"`
+	VmName           string `json:"vm_name"`
+	SourceAddrDomain uint32 `json:"source_addr_domain,optional"`
+	SourceAddrBus    uint32 `json:"source_addr_bus"`
+	SourceAddrSlot   uint32 `json:"source_addr_slot,optional"`
+}
+
 type VMInfo struct {
 	Name  string `json:"name"`
 	State string `json:"state"`
 	Ip    string `json:"ip"`
 	Image string `json:"image"`
+}
+
+type VMInfoReqeust struct {
+	Id     string `form:"id"`
+	VmName string `form:"vm_name"`
+}
+
+type VMInfoResponse struct {
+	CPU        uint32                `json:"cpu"`
+	Memroy     uint64                `json:"memory"`
+	Disks      []*VMDisk             `json:"disks"`
+	Interfaces []*VMNetworkInterface `json:"interfaces"`
+	Hostdevs   []*VMHostdev          `json:"hostdevs"`
+	VncPort    int32                 `json:"vnc_port"`
+}
+
+type VMInterfaceAddRequest struct {
+	Id              string `json:"id"`
+	VmName          string `json:"vm_name"`
+	InterfaceType   uint32 `json:"interface_type"`
+	SourceDirectDev string `json:"source_direct_dev,optional"`
+	Model           uint32 `json:"model"`
+}
+
+type VMInterfaceDeleteRequest struct {
+	Id     string `json:"id"`
+	VmName string `json:"vm_name"`
+	Mac    string `json:"mac"`
+}
+
+type VMNetworkInterface struct {
+	Name        string `json:"name"`
+	Type        string `json:"type"`
+	Source      string `json:"source"`
+	SourceModel string `json:"source_model"`
+	Model       string `json:"model"`
+	Mac         string `json:"mac"`
 }
 
 type VMOperationResponse struct {

@@ -19,15 +19,18 @@ type VirtInterface interface {
 	CreateVolWithLibvirt(ctx context.Context, in *pb.CreateVolWithLibvirtReqeust) (*pb.CreateVolWithLibvirtResponse, error)
 	GetVol(ctx context.Context, in *pb.GetVolRequest) (*pb.GetVolResponse, error)
 
-	ListHostNetworkInterfaceWithLibvirt(ctx context.Context, in *pb.ListHostNetworkInterfaceRequest) (*pb.ListHostNetworkInterfaceResponse, error)
-	ListVMNetwrokInterfaceWithLibvirt(ctx context.Context, in *pb.ListVMNetwrokInterfaceReqeust) (*pb.ListVMNetworkInterfaceResponse, error)
+	// ListHostNetworkInterfaceWithLibvirt(ctx context.Context, in *pb.ListHostNetworkInterfaceRequest) (*pb.ListHostNetworkInterfaceResponse, error)
+	// ListVMNetwrokInterfaceWithLibvirt(ctx context.Context, in *pb.ListVMNetwrokInterfaceReqeust) (*pb.ListVMNetworkInterfaceResponse, error)
 	AddNetworkInterfaceWithLibvirt(ctx context.Context, in *pb.AddNetworkInterfaceRequest) error
 	DeleteNetworkInterfaceWithLibvirt(ctx context.Context, in *pb.DeleteNetworkInterfaceRequest) error
 
-	ListHostDiskWithLibvirt(ctx context.Context, in *pb.ListHostDiskRequest) (*pb.ListDiskResponse, error)
-	ListVMDiskWithLibvirt(ctx context.Context, in *pb.ListVMDiskRequest) (*pb.ListVMDiskResponse, error)
+	// ListHostDiskWithLibvirt(ctx context.Context, in *pb.ListHostDiskRequest) (*pb.ListDiskResponse, error)
+	// ListVMDiskWithLibvirt(ctx context.Context, in *pb.ListVMDiskRequest) (*pb.ListVMDiskResponse, error)
 	AddDiskWithLibvirt(ctx context.Context, in *pb.AddDiskRequest) error
 	DeleteDiskWithLibvirt(ctx context.Context, in *pb.DeleteDiskRequest) error
+	AddHostdevWithLibvirt(ctx context.Context, in *pb.AddHostdevRequest) error
+	DeleteHostdevWithLibvirt(ctx context.Context, in *pb.DeleteHostdevRequest) error
+	GetVncPortWithLibvirt(ctx context.Context, in *pb.VMVncPortRequest) (*pb.VMVncPortResponse, error)
 
 	// libvirt 与multipass 通用
 	StartVM(ctx context.Context, in *pb.StartVMRequest) error
@@ -37,6 +40,7 @@ type VirtInterface interface {
 	ListVMInstance(ctx context.Context, in *pb.ListVMInstanceReqeust) (*pb.ListVMInstanceResponse, error)
 	ListImage(ctx context.Context, in *pb.ListImageRequest) (*pb.ListImageResponse, error)
 	DeleteImage(_ context.Context, request *pb.DeleteImageRequest) error
+	GetVMInfo(ctx context.Context, in *pb.GetVMInfoRequest) (*pb.GetVMInfoResponse, error)
 
 	// Multipass 相关操作
 	// if return err, will not close progressChan

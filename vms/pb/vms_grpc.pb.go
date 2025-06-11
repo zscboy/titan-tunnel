@@ -19,29 +19,29 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Vms_CreateVMWithLibvirt_FullMethodName                 = "/pb.Vms/CreateVMWithLibvirt"
-	Vms_CreateVolWithLibvirt_FullMethodName                = "/pb.Vms/CreateVolWithLibvirt"
-	Vms_GetVol_FullMethodName                              = "/pb.Vms/GetVol"
-	Vms_ListHostNetworkInterfaceWithLibvirt_FullMethodName = "/pb.Vms/ListHostNetworkInterfaceWithLibvirt"
-	Vms_ListVMNetwrokInterfaceWithLibvirt_FullMethodName   = "/pb.Vms/ListVMNetwrokInterfaceWithLibvirt"
-	Vms_AddNetworkInterfaceWithLibvirt_FullMethodName      = "/pb.Vms/AddNetworkInterfaceWithLibvirt"
-	Vms_DeleteNetworkInterfaceWithLibvirt_FullMethodName   = "/pb.Vms/DeleteNetworkInterfaceWithLibvirt"
-	Vms_ListHostDiskWithLibvirt_FullMethodName             = "/pb.Vms/ListHostDiskWithLibvirt"
-	Vms_ListVMDiskWithLibvirt_FullMethodName               = "/pb.Vms/ListVMDiskWithLibvirt"
-	Vms_AddDiskWithLibvirt_FullMethodName                  = "/pb.Vms/AddDiskWithLibvirt"
-	Vms_DeleteDiskWithLibvirt_FullMethodName               = "/pb.Vms/DeleteDiskWithLibvirt"
-	Vms_CreateVM_FullMethodName                            = "/pb.Vms/CreateVM"
-	Vms_StartVM_FullMethodName                             = "/pb.Vms/StartVM"
-	Vms_StopVM_FullMethodName                              = "/pb.Vms/StopVM"
-	Vms_DeleteVM_FullMethodName                            = "/pb.Vms/DeleteVM"
-	Vms_ListVMInstance_FullMethodName                      = "/pb.Vms/ListVMInstance"
-	Vms_ListImage_FullMethodName                           = "/pb.Vms/ListImage"
-	Vms_DeleteImage_FullMethodName                         = "/pb.Vms/DeleteImage"
-	Vms_UpdateVM_FullMethodName                            = "/pb.Vms/UpdateVM"
-	Vms_CreateVMWithMultipass_FullMethodName               = "/pb.Vms/CreateVMWithMultipass"
-	Vms_MultipassExec_FullMethodName                       = "/pb.Vms/MultipassExec"
-	Vms_ListNode_FullMethodName                            = "/pb.Vms/ListNode"
-	Vms_GetNode_FullMethodName                             = "/pb.Vms/GetNode"
+	Vms_CreateVMWithLibvirt_FullMethodName               = "/pb.Vms/CreateVMWithLibvirt"
+	Vms_CreateVolWithLibvirt_FullMethodName              = "/pb.Vms/CreateVolWithLibvirt"
+	Vms_GetVol_FullMethodName                            = "/pb.Vms/GetVol"
+	Vms_AddNetworkInterfaceWithLibvirt_FullMethodName    = "/pb.Vms/AddNetworkInterfaceWithLibvirt"
+	Vms_DeleteNetworkInterfaceWithLibvirt_FullMethodName = "/pb.Vms/DeleteNetworkInterfaceWithLibvirt"
+	Vms_AddDiskWithLibvirt_FullMethodName                = "/pb.Vms/AddDiskWithLibvirt"
+	Vms_DeleteDiskWithLibvirt_FullMethodName             = "/pb.Vms/DeleteDiskWithLibvirt"
+	Vms_AddHostdevWithLibvirt_FullMethodName             = "/pb.Vms/AddHostdevWithLibvirt"
+	Vms_DeleteHostdevWithLibvirt_FullMethodName          = "/pb.Vms/DeleteHostdevWithLibvirt"
+	Vms_GetVncPortWithLibvirt_FullMethodName             = "/pb.Vms/GetVncPortWithLibvirt"
+	Vms_CreateVM_FullMethodName                          = "/pb.Vms/CreateVM"
+	Vms_StartVM_FullMethodName                           = "/pb.Vms/StartVM"
+	Vms_StopVM_FullMethodName                            = "/pb.Vms/StopVM"
+	Vms_DeleteVM_FullMethodName                          = "/pb.Vms/DeleteVM"
+	Vms_ListVMInstance_FullMethodName                    = "/pb.Vms/ListVMInstance"
+	Vms_ListImage_FullMethodName                         = "/pb.Vms/ListImage"
+	Vms_DeleteImage_FullMethodName                       = "/pb.Vms/DeleteImage"
+	Vms_UpdateVM_FullMethodName                          = "/pb.Vms/UpdateVM"
+	Vms_GetVMInfo_FullMethodName                         = "/pb.Vms/GetVMInfo"
+	Vms_CreateVMWithMultipass_FullMethodName             = "/pb.Vms/CreateVMWithMultipass"
+	Vms_MultipassExec_FullMethodName                     = "/pb.Vms/MultipassExec"
+	Vms_ListNode_FullMethodName                          = "/pb.Vms/ListNode"
+	Vms_GetNode_FullMethodName                           = "/pb.Vms/GetNode"
 )
 
 // VmsClient is the client API for Vms service.
@@ -52,14 +52,15 @@ type VmsClient interface {
 	CreateVMWithLibvirt(ctx context.Context, in *CreateVMWithLibvirtRequest, opts ...grpc.CallOption) (*VMOperationResponse, error)
 	CreateVolWithLibvirt(ctx context.Context, in *CreateVolWithLibvirtReqeust, opts ...grpc.CallOption) (*CreateVolWithLibvirtResponse, error)
 	GetVol(ctx context.Context, in *GetVolRequest, opts ...grpc.CallOption) (*GetVolResponse, error)
-	ListHostNetworkInterfaceWithLibvirt(ctx context.Context, in *ListHostNetworkInterfaceRequest, opts ...grpc.CallOption) (*ListHostNetworkInterfaceResponse, error)
-	ListVMNetwrokInterfaceWithLibvirt(ctx context.Context, in *ListVMNetwrokInterfaceReqeust, opts ...grpc.CallOption) (*ListVMNetworkInterfaceResponse, error)
+	// rpc ListHostNetworkInterfaceWithLibvirt(ListHostNetworkInterfaceRequest) returns (ListHostNetworkInterfaceResponse);
+	// rpc ListVMNetwrokInterfaceWithLibvirt(ListVMNetwrokInterfaceReqeust) returns (ListVMNetworkInterfaceResponse);
 	AddNetworkInterfaceWithLibvirt(ctx context.Context, in *AddNetworkInterfaceRequest, opts ...grpc.CallOption) (*VMOperationResponse, error)
 	DeleteNetworkInterfaceWithLibvirt(ctx context.Context, in *DeleteNetworkInterfaceRequest, opts ...grpc.CallOption) (*VMOperationResponse, error)
-	ListHostDiskWithLibvirt(ctx context.Context, in *ListHostDiskRequest, opts ...grpc.CallOption) (*ListDiskResponse, error)
-	ListVMDiskWithLibvirt(ctx context.Context, in *ListVMDiskRequest, opts ...grpc.CallOption) (*ListVMDiskResponse, error)
 	AddDiskWithLibvirt(ctx context.Context, in *AddDiskRequest, opts ...grpc.CallOption) (*VMOperationResponse, error)
 	DeleteDiskWithLibvirt(ctx context.Context, in *DeleteDiskRequest, opts ...grpc.CallOption) (*VMOperationResponse, error)
+	AddHostdevWithLibvirt(ctx context.Context, in *AddHostdevRequest, opts ...grpc.CallOption) (*VMOperationResponse, error)
+	DeleteHostdevWithLibvirt(ctx context.Context, in *DeleteHostdevRequest, opts ...grpc.CallOption) (*VMOperationResponse, error)
+	GetVncPortWithLibvirt(ctx context.Context, in *VMVncPortRequest, opts ...grpc.CallOption) (*VMVncPortResponse, error)
 	// common
 	CreateVM(ctx context.Context, in *CreateVMRequest, opts ...grpc.CallOption) (*VMOperationResponse, error)
 	StartVM(ctx context.Context, in *StartVMRequest, opts ...grpc.CallOption) (*VMOperationResponse, error)
@@ -70,6 +71,7 @@ type VmsClient interface {
 	DeleteImage(ctx context.Context, in *DeleteImageRequest, opts ...grpc.CallOption) (*DeleteImageResponse, error)
 	// not implement now
 	UpdateVM(ctx context.Context, in *UpdateVMRequest, opts ...grpc.CallOption) (*VMOperationResponse, error)
+	GetVMInfo(ctx context.Context, in *GetVMInfoRequest, opts ...grpc.CallOption) (*GetVMInfoResponse, error)
 	// Multipass
 	CreateVMWithMultipass(ctx context.Context, in *CreateVMWithMultipassRequest, opts ...grpc.CallOption) (*VMOperationResponse, error)
 	MultipassExec(ctx context.Context, in *MultipassExecRequest, opts ...grpc.CallOption) (*MultipassExecResponse, error)
@@ -116,26 +118,6 @@ func (c *vmsClient) GetVol(ctx context.Context, in *GetVolRequest, opts ...grpc.
 	return out, nil
 }
 
-func (c *vmsClient) ListHostNetworkInterfaceWithLibvirt(ctx context.Context, in *ListHostNetworkInterfaceRequest, opts ...grpc.CallOption) (*ListHostNetworkInterfaceResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListHostNetworkInterfaceResponse)
-	err := c.cc.Invoke(ctx, Vms_ListHostNetworkInterfaceWithLibvirt_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *vmsClient) ListVMNetwrokInterfaceWithLibvirt(ctx context.Context, in *ListVMNetwrokInterfaceReqeust, opts ...grpc.CallOption) (*ListVMNetworkInterfaceResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListVMNetworkInterfaceResponse)
-	err := c.cc.Invoke(ctx, Vms_ListVMNetwrokInterfaceWithLibvirt_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *vmsClient) AddNetworkInterfaceWithLibvirt(ctx context.Context, in *AddNetworkInterfaceRequest, opts ...grpc.CallOption) (*VMOperationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(VMOperationResponse)
@@ -156,26 +138,6 @@ func (c *vmsClient) DeleteNetworkInterfaceWithLibvirt(ctx context.Context, in *D
 	return out, nil
 }
 
-func (c *vmsClient) ListHostDiskWithLibvirt(ctx context.Context, in *ListHostDiskRequest, opts ...grpc.CallOption) (*ListDiskResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListDiskResponse)
-	err := c.cc.Invoke(ctx, Vms_ListHostDiskWithLibvirt_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *vmsClient) ListVMDiskWithLibvirt(ctx context.Context, in *ListVMDiskRequest, opts ...grpc.CallOption) (*ListVMDiskResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListVMDiskResponse)
-	err := c.cc.Invoke(ctx, Vms_ListVMDiskWithLibvirt_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *vmsClient) AddDiskWithLibvirt(ctx context.Context, in *AddDiskRequest, opts ...grpc.CallOption) (*VMOperationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(VMOperationResponse)
@@ -190,6 +152,36 @@ func (c *vmsClient) DeleteDiskWithLibvirt(ctx context.Context, in *DeleteDiskReq
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(VMOperationResponse)
 	err := c.cc.Invoke(ctx, Vms_DeleteDiskWithLibvirt_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vmsClient) AddHostdevWithLibvirt(ctx context.Context, in *AddHostdevRequest, opts ...grpc.CallOption) (*VMOperationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(VMOperationResponse)
+	err := c.cc.Invoke(ctx, Vms_AddHostdevWithLibvirt_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vmsClient) DeleteHostdevWithLibvirt(ctx context.Context, in *DeleteHostdevRequest, opts ...grpc.CallOption) (*VMOperationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(VMOperationResponse)
+	err := c.cc.Invoke(ctx, Vms_DeleteHostdevWithLibvirt_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vmsClient) GetVncPortWithLibvirt(ctx context.Context, in *VMVncPortRequest, opts ...grpc.CallOption) (*VMVncPortResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(VMVncPortResponse)
+	err := c.cc.Invoke(ctx, Vms_GetVncPortWithLibvirt_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -276,6 +268,16 @@ func (c *vmsClient) UpdateVM(ctx context.Context, in *UpdateVMRequest, opts ...g
 	return out, nil
 }
 
+func (c *vmsClient) GetVMInfo(ctx context.Context, in *GetVMInfoRequest, opts ...grpc.CallOption) (*GetVMInfoResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetVMInfoResponse)
+	err := c.cc.Invoke(ctx, Vms_GetVMInfo_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *vmsClient) CreateVMWithMultipass(ctx context.Context, in *CreateVMWithMultipassRequest, opts ...grpc.CallOption) (*VMOperationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(VMOperationResponse)
@@ -324,14 +326,15 @@ type VmsServer interface {
 	CreateVMWithLibvirt(context.Context, *CreateVMWithLibvirtRequest) (*VMOperationResponse, error)
 	CreateVolWithLibvirt(context.Context, *CreateVolWithLibvirtReqeust) (*CreateVolWithLibvirtResponse, error)
 	GetVol(context.Context, *GetVolRequest) (*GetVolResponse, error)
-	ListHostNetworkInterfaceWithLibvirt(context.Context, *ListHostNetworkInterfaceRequest) (*ListHostNetworkInterfaceResponse, error)
-	ListVMNetwrokInterfaceWithLibvirt(context.Context, *ListVMNetwrokInterfaceReqeust) (*ListVMNetworkInterfaceResponse, error)
+	// rpc ListHostNetworkInterfaceWithLibvirt(ListHostNetworkInterfaceRequest) returns (ListHostNetworkInterfaceResponse);
+	// rpc ListVMNetwrokInterfaceWithLibvirt(ListVMNetwrokInterfaceReqeust) returns (ListVMNetworkInterfaceResponse);
 	AddNetworkInterfaceWithLibvirt(context.Context, *AddNetworkInterfaceRequest) (*VMOperationResponse, error)
 	DeleteNetworkInterfaceWithLibvirt(context.Context, *DeleteNetworkInterfaceRequest) (*VMOperationResponse, error)
-	ListHostDiskWithLibvirt(context.Context, *ListHostDiskRequest) (*ListDiskResponse, error)
-	ListVMDiskWithLibvirt(context.Context, *ListVMDiskRequest) (*ListVMDiskResponse, error)
 	AddDiskWithLibvirt(context.Context, *AddDiskRequest) (*VMOperationResponse, error)
 	DeleteDiskWithLibvirt(context.Context, *DeleteDiskRequest) (*VMOperationResponse, error)
+	AddHostdevWithLibvirt(context.Context, *AddHostdevRequest) (*VMOperationResponse, error)
+	DeleteHostdevWithLibvirt(context.Context, *DeleteHostdevRequest) (*VMOperationResponse, error)
+	GetVncPortWithLibvirt(context.Context, *VMVncPortRequest) (*VMVncPortResponse, error)
 	// common
 	CreateVM(context.Context, *CreateVMRequest) (*VMOperationResponse, error)
 	StartVM(context.Context, *StartVMRequest) (*VMOperationResponse, error)
@@ -342,6 +345,7 @@ type VmsServer interface {
 	DeleteImage(context.Context, *DeleteImageRequest) (*DeleteImageResponse, error)
 	// not implement now
 	UpdateVM(context.Context, *UpdateVMRequest) (*VMOperationResponse, error)
+	GetVMInfo(context.Context, *GetVMInfoRequest) (*GetVMInfoResponse, error)
 	// Multipass
 	CreateVMWithMultipass(context.Context, *CreateVMWithMultipassRequest) (*VMOperationResponse, error)
 	MultipassExec(context.Context, *MultipassExecRequest) (*MultipassExecResponse, error)
@@ -367,29 +371,26 @@ func (UnimplementedVmsServer) CreateVolWithLibvirt(context.Context, *CreateVolWi
 func (UnimplementedVmsServer) GetVol(context.Context, *GetVolRequest) (*GetVolResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetVol not implemented")
 }
-func (UnimplementedVmsServer) ListHostNetworkInterfaceWithLibvirt(context.Context, *ListHostNetworkInterfaceRequest) (*ListHostNetworkInterfaceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListHostNetworkInterfaceWithLibvirt not implemented")
-}
-func (UnimplementedVmsServer) ListVMNetwrokInterfaceWithLibvirt(context.Context, *ListVMNetwrokInterfaceReqeust) (*ListVMNetworkInterfaceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListVMNetwrokInterfaceWithLibvirt not implemented")
-}
 func (UnimplementedVmsServer) AddNetworkInterfaceWithLibvirt(context.Context, *AddNetworkInterfaceRequest) (*VMOperationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddNetworkInterfaceWithLibvirt not implemented")
 }
 func (UnimplementedVmsServer) DeleteNetworkInterfaceWithLibvirt(context.Context, *DeleteNetworkInterfaceRequest) (*VMOperationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteNetworkInterfaceWithLibvirt not implemented")
 }
-func (UnimplementedVmsServer) ListHostDiskWithLibvirt(context.Context, *ListHostDiskRequest) (*ListDiskResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListHostDiskWithLibvirt not implemented")
-}
-func (UnimplementedVmsServer) ListVMDiskWithLibvirt(context.Context, *ListVMDiskRequest) (*ListVMDiskResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListVMDiskWithLibvirt not implemented")
-}
 func (UnimplementedVmsServer) AddDiskWithLibvirt(context.Context, *AddDiskRequest) (*VMOperationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddDiskWithLibvirt not implemented")
 }
 func (UnimplementedVmsServer) DeleteDiskWithLibvirt(context.Context, *DeleteDiskRequest) (*VMOperationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteDiskWithLibvirt not implemented")
+}
+func (UnimplementedVmsServer) AddHostdevWithLibvirt(context.Context, *AddHostdevRequest) (*VMOperationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddHostdevWithLibvirt not implemented")
+}
+func (UnimplementedVmsServer) DeleteHostdevWithLibvirt(context.Context, *DeleteHostdevRequest) (*VMOperationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteHostdevWithLibvirt not implemented")
+}
+func (UnimplementedVmsServer) GetVncPortWithLibvirt(context.Context, *VMVncPortRequest) (*VMVncPortResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetVncPortWithLibvirt not implemented")
 }
 func (UnimplementedVmsServer) CreateVM(context.Context, *CreateVMRequest) (*VMOperationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateVM not implemented")
@@ -414,6 +415,9 @@ func (UnimplementedVmsServer) DeleteImage(context.Context, *DeleteImageRequest) 
 }
 func (UnimplementedVmsServer) UpdateVM(context.Context, *UpdateVMRequest) (*VMOperationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateVM not implemented")
+}
+func (UnimplementedVmsServer) GetVMInfo(context.Context, *GetVMInfoRequest) (*GetVMInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetVMInfo not implemented")
 }
 func (UnimplementedVmsServer) CreateVMWithMultipass(context.Context, *CreateVMWithMultipassRequest) (*VMOperationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateVMWithMultipass not implemented")
@@ -502,42 +506,6 @@ func _Vms_GetVol_Handler(srv interface{}, ctx context.Context, dec func(interfac
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Vms_ListHostNetworkInterfaceWithLibvirt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListHostNetworkInterfaceRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(VmsServer).ListHostNetworkInterfaceWithLibvirt(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Vms_ListHostNetworkInterfaceWithLibvirt_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VmsServer).ListHostNetworkInterfaceWithLibvirt(ctx, req.(*ListHostNetworkInterfaceRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Vms_ListVMNetwrokInterfaceWithLibvirt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListVMNetwrokInterfaceReqeust)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(VmsServer).ListVMNetwrokInterfaceWithLibvirt(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Vms_ListVMNetwrokInterfaceWithLibvirt_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VmsServer).ListVMNetwrokInterfaceWithLibvirt(ctx, req.(*ListVMNetwrokInterfaceReqeust))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Vms_AddNetworkInterfaceWithLibvirt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AddNetworkInterfaceRequest)
 	if err := dec(in); err != nil {
@@ -574,42 +542,6 @@ func _Vms_DeleteNetworkInterfaceWithLibvirt_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Vms_ListHostDiskWithLibvirt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListHostDiskRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(VmsServer).ListHostDiskWithLibvirt(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Vms_ListHostDiskWithLibvirt_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VmsServer).ListHostDiskWithLibvirt(ctx, req.(*ListHostDiskRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Vms_ListVMDiskWithLibvirt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListVMDiskRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(VmsServer).ListVMDiskWithLibvirt(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Vms_ListVMDiskWithLibvirt_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VmsServer).ListVMDiskWithLibvirt(ctx, req.(*ListVMDiskRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Vms_AddDiskWithLibvirt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AddDiskRequest)
 	if err := dec(in); err != nil {
@@ -642,6 +574,60 @@ func _Vms_DeleteDiskWithLibvirt_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(VmsServer).DeleteDiskWithLibvirt(ctx, req.(*DeleteDiskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Vms_AddHostdevWithLibvirt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddHostdevRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VmsServer).AddHostdevWithLibvirt(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Vms_AddHostdevWithLibvirt_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VmsServer).AddHostdevWithLibvirt(ctx, req.(*AddHostdevRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Vms_DeleteHostdevWithLibvirt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteHostdevRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VmsServer).DeleteHostdevWithLibvirt(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Vms_DeleteHostdevWithLibvirt_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VmsServer).DeleteHostdevWithLibvirt(ctx, req.(*DeleteHostdevRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Vms_GetVncPortWithLibvirt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VMVncPortRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VmsServer).GetVncPortWithLibvirt(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Vms_GetVncPortWithLibvirt_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VmsServer).GetVncPortWithLibvirt(ctx, req.(*VMVncPortRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -790,6 +776,24 @@ func _Vms_UpdateVM_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Vms_GetVMInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetVMInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VmsServer).GetVMInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Vms_GetVMInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VmsServer).GetVMInfo(ctx, req.(*GetVMInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Vms_CreateVMWithMultipass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateVMWithMultipassRequest)
 	if err := dec(in); err != nil {
@@ -882,14 +886,6 @@ var Vms_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Vms_GetVol_Handler,
 		},
 		{
-			MethodName: "ListHostNetworkInterfaceWithLibvirt",
-			Handler:    _Vms_ListHostNetworkInterfaceWithLibvirt_Handler,
-		},
-		{
-			MethodName: "ListVMNetwrokInterfaceWithLibvirt",
-			Handler:    _Vms_ListVMNetwrokInterfaceWithLibvirt_Handler,
-		},
-		{
 			MethodName: "AddNetworkInterfaceWithLibvirt",
 			Handler:    _Vms_AddNetworkInterfaceWithLibvirt_Handler,
 		},
@@ -898,20 +894,24 @@ var Vms_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Vms_DeleteNetworkInterfaceWithLibvirt_Handler,
 		},
 		{
-			MethodName: "ListHostDiskWithLibvirt",
-			Handler:    _Vms_ListHostDiskWithLibvirt_Handler,
-		},
-		{
-			MethodName: "ListVMDiskWithLibvirt",
-			Handler:    _Vms_ListVMDiskWithLibvirt_Handler,
-		},
-		{
 			MethodName: "AddDiskWithLibvirt",
 			Handler:    _Vms_AddDiskWithLibvirt_Handler,
 		},
 		{
 			MethodName: "DeleteDiskWithLibvirt",
 			Handler:    _Vms_DeleteDiskWithLibvirt_Handler,
+		},
+		{
+			MethodName: "AddHostdevWithLibvirt",
+			Handler:    _Vms_AddHostdevWithLibvirt_Handler,
+		},
+		{
+			MethodName: "DeleteHostdevWithLibvirt",
+			Handler:    _Vms_DeleteHostdevWithLibvirt_Handler,
+		},
+		{
+			MethodName: "GetVncPortWithLibvirt",
+			Handler:    _Vms_GetVncPortWithLibvirt_Handler,
 		},
 		{
 			MethodName: "CreateVM",
@@ -944,6 +944,10 @@ var Vms_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateVM",
 			Handler:    _Vms_UpdateVM_Handler,
+		},
+		{
+			MethodName: "GetVMInfo",
+			Handler:    _Vms_GetVMInfo_Handler,
 		},
 		{
 			MethodName: "CreateVMWithMultipass",

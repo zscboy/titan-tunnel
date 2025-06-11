@@ -26,28 +26,48 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodPost,
-				Path:    "/api/cmd/downloadImage",
-				Handler: downloadImageHandler(serverCtx),
+				Path:    "/api/image/delete",
+				Handler: deleteImageHandler(serverCtx),
 			},
 			{
-				Method:  http.MethodPost,
-				Path:    "/api/cmd/downloadTaskDelete",
-				Handler: downloadTaskDeleteHandler(serverCtx),
+				Method:  http.MethodGet,
+				Path:    "/api/image/list",
+				Handler: listImageHandler(serverCtx),
 			},
 			{
-				Method:  http.MethodPost,
-				Path:    "/api/cmd/downloadTaskGet",
-				Handler: downloadTaskGetHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/api/cmd/downloadTaskList",
-				Handler: downloadTaskListHandler(serverCtx),
+				Method:  http.MethodGet,
+				Path:    "/api/node/hostinfo",
+				Handler: getHostInfoHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodGet,
 				Path:    "/api/node/list",
 				Handler: listNodeHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/api/node/nvme/list",
+				Handler: listNvmeHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/task/delete",
+				Handler: downloadTaskDeleteHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/task/dwonloadimage",
+				Handler: downloadImageHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/api/task/get",
+				Handler: downloadTaskGetHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/api/task/list",
+				Handler: downloadTaskListHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
@@ -60,9 +80,39 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: deleteVMHandler(serverCtx),
 			},
 			{
+				Method:  http.MethodPost,
+				Path:    "/api/vm/disk/add",
+				Handler: vmDiskAddHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/vm/disk/delete",
+				Handler: vmDiskDeleteHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/vm/hostdev/add",
+				Handler: vmHosthostAddHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/vm/hostdev/delete",
+				Handler: vmHosthostDeleteHandler(serverCtx),
+			},
+			{
 				Method:  http.MethodGet,
-				Path:    "/api/vm/image/list",
-				Handler: listImageHandler(serverCtx),
+				Path:    "/api/vm/info",
+				Handler: getVMInfoHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/vm/interface/add",
+				Handler: vmInterfaceAddHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/vm/interface/delete",
+				Handler: vmInterfaceDeleteHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
@@ -99,21 +149,29 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	)
 
 	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.JwtMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodGet,
+					Path:    "/ws/ssh",
+					Handler: sshWSHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodGet,
+					Path:    "/ws/vm",
+					Handler: vmWSHandler(serverCtx),
+				},
+			}...,
+		),
+	)
+
+	server.AddRoutes(
 		[]rest.Route{
 			{
 				Method:  http.MethodGet,
-				Path:    "/api/ws/node",
+				Path:    "/ws/node",
 				Handler: nodeWSHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/api/ws/ssh",
-				Handler: sshWSHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/api/ws/vm",
-				Handler: vmWSHandler(serverCtx),
 			},
 		},
 	)
