@@ -2,6 +2,7 @@ package model
 
 const (
 	redisKeyVmsNode     = "vms:node:%s"
-	redisKeyVmsList     = "vms:list"
+	redisKeyVmsZset     = "vms:zset"
 	redisKeyUserAccount = "vms:account"
+	redisKeyVmsOnline   = "vms:online:%s"
 )

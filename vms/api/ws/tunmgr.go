@@ -26,64 +26,48 @@ func NewTunnelManager(config config.Config, redis *redis.Redis) *TunnelManager {
 	return tm
 }
 
-func (tm *TunnelManager) acceptWebsocket(conn *websocket.Conn, opts *TunOptions) {
-	logx.Debugf("TunnelManager:%s accept websocket ", opts.Id)
+func (tm *TunnelManager) acceptWebsocket(conn *websocket.Conn, node *model.Node) {
+	logx.Debugf("TunnelManager:%s accept websocket ", node.Id)
 	// TODO: wait for old tunnel to disconnect
-	v, ok := tm.tunnels.Load(opts.Id)
+	v, ok := tm.tunnels.Load(node.Id)
 	if ok {
 		oldTun := v.(*CtrlTunnel)
 		oldTun.close()
 	}
 
-	ctrlTun := newCtrlTunnel(conn, tm, opts)
-	tm.tunnels.Store(opts.Id, ctrlTun)
+	ctrlTun := newCtrlTunnel(conn, tm, &TunOptions{Id: node.Id, OS: node.OS, VMAPI: node.VmAPI, IP: node.IP})
+	tm.tunnels.Store(node.Id, ctrlTun)
 
-	node, err := model.GetNode(tm.redis, opts.Id)
-	if err != nil {
-		logx.Errorf("TunnelManager.acceptWebsocket, get node %s", err.Error())
+	if err := model.SetNode(context.Background(), tm.redis, node); err != nil {
+		logx.Errorf("SetNode failed:%s", err.Error())
 		return
 	}
 
-	if node == nil {
-		node = &model.Node{Id: opts.Id, OS: opts.OS, VmAPI: opts.VMAPI, IP: opts.IP, RegisterAt: time.Now().String()}
-		tm.registerNode(node)
-	} else {
-		node.IP = opts.IP
-		tm.setNodeOnline(node)
+	if err := model.SetNodeOnline(tm.redis, node.Id); err != nil {
+		logx.Errorf("SetNodeOnline failed:%s", err.Error())
+		return
 	}
 
 	go func() {
-		if err = ctrlTun.authRequest(context.Background()); err != nil {
+		if err := ctrlTun.authRequest(context.Background()); err != nil {
 			logx.Errorf("auth request failed:%v", err)
 		} else {
-			logx.Debugf("auth %s success", opts.Id)
+			logx.Debugf("auth %s success", node.Id)
 		}
 
 	}()
 
-	defer tm.setNodeOffline(node)
-	defer tm.tunnels.Delete(opts.Id)
+	defer model.SetNodeOffline(tm.redis, node.Id)
+	defer tm.tunnels.Delete(node.Id)
 
 	ctrlTun.serve()
 }
 
-func (tm *TunnelManager) registerNode(node *model.Node) {
-	node.LoginAt = time.Now().String()
-	node.Online = true
-	model.RegisterNode(context.Background(), tm.redis, node)
-}
-
-func (tm *TunnelManager) setNodeOnline(node *model.Node) {
-	node.LoginAt = time.Now().String()
-	node.Online = true
-	model.SaveNode(tm.redis, node)
-}
-
-func (tm *TunnelManager) setNodeOffline(node *model.Node) {
-	node.OfflineAt = time.Now().String()
-	node.Online = false
-	model.SaveNode(tm.redis, node)
-}
+// func (tm *TunnelManager) setNodeOffline(node *model.Node) {
+// 	node.OfflineAt = time.Now().String()
+// 	node.Online = false
+// 	model.SaveNode(tm.redis, node)
+// }
 
 func (tm *TunnelManager) onVmClient(conn *websocket.Conn, uuid string, address *pb.DestAddr, transportType TransportType) {
 	logx.Debugf("TunnelManager.onVmClient uuid:%s", uuid)

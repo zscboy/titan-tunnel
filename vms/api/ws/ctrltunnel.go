@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 	pb "titan-vm/pb"
+	"titan-vm/vms/model"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
@@ -232,6 +233,8 @@ func (ct *CtrlTunnel) keepalive() {
 
 	ct.writeLock.Lock()
 	defer ct.writeLock.Unlock()
+
+	model.SetNodeOnline(ct.tunMgr.redis, ct.opts.Id)
 
 	b := make([]byte, 8)
 

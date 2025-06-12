@@ -179,6 +179,8 @@ type NodeWSRequest struct {
 	NodeId string `form:"id"`
 	OS     string `form:"os"`
 	VMAPI  string `form:"vmapi"`
+	Pubkey string `header:"pubkey"`
+	Sign   string `header:"sign"`
 }
 
 type NvmeInfo struct {

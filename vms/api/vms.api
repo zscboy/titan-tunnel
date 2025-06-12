@@ -139,7 +139,9 @@ type (
 		// windows, linux, macos
 		OS string `form:"os"`
 		// multipass or libvirt
-		VMAPI string `form:"vmapi"`
+		VMAPI  string `form:"vmapi"`
+		Pubkey string `header:"pubkey"`
+		Sign   string `header:"sign"`
 	}
 	VMWSRequest {
 		NodeId  string `form:"id"`

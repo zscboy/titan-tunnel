@@ -7,6 +7,7 @@ import (
 	"syscall"
 	"time"
 	"titan-vm/vmc/client"
+	"titan-vm/vmc/wallet"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
@@ -34,6 +35,13 @@ func main() {
 				Value: "multipass",
 			},
 
+			&cli.StringFlag{
+				Name:     "work-dir",
+				Usage:    "--work-dir ./",
+				Value:    "",
+				Required: true,
+			},
+
 			&cli.BoolFlag{
 				Name:  "debug",
 				Usage: "--debug",
@@ -48,13 +56,19 @@ func main() {
 			uuid := cctx.String("uuid")
 			debug := cctx.Bool("debug")
 			vmapi := cctx.String("vmapi")
+			workDir := cctx.String("work-dir")
 
 			if debug {
 				log.SetLevel(log.DebugLevel)
 			}
 
+			wallet, err := loadWallet(workDir)
+			if err != nil {
+				log.Panic(err)
+			}
+
 			// ctx, done := context.WithCancel(cctx.Context)
-			tun, err := client.NewTunnel(url, uuid, vmapi)
+			tun, err := client.NewTunnel(url, uuid, vmapi, wallet)
 			if err != nil {
 				log.Panic(err)
 			}
@@ -113,4 +127,42 @@ func tunServe(tun *client.Tunnel, cancel context.CancelFunc) {
 			return
 		}
 	}
+}
+
+func loadWallet(workDir string) (*wallet.Wallet, error) {
+	if _, err := os.Stat(workDir); os.IsNotExist(err) {
+		return nil, err
+	}
+
+	w, err := wallet.NewWallet(
+		wallet.WithChainID(wallet.DefaultChainID),
+		wallet.WithAccountPrefix(wallet.DefaultAccountPrefix),
+		wallet.WithKeyringBackend(wallet.DefaultBackend),
+		wallet.WithKeyDirectory(workDir),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	infos, err := w.ListKeys()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, info := range infos {
+		if info.GetName() == wallet.DefaultKeyName {
+			addr, _ := w.GetAddress(wallet.DefaultKeyName)
+			log.Debugf("wallet addr:%s", addr)
+			return w, nil
+		}
+	}
+
+	out, err := w.AddKey(wallet.DefaultKeyName, wallet.DefaultCoinType)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Debugf("wallet addr:%s", out.Address)
+
+	return w, nil
 }

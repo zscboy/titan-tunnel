@@ -2,14 +2,17 @@ package client
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"net"
+	"net/http"
 	"runtime"
 	"sync"
 	"time"
 	"titan-vm/pb"
 	"titan-vm/vmc/downloader"
+	"titan-vm/vmc/wallet"
 
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
@@ -28,15 +31,17 @@ type Tunnel struct {
 	isDestroy     bool
 	command       *Command
 	vmapi         string
+	wallet        *wallet.Wallet
 }
 
-func NewTunnel(serverUrl, uuid, vmapi string) (*Tunnel, error) {
+func NewTunnel(serverUrl, uuid, vmapi string, wallet *wallet.Wallet) (*Tunnel, error) {
 	tun := &Tunnel{
 		uuid:      uuid,
 		writeLock: sync.Mutex{},
 		url:       serverUrl,
 		isDestroy: false,
 		vmapi:     vmapi,
+		wallet:    wallet,
 	}
 
 	tun.command = &Command{tunnel: tun, downloadManager: downloader.NewManager()}
@@ -45,12 +50,26 @@ func NewTunnel(serverUrl, uuid, vmapi string) (*Tunnel, error) {
 }
 
 func (t *Tunnel) Connect() error {
+	pubKey, err := t.wallet.GetPubKey(wallet.DefaultKeyName)
+	if err != nil {
+		return err
+	}
+
+	signBytes, err := t.wallet.Sign(wallet.DefaultKeyName, []byte(t.uuid))
+	if err != nil {
+		return err
+	}
+
+	header := http.Header{}
+	header.Add("pubkey", hex.EncodeToString(pubKey.Bytes()))
+	header.Add("sign", hex.EncodeToString(signBytes))
+
 	url := fmt.Sprintf("%s?id=%s&os=%s&vmapi=%s", t.url, t.uuid, runtime.GOOS, t.vmapi)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	conn, resp, err := websocket.DefaultDialer.DialContext(ctx, url, nil)
+	conn, resp, err := websocket.DefaultDialer.DialContext(ctx, url, header)
 	if err != nil {
 		var data []byte
 		if resp != nil {
