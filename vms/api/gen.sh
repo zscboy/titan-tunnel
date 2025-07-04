@@ -1,1 +1,0 @@
-goctl api go -api vms.api -dir .

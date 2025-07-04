@@ -1,1 +1,0 @@
-goctl rpc protoc vms.proto --go_out=. --go-grpc_out=. --zrpc_out=.

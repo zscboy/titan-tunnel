@@ -1,0 +1,21 @@
+// server.api
+type (
+	NodeWSRequest {
+		NodeId string `form:"id"`
+		// windows, linux, macos
+		OS string `form:"os"`
+	// multipass or libvirt
+	// VMAPI  string `form:"vmapi"`
+	// Pubkey string `header:"pubkey"`
+	// Sign   string `header:"sign"`
+	}
+)
+
+// @server (
+//  middleware: JwtMiddleware // Enable jwt authentication
+// )
+service server-api {
+	@handler nodeWS
+	get /ws/node
+}
+
