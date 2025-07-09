@@ -1,0 +1,802 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0"
+  },
+  "basePath": "/",
+  "paths": {
+    "/node/list": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "listNode",
+        "operationId": "listNode",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "popid",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "type",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "start",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "end",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nodes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "ip",
+                      "net_delay",
+                      "bind_user",
+                      "online"
+                    ],
+                    "properties": {
+                      "bind_user": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "type": "string"
+                      },
+                      "ip": {
+                        "type": "string"
+                      },
+                      "net_delay": {
+                        "type": "integer"
+                      },
+                      "online": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                },
+                "total": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/node/pop": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "getNodePop",
+        "operationId": "getNodePop",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "nodeid",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "access_token": {
+                  "type": "string"
+                },
+                "server_url": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pops": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "getPops",
+        "operationId": "getPops",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "Pops": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "area",
+                      "total_node"
+                    ],
+                    "properties": {
+                      "area": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "type": "string"
+                      },
+                      "total_node": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/create": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "createUser",
+        "operationId": "createUser",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "user_name",
+                "password",
+                "pop_id"
+              ],
+              "properties": {
+                "password": {
+                  "type": "string"
+                },
+                "pop_id": {
+                  "type": "string"
+                },
+                "route": {
+                  "type": "object",
+                  "properties": {
+                    "Intervals": {
+                      "type": "integer"
+                    },
+                    "Mode": {
+                      "type": "integer"
+                    },
+                    "NodeID": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "traffic_limit": {
+                  "type": "object",
+                  "required": [
+                    "start_time",
+                    "end_time",
+                    "total_traffic"
+                  ],
+                  "properties": {
+                    "end_time": {
+                      "type": "integer"
+                    },
+                    "start_time": {
+                      "type": "integer"
+                    },
+                    "total_traffic": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "user_name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "node_ip": {
+                  "type": "string"
+                },
+                "pod_id": {
+                  "type": "string"
+                },
+                "route": {
+                  "type": "object",
+                  "properties": {
+                    "Intervals": {
+                      "type": "integer"
+                    },
+                    "Mode": {
+                      "type": "integer"
+                    },
+                    "NodeID": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "traffic_limit": {
+                  "type": "object",
+                  "required": [
+                    "start_time",
+                    "end_time",
+                    "total_traffic"
+                  ],
+                  "properties": {
+                    "end_time": {
+                      "type": "integer"
+                    },
+                    "start_time": {
+                      "type": "integer"
+                    },
+                    "total_traffic": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "user_name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/delete": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "deleteUser",
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "user_name"
+              ],
+              "properties": {
+                "user_name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "err_msg": {
+                  "type": "string"
+                },
+                "success": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/get": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "getUser",
+        "operationId": "getUser",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "username",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "node_ip": {
+                  "type": "string"
+                },
+                "pod_id": {
+                  "type": "string"
+                },
+                "route": {
+                  "type": "object",
+                  "properties": {
+                    "Intervals": {
+                      "type": "integer"
+                    },
+                    "Mode": {
+                      "type": "integer"
+                    },
+                    "NodeID": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "traffic_limit": {
+                  "type": "object",
+                  "required": [
+                    "start_time",
+                    "end_time",
+                    "total_traffic"
+                  ],
+                  "properties": {
+                    "end_time": {
+                      "type": "integer"
+                    },
+                    "start_time": {
+                      "type": "integer"
+                    },
+                    "total_traffic": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "user_name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/list": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "listUser",
+        "operationId": "listUser",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "popid",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "start",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "end",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "total": {
+                  "type": "integer"
+                },
+                "users": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "user_name",
+                      "traffic_limit",
+                      "route",
+                      "node_ip",
+                      "current_traffic",
+                      "off"
+                    ],
+                    "properties": {
+                      "current_traffic": {
+                        "type": "integer"
+                      },
+                      "node_ip": {
+                        "type": "string"
+                      },
+                      "off": {
+                        "type": "boolean"
+                      },
+                      "route": {
+                        "type": "object",
+                        "properties": {
+                          "Intervals": {
+                            "type": "integer"
+                          },
+                          "Mode": {
+                            "type": "integer"
+                          },
+                          "NodeID": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "traffic_limit": {
+                        "type": "object",
+                        "required": [
+                          "start_time",
+                          "end_time",
+                          "total_traffic"
+                        ],
+                        "properties": {
+                          "end_time": {
+                            "type": "integer"
+                          },
+                          "start_time": {
+                            "type": "integer"
+                          },
+                          "total_traffic": {
+                            "type": "integer"
+                          }
+                        }
+                      },
+                      "user_name": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/modify": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "modifyUser",
+        "operationId": "modifyUser",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "user_name",
+                "pod_id",
+                "total_traffic",
+                "route"
+              ],
+              "properties": {
+                "pod_id": {
+                  "type": "string"
+                },
+                "route": {
+                  "type": "object",
+                  "properties": {
+                    "Intervals": {
+                      "type": "integer"
+                    },
+                    "Mode": {
+                      "type": "integer"
+                    },
+                    "NodeID": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "total_traffic": {
+                  "type": "object",
+                  "required": [
+                    "start_time",
+                    "end_time",
+                    "total_traffic"
+                  ],
+                  "properties": {
+                    "end_time": {
+                      "type": "integer"
+                    },
+                    "start_time": {
+                      "type": "integer"
+                    },
+                    "total_traffic": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "user_name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "err_msg": {
+                  "type": "string"
+                },
+                "success": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/password/modify": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "modifyUserPassword",
+        "operationId": "modifyUserPassword",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "user_name",
+                "new_password"
+              ],
+              "properties": {
+                "new_password": {
+                  "type": "string"
+                },
+                "user_name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "err_msg": {
+                  "type": "string"
+                },
+                "success": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/routenode/switch": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "switchUserRouteNode",
+        "operationId": "switchUserRouteNode",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "user_name",
+                "node_id"
+              ],
+              "properties": {
+                "node_id": {
+                  "type": "string"
+                },
+                "user_name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "err_msg": {
+                  "type": "string"
+                },
+                "success": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/startorstop": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "startOrStopUser",
+        "operationId": "startOrStopUser",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "user_name",
+                "actoin"
+              ],
+              "properties": {
+                "actoin": {
+                  "type": "string"
+                },
+                "user_name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "err_msg": {
+                  "type": "string"
+                },
+                "success": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ws/node": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "nodeWS",
+        "operationId": "nodeWS",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {}
+          }
+        }
+      }
+    }
+  },
+  "x-date": "2025-07-09 10:05:31",
+  "x-description": "This is a goctl generated swagger file.",
+  "x-github": "https://github.com/zeromicro/go-zero",
+  "x-go-zero-doc": "https://go-zero.dev/",
+  "x-goctl-version": "1.8.4"
+}
