@@ -103,9 +103,11 @@ func (t *Tunnel) Serve() error {
 			continue
 		}
 
+		start := time.Now()
 		if err = t.onTunnelMsg(p); err != nil {
 			logx.Errorf("onTunnelMsg: %s", err.Error())
 		}
+		logx.Debugf("handle msg cost time: %dms", time.Since(start).Milliseconds())
 	}
 
 	logx.Debugf("tunnel %s close", t.uuid)

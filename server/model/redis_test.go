@@ -15,8 +15,8 @@ func TestRedis(t *testing.T) {
 	conf := redis.RedisConf{Host: "127.0.0.1:6379", Type: "node"}
 	rd := redis.MustNewRedis(conf)
 
-	node := Node{Id: "123", OS: "linux", VmAPI: "libvirt", CPU: 4, Memory: 10000, LoginAt: time.Now().String(), RegisterAt: time.Now().String()}
-	err := SetNodeWithZadd(context.Background(), rd, &node)
+	node := Node{Id: "123", OS: "linux", LoginAt: time.Now().String(), RegisterAt: time.Now().String()}
+	err := SetNodeAndZadd(context.Background(), rd, &node)
 	if err != nil {
 		t.Fatalf("register node %s", err.Error())
 	}
@@ -26,7 +26,7 @@ func TestGetAccount(t *testing.T) {
 	conf := redis.RedisConf{Host: "127.0.0.1:6379", Type: "node"}
 	rd := redis.MustNewRedis(conf)
 
-	ac, err := GetAccount(rd, "abc")
+	ac, err := GetUser(rd, "abc")
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -67,11 +67,11 @@ func TestSetNode(t *testing.T) {
 	// "m:map[cpu:0 extend:{\"tag1\":\"abc\",\"tag2\":\"ssss\"} ip:::1 loginAt:2025-06-11 20:18:27.8540556 +0800 CST memory:0 os:windows pubKey:03fa2f3b28f7ef61948332d76ab87a4cb84ef4c1aa84f74bd79e3040a7a1523500 registerAt:2025-06-11 18:48:06.0197263 +0800 CST sshPort:0 vmapi:multipass]","level":"info"}
 	// req := api.SetNodeExtendInfoRequest{Extend: "{\"tag1\":\"abc\",\"tag2\":\"ssss\"}"}
 	node := Node{
-		Id:     "test",
-		CPU:    0,
-		IP:     ":::1",
-		Memory: 0,
-		Extend: "{\"tag1\":\"abc\",\"tag2\":\"dddd\"}",
+		Id: "test",
+		// CPU: 0,
+		IP: ":::1",
+		// Memory: 0,
+		// Extend: "{\"tag1\":\"abc\",\"tag2\":\"dddd\"}",
 	}
 	err := SaveNode(rd, &node)
 	if err != nil {

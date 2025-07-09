@@ -14,7 +14,7 @@ import (
 type Socks5Handler interface {
 	HandleSocks5TCP(*net.TCPConn, *SocksTargetInfo) error
 	HandleSocks5UDP(udpConn UDPConn, udpInfo *Socks5UDPInfo, data []byte) error
-	HandleUserAuth(userName, password string) bool
+	HandleUserAuth(userName, password string) error
 }
 
 type Socks5ServerOptions struct {
@@ -34,7 +34,7 @@ type SocksTargetInfo struct {
 	Port       int
 
 	ExtraBytes []byte
-	User       string
+	UserName   string
 }
 
 type UDPConn interface {
@@ -45,7 +45,7 @@ type Socks5UDPInfo struct {
 	UDPServerID string
 	Src         string
 	Dest        string
-	User        string
+	UserName    string
 }
 
 type Socks5Server struct {
@@ -248,7 +248,8 @@ func (socks5Server *Socks5Server) userPassAuth(writer io.Writer, reader io.Reade
 	}
 
 	// Verify the password
-	if !socks5Server.opts.Handler.HandleUserAuth(string(user), string(pass)) {
+	if err := socks5Server.opts.Handler.HandleUserAuth(string(user), string(pass)); err != nil {
+		logx.Errorf("Socks5Server.userPassAuth HandleUserAuth failed:%v", err.Error())
 		return nil, userPassAuthFailure(writer)
 	}
 
@@ -309,7 +310,7 @@ func (socks5Server *Socks5Server) handleSocks5Connect(req *request) error {
 		Port:       req.destAddr.port,
 		DomainName: req.destAddr.fqdn,
 		ExtraBytes: extraBytes,
-		User:       req.user,
+		UserName:   req.user,
 	}
 
 	tcpConn, ok := req.conn.(*net.TCPConn)

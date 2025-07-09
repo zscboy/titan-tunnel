@@ -11,23 +11,17 @@ import (
 )
 
 type Node struct {
-	Id      string
-	OS      string `redis:"os"`
-	VmAPI   string `redis:"vmapi"`
-	CPU     int    `redis:"cpu"`
-	Memory  int    `redis:"memory"`
-	LoginAt string `redis:"loginAt"`
-	// OfflineAt  string `redis:"offlineAt"`
-	RegisterAt string `redis:"registerAt"`
+	Id         string
+	OS         string `redis:"os"`
+	LoginAt    string `redis:"login_at"`
+	RegisterAt string `redis:"register_at"`
 	Online     bool
 	IP         string `redis:"ip"`
-	SSHPort    int    `redis:"sshPort"`
-	PubKey     string `redis:"pubKey"`
-	Extend     string `redis:"extend"`
+	BindUser   string `redis:"bind_user"`
 }
 
-func SetNodeWithZadd(ctx context.Context, redis *redis.Redis, node *Node) error {
-	hashKey := fmt.Sprintf(redisKeyVmsNode, node.Id)
+func SetNodeAndZadd(ctx context.Context, redis *redis.Redis, node *Node) error {
+	hashKey := fmt.Sprintf(redisKeyNode, node.Id)
 	m, err := structToMap(node)
 	if err != nil {
 		return err
@@ -45,7 +39,7 @@ func SetNodeWithZadd(ctx context.Context, redis *redis.Redis, node *Node) error 
 	}
 
 	pipe.HMSet(ctx, hashKey, m)
-	pipe.ZAdd(ctx, redisKeyVmsZset, goredis.Z{Score: float64(t.Unix()), Member: node.Id})
+	pipe.ZAdd(ctx, redisKeyNodeZset, goredis.Z{Score: float64(t.Unix()), Member: node.Id})
 
 	_, err = pipe.Exec(ctx)
 	if err != nil {
@@ -56,7 +50,7 @@ func SetNodeWithZadd(ctx context.Context, redis *redis.Redis, node *Node) error 
 }
 
 func SaveNode(redis *redis.Redis, node *Node) error {
-	key := fmt.Sprintf(redisKeyVmsNode, node.Id)
+	key := fmt.Sprintf(redisKeyNode, node.Id)
 	m, err := structToMap(node)
 	if err != nil {
 		return err
@@ -68,7 +62,7 @@ func SaveNode(redis *redis.Redis, node *Node) error {
 
 // GetNode if node not exist, return nil
 func GetNode(redis *redis.Redis, id string) (*Node, error) {
-	key := fmt.Sprintf(redisKeyVmsNode, id)
+	key := fmt.Sprintf(redisKeyNode, id)
 	m, err := redis.Hgetall(key)
 	if err != nil {
 		return nil, err
@@ -95,7 +89,19 @@ func GetNode(redis *redis.Redis, id string) (*Node, error) {
 }
 
 func ListNode(ctx context.Context, redis *redis.Redis, start, end int) ([]*Node, error) {
-	ids, err := redis.Zrevrange(redisKeyVmsZset, int64(start), int64(end))
+	return listNode(ctx, redis, redisKeyNodeZset, start, end)
+}
+
+func ListUnbindNode(ctx context.Context, redis *redis.Redis, start, end int) ([]*Node, error) {
+	return listNode(ctx, redis, redisKeyNodeUnbind, start, end)
+}
+
+func ListBindNode(ctx context.Context, redis *redis.Redis, start, end int) ([]*Node, error) {
+	return listNode(ctx, redis, redisKeyNodeBind, start, end)
+}
+
+func listNode(ctx context.Context, redis *redis.Redis, keyOfnodeSortSet string, start, end int) ([]*Node, error) {
+	ids, err := redis.Zrevrange(keyOfnodeSortSet, int64(start), int64(end))
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +112,7 @@ func ListNode(ctx context.Context, redis *redis.Redis, start, end int) ([]*Node,
 	}
 
 	for _, id := range ids {
-		key := fmt.Sprintf(redisKeyVmsOnline, id)
+		key := fmt.Sprintf(redisKeyNodeOnline, id)
 		pipe1.Exists(ctx, key)
 	}
 
@@ -131,7 +137,7 @@ func ListNode(ctx context.Context, redis *redis.Redis, start, end int) ([]*Node,
 	}
 
 	for _, id := range ids {
-		key := fmt.Sprintf(redisKeyVmsNode, id)
+		key := fmt.Sprintf(redisKeyNode, id)
 		pipe2.HGetAll(ctx, key)
 	}
 
@@ -162,11 +168,18 @@ func ListNode(ctx context.Context, redis *redis.Redis, start, end int) ([]*Node,
 }
 
 func GetNodeLen(redis *redis.Redis) (int, error) {
-	return redis.Zcard(redisKeyVmsZset)
+	return redis.Zcard(redisKeyNodeZset)
+}
+
+func GetUnbindNodeLen(redis *redis.Redis) (int, error) {
+	return redis.Zcard(redisKeyNodeUnbind)
+}
+func GetbindNodeLen(redis *redis.Redis) (int, error) {
+	return redis.Zcard(redisKeyNodeBind)
 }
 
 func SetNodeOnline(redis *redis.Redis, nodeId string) error {
-	key := fmt.Sprintf(redisKeyVmsOnline, nodeId)
+	key := fmt.Sprintf(redisKeyNodeOnline, nodeId)
 	if err := redis.Set(key, "true"); err != nil {
 		return err
 	}
@@ -175,12 +188,12 @@ func SetNodeOnline(redis *redis.Redis, nodeId string) error {
 }
 
 func SetNodeOffline(redis *redis.Redis, nodeId string) error {
-	key := fmt.Sprintf(redisKeyVmsOnline, nodeId)
+	key := fmt.Sprintf(redisKeyNodeOnline, nodeId)
 	_, err := redis.Del(key)
 	return err
 }
 
 func isNodeOnline(redis *redis.Redis, nodeId string) (bool, error) {
-	key := fmt.Sprintf(redisKeyVmsOnline, nodeId)
+	key := fmt.Sprintf(redisKeyNodeOnline, nodeId)
 	return redis.Exists(key)
 }

@@ -58,7 +58,7 @@ func (udp *UDPServer) serve() {
 			continue
 		}
 
-		go udp.handleUDPConn(src, buf[:n])
+		udp.handleUDPConn(src, buf[:n])
 	}
 
 	logx.Infof("user %s udp server close", udp.user)
@@ -93,7 +93,7 @@ func (udp *UDPServer) handleUDPConn(src *net.UDPAddr, data []byte) error {
 		return fmt.Errorf("UDPServer.handleUDPConn not support ip %s", udpAddr.IP.String())
 	}
 
-	udpInfo := &Socks5UDPInfo{UDPServerID: udp.id, Src: src.String(), Dest: dest, User: udp.user}
+	udpInfo := &Socks5UDPInfo{UDPServerID: udp.id, Src: src.String(), Dest: dest, UserName: udp.user}
 
 	if udp.server == nil || udp.server.opts == nil || udp.server.opts.Handler == nil {
 		return fmt.Errorf("UDP.handleUDPConn, handler is nil")

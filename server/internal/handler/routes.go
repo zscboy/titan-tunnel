@@ -16,6 +16,66 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodGet,
+				Path:    "/node/list",
+				Handler: listNodeHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/node/pop",
+				Handler: getNodePopHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/pops",
+				Handler: getPopsHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/user/create",
+				Handler: createUserHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/user/delete",
+				Handler: deleteUserHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/user/get",
+				Handler: getUserHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/user/list",
+				Handler: listUserHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/user/modify",
+				Handler: modifyUserHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/user/password/modify",
+				Handler: modifyUserPasswordHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/user/routenode/switch",
+				Handler: switchUserRouteNodeHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/user/startorstop",
+				Handler: startOrStopUserHandler(serverCtx),
+			},
+		},
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
 				Path:    "/ws/node",
 				Handler: nodeWSHandler(serverCtx),
 			},

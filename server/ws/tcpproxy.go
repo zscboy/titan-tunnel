@@ -11,11 +11,12 @@ type TCPProxy struct {
 	id              string
 	conn            net.Conn
 	tunnel          *Tunnel
+	userName        string
 	isCloseByClient bool
 }
 
-func newTCPProxy(id string, conn net.Conn, t *Tunnel) *TCPProxy {
-	return &TCPProxy{id: id, conn: conn, tunnel: t}
+func newTCPProxy(id string, conn net.Conn, t *Tunnel, userName string) *TCPProxy {
+	return &TCPProxy{id: id, conn: conn, tunnel: t, userName: userName}
 }
 
 func (proxy *TCPProxy) close() {
@@ -37,6 +38,7 @@ func (proxy *TCPProxy) write(data []byte) error {
 		return fmt.Errorf("session %s conn == nil", proxy.id)
 	}
 
+	proxy.tunnel.tunMgr.traffic(proxy.userName, int64(len(data)))
 	_, err := proxy.conn.Write(data)
 	return err
 }
@@ -56,6 +58,8 @@ func (proxy *TCPProxy) proxyConn() error {
 			}
 			return nil
 		}
+
+		proxy.tunnel.tunMgr.traffic(proxy.userName, int64(n))
 		proxy.tunnel.onProxyDataFromProxy(proxy.id, buf[:n])
 	}
 }

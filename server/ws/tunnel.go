@@ -30,15 +30,13 @@ type TunOptions struct {
 
 // Tunnel Tunnel
 type Tunnel struct {
-	// id        string
 	conn      *websocket.Conn
 	writeLock sync.Mutex
 	waitping  int
 
 	proxys sync.Map
 
-	opts *TunOptions
-	// commandList sync.Map
+	opts     *TunOptions
 	waitList sync.Map
 	tunMgr   *TunnelManager
 }
@@ -157,8 +155,8 @@ func (t *Tunnel) onProxySessionDataFromTunnel(sessionID string, data []byte) err
 		return fmt.Errorf("Tunnel.onProxySessionDataFromTunnel, can not found session %s", sessionID)
 	}
 
-	session := v.(*TCPProxy)
-	return session.write(data)
+	proxy := v.(*TCPProxy)
+	return proxy.write(data)
 }
 
 func (t *Tunnel) onProxyTCPConnClose(sessionID string) {
@@ -215,7 +213,7 @@ func (t *Tunnel) acceptSocks5TCPConn(conn net.Conn, targetInfo *socks5.SocksTarg
 		t.onProxyDataFromProxy(sessionID, targetInfo.ExtraBytes)
 	}
 
-	proxyTCP := newTCPProxy(sessionID, conn, t)
+	proxyTCP := newTCPProxy(sessionID, conn, t, targetInfo.UserName)
 
 	t.proxys.Store(sessionID, proxyTCP)
 	defer t.proxys.Delete(sessionID)
@@ -296,18 +294,17 @@ func (t *Tunnel) onProxyUDPDataFromTunnel(sessionID string, data []byte) error {
 
 func (t *Tunnel) acceptSocks5UDPData(conn socks5.UDPConn, udpInfo *socks5.Socks5UDPInfo, data []byte) error {
 	sessionID := uuid.NewSHA1(uuid.NameSpaceDNS, []byte(fmt.Sprintf("%s%s%s", udpInfo.UDPServerID, udpInfo.Src, udpInfo.Dest))).String()
-
-	var udp *UDPProxy
 	v, ok := t.proxys.Load(sessionID)
-	if !ok {
-		udp = newProxyUDP(sessionID, conn, udpInfo, t, t.opts.UDPTimeout)
-		t.proxys.Store(sessionID, udp)
-
-		go udp.waitTimeout()
-	} else {
-		udp = v.(*UDPProxy)
+	if ok {
+		return v.(*UDPProxy).writeToDest(data)
 	}
 
+	udp := newProxyUDP(sessionID, conn, udpInfo, t, t.opts.UDPTimeout)
+	go udp.waitTimeout()
+
+	logx.Debugf("Tunnel.acceptSocks5UDPData new UDPProxy %s", sessionID)
+
+	t.proxys.Store(sessionID, udp)
 	return udp.writeToDest(data)
 }
 

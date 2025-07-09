@@ -23,7 +23,7 @@ func NewNodeWSLogic(ctx context.Context, svcCtx *svc.ServiceContext) *NodeWSLogi
 	}
 }
 
-func (l *NodeWSLogic) NodeWS(w http.ResponseWriter, r *http.Request, req *types.NodeWSRequest) error {
+func (l *NodeWSLogic) NodeWS(w http.ResponseWriter, r *http.Request, req *types.NodeWSReq) error {
 	nodeWS := ws.NewNodeWS(l.svcCtx.TunMgr)
 	return nodeWS.ServeWS(w, r, req)
 }

@@ -28,7 +28,7 @@ func NewNodeWS(tunMgr *TunnelManager) *NodeWS {
 	return &NodeWS{tunMgr: tunMgr}
 }
 
-func (ws *NodeWS) ServeWS(w http.ResponseWriter, r *http.Request, req *types.NodeWSRequest) error {
+func (ws *NodeWS) ServeWS(w http.ResponseWriter, r *http.Request, req *types.NodeWSReq) error {
 	logx.Infof("NodeWS.ServeWS %s, %v", r.URL.Path, req)
 
 	ip, err := ws.getRemoteIP(r)
