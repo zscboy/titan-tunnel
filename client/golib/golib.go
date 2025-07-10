@@ -81,3 +81,5 @@ func StopTunnel() {
 		globalCancel()
 	}
 }
+
+func main() {}

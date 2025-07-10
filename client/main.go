@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-	client "titan-tunnel/client/tunnel"
+	"titan-tunnel/client/tunnel"
 
 	"github.com/urfave/cli/v2"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -61,7 +61,7 @@ func main() {
 			}
 
 			// ctx, done := context.WithCancel(cctx.Context)
-			tun, err := client.NewTunnel(url, uuid, udpTimeout, tcpTimeout)
+			tun, err := tunnel.NewTunnel(url, uuid, udpTimeout, tcpTimeout)
 			if err != nil {
 				panic(err)
 			}
@@ -92,7 +92,7 @@ func main() {
 	}
 }
 
-func tunServe(tun *client.Tunnel, cancel context.CancelFunc) {
+func tunServe(tun *tunnel.Tunnel, cancel context.CancelFunc) {
 	defer cancel()
 	for {
 		tun.Serve()
