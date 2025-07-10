@@ -102,7 +102,7 @@ func (l *CreateUserLogic) CreateUser(req *types.CreateUserReq) (resp *types.Crea
 		return nil, err
 	}
 
-	err = model.BindNode(l.svcCtx.Redis, route.NodeID)
+	err = model.BindNode(l.svcCtx.Redis, route.NodeID, req.UserName)
 	if err != nil {
 		return nil, err
 	}

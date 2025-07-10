@@ -28,11 +28,11 @@ func NewDeleteUserLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Delete
 func (l *DeleteUserLogic) DeleteUser(req *types.DeleteUserReq) (resp *types.UserOperationResp, err error) {
 	user, err := model.GetUser(l.svcCtx.Redis, req.UserName)
 	if err != nil {
-		return nil, err
+		return &types.UserOperationResp{ErrMsg: err.Error()}, nil
 	}
 
 	if user == nil {
-		return nil, fmt.Errorf("user %s not exist", req.UserName)
+		return &types.UserOperationResp{ErrMsg: fmt.Sprintf("user %s not exist", req.UserName)}, nil
 	}
 
 	err = model.DeleteUser(l.svcCtx.Redis, req.UserName)

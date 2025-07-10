@@ -55,7 +55,7 @@ func (l *SwitchUserRouteNodeLogic) SwitchUserRouteNode(req *types.SwitchUserRout
 		return &types.UserOperationResp{ErrMsg: err.Error()}, nil
 	}
 
-	err = model.BindNode(l.svcCtx.Redis, user.RouteNodeID)
+	err = model.BindNode(l.svcCtx.Redis, user.RouteNodeID, user.UserName)
 	if err != nil {
 		return &types.UserOperationResp{ErrMsg: err.Error()}, nil
 	}

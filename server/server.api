@@ -5,9 +5,10 @@ type (
 		OS     string `form:"os"`
 	}
 	Pop {
-		ID        string `json:"id"`
-		Area      string `json:"area"`
-		TotalNode int    `json:"total_node"`
+		ID         string `json:"id"`
+		Area       string `json:"area"`
+		Socks5Addr string `json:"socks5_addr"`
+		TotalNode  int    `json:"total_node"`
 	}
 	GetPopsResp {
 		Pops []Pop
@@ -134,17 +135,18 @@ type (
 	}
 )
 
+service server-api {
+	@handler getNodePop
+	get /node/pop (GetNodePopReq) returns (GetNodePopResp)
+}
+
 @server (
 	jwt: JwtAuth // Enable jwt authentication
 )
-
 service server-api {
 	// will move to center server
 	@handler getPops
 	get /pops returns (GetPopsResp)
-
-	@handler getNodePop
-	get /node/pop (GetNodePopReq) returns (GetNodePopResp)
 
 	@handler listNode
 	get /node/list (ListNodeReq) returns (ListNodeResp)
@@ -172,7 +174,6 @@ service server-api {
 
 	@handler startOrStopUser
 	post /user/startorstop (StartOrStopUserReq) returns (UserOperationResp)
-
 }
 
 // @server (

@@ -6,13 +6,27 @@ import (
 	"github.com/zeromicro/go-zero/core/stores/redis"
 )
 
-func BindNode(redis *redis.Redis, nodeID string) error {
+func BindNode(redis *redis.Redis, nodeID, userName string) error {
 	_, err := redis.Zrem(redisKeyNodeUnbind, nodeID)
 	if err != nil {
 		return err
 	}
 	_, err = redis.Zadd(redisKeyNodeBind, time.Now().Unix(), nodeID)
-	return err
+	if err != nil {
+		return err
+	}
+
+	node, err := GetNode(redis, nodeID)
+	if err != nil {
+		return err
+	}
+
+	if node.BindUser != userName {
+		node.BindUser = userName
+		return SaveNode(redis, node)
+	}
+
+	return nil
 }
 
 func UnbindNode(redis *redis.Redis, nodeID string) error {
@@ -21,7 +35,21 @@ func UnbindNode(redis *redis.Redis, nodeID string) error {
 		return err
 	}
 	_, err = redis.Zadd(redisKeyNodeUnbind, time.Now().Unix(), nodeID)
-	return err
+	if err != nil {
+		return err
+	}
+
+	node, err := GetNode(redis, nodeID)
+	if err != nil {
+		return err
+	}
+
+	if len(node.BindUser) > 0 {
+		node.BindUser = ""
+		return SaveNode(redis, node)
+	}
+
+	return nil
 }
 
 func getUnbindNodes(redis *redis.Redis, start, stop int64) ([]string, error) {

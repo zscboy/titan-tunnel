@@ -56,6 +56,8 @@ func main() {
 			debug := cctx.Bool("debug")
 			if debug {
 				logx.SetLevel(logx.DebugLevel)
+			} else {
+				logx.SetLevel(logx.InfoLevel)
 			}
 
 			// ctx, done := context.WithCancel(cctx.Context)

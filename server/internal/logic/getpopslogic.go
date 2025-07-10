@@ -29,7 +29,7 @@ func (l *GetPopsLogic) GetPops() (resp *types.GetPopsResp, err error) {
 	pops := make([]types.Pop, 0, len(l.svcCtx.Config.Pops))
 	for _, pop := range l.svcCtx.Config.Pops {
 		totalNode := l.getTotalNode(pop.ID)
-		p := types.Pop{ID: pop.ID, Area: pop.Area, TotalNode: totalNode}
+		p := types.Pop{ID: pop.ID, Area: pop.Area, TotalNode: totalNode, Socks5Addr: pop.Socks5Addr}
 		pops = append(pops, p)
 	}
 	return &types.GetPopsResp{Pops: pops}, nil

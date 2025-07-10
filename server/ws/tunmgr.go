@@ -70,7 +70,7 @@ func (tm *TunnelManager) acceptWebsocket(conn *websocket.Conn, node *model.Node)
 	}
 
 	if len(node.BindUser) > 0 {
-		model.BindNode(tm.redis, node.Id)
+		model.BindNode(tm.redis, node.Id, node.BindUser)
 	} else {
 		model.UnbindNode(tm.redis, node.Id)
 	}
@@ -152,6 +152,10 @@ func (tm *TunnelManager) HandleUserAuth(userName, password string) error {
 		return fmt.Errorf("get user from redis error %v", err)
 	}
 
+	if user == nil {
+		return fmt.Errorf("user %s not exist", userName)
+	}
+
 	if user.Off {
 		return fmt.Errorf("user %s off", userName)
 	}
@@ -205,6 +209,11 @@ func (tm *TunnelManager) startUserTrafficTimer() {
 				user, err := model.GetUser(tm.redis, userName)
 				if err != nil {
 					logx.Errorf("get user %v", err)
+					continue
+				}
+
+				if user == nil {
+					logx.Errorf("user %s not exist", userName)
 					continue
 				}
 

@@ -68,7 +68,7 @@ func (l *ModifyUserLogic) ModifyUser(req *types.ModifyUserReq) (resp *types.User
 
 	if oldRouteNodeID != user.RouteNodeID {
 		model.UnbindNode(l.svcCtx.Redis, oldRouteNodeID)
-		model.BindNode(l.svcCtx.Redis, user.RouteNodeID)
+		model.BindNode(l.svcCtx.Redis, user.RouteNodeID, user.UserName)
 	}
 
 	l.svcCtx.TunMgr.DeleteUserFromCache(req.UserName)

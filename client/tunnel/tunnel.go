@@ -2,9 +2,11 @@ package tunnel
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net"
+	"net/http"
 	"runtime"
 	"sync"
 	"time"
@@ -14,6 +16,11 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/protobuf/proto"
 )
+
+type Pop struct {
+	URL   string `json:"server_url"`
+	Token string `json:"access_token"`
+}
 
 type Tunnel struct {
 	uuid      string
@@ -45,11 +52,20 @@ func NewTunnel(serverUrl, uuid string, udpTimeout, tcpTimeout int) (*Tunnel, err
 }
 
 func (t *Tunnel) Connect() error {
+	serverURL := fmt.Sprintf("%s?nodeid=%s", t.url, t.uuid)
+	pop, err := t.getPop(serverURL)
+	if err != nil {
+		return fmt.Errorf("get pop %s, failed:%v", serverURL, err)
+	}
+
+	header := http.Header{}
+	header.Add("Authorization", "Bearer "+pop.Token)
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(t.tcpTimeout)*time.Second)
 	defer cancel()
 
-	url := fmt.Sprintf("%s?id=%s&os=%s", t.url, t.uuid, runtime.GOOS)
-	conn, resp, err := websocket.DefaultDialer.DialContext(ctx, url, nil)
+	url := fmt.Sprintf("%s?id=%s&os=%s", pop.URL, t.uuid, runtime.GOOS)
+	conn, resp, err := websocket.DefaultDialer.DialContext(ctx, url, header)
 	if err != nil {
 		var data []byte
 		if resp != nil {
@@ -72,6 +88,27 @@ func (t *Tunnel) Connect() error {
 
 	logx.Infof("new tun %s", url)
 	return nil
+}
+
+func (t *Tunnel) getPop(serverURL string) (*Pop, error) {
+	resp, err := http.Get(serverURL)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	pop := &Pop{}
+	err = json.Unmarshal(body, pop)
+	if err != nil {
+		return nil, err
+	}
+
+	return pop, nil
 }
 
 func (t *Tunnel) Destroy() error {
