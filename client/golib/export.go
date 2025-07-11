@@ -21,8 +21,8 @@ static inline jstring jx_NewStringUTF(JNIEnv *env, const char* str) {
 */
 import "C"
 
-//export Java_com_titan_app_ipservice_JSONCall
-func Java_com_titan_app_ipservice_JSONCall(env *C.JNIEnv, thiz C.jobject, args C.jstring) C.jstring {
+//export Java_com_titan_app_ipservice_JSONCallHelper_JSONCall
+func Java_com_titan_app_ipservice_JSONCallHelper_JSONCall(env *C.JNIEnv, thiz C.jobject, args C.jstring) C.jstring {
 	var utf8Chars *C.char
 	var goChars *C.char
 	var result C.jstring
