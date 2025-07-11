@@ -93,8 +93,10 @@ func startTunnel(jsonParams string /* cUrl, cUuid *C.char, udpTimeout, tcpTimeou
 	return &JSONCallResult{Code: 0, Msg: "success"}
 }
 
-func stopTunnel() {
+func stopTunnel() *JSONCallResult {
 	if globalCancel != nil {
 		globalCancel()
 	}
+
+	return &JSONCallResult{Code: 0, Msg: "success"}
 }
