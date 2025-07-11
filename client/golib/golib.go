@@ -7,6 +7,7 @@ import "C"
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	"titan-tunnel/client/tunnel"
@@ -16,26 +17,43 @@ import (
 
 var globalCancel context.CancelFunc
 
-//export StartTunnel
-func StartTunnel(cUrl, cUuid *C.char, udpTimeout, tcpTimeout C.int, debug C.int) C.int {
-	url := C.GoString(cUrl)
-	uuid := C.GoString(cUuid)
+func startTunnel(jsonParams string /* cUrl, cUuid *C.char, udpTimeout, tcpTimeout C.int, debug C.int*/) *JSONCallResult {
 
-	if debug != 0 {
+	var input = struct {
+		ServerURL  string `json:"server_url"`
+		UUID       string `json:"uuid"`
+		UDPTimeout int    `json:"udp_timeout"`
+		TCPTimeout int    `json:"tcp_timeout"`
+		Debug      bool   `json:"debug"`
+	}{}
+
+	err := json.Unmarshal([]byte(jsonParams), &input)
+	if err != nil {
+		return &JSONCallResult{
+			Code: -1,
+			Msg:  err.Error(),
+		}
+	}
+
+	if input.Debug {
 		logx.SetLevel(logx.DebugLevel)
 	} else {
 		logx.SetLevel(logx.InfoLevel)
 	}
 
-	tun, err := tunnel.NewTunnel(url, uuid, int(udpTimeout), int(tcpTimeout))
+	if len(input.ServerURL) == 0 || len(input.UUID) == 0 {
+		return &JSONCallResult{Code: -1, Msg: "Params need server_url or uuid"}
+	}
+
+	tun, err := tunnel.NewTunnel(input.ServerURL, input.UUID, input.UDPTimeout, input.TCPTimeout)
 	if err != nil {
 		logx.Error("NewTunnel error:", err)
-		return -1
+		return &JSONCallResult{Code: -1, Msg: err.Error()}
 	}
 
 	if err = tun.Connect(); err != nil {
 		logx.Error("Connect error:", err)
-		return -2
+		return &JSONCallResult{Code: -1, Msg: err.Error()}
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -72,14 +90,11 @@ func StartTunnel(cUrl, cUuid *C.char, udpTimeout, tcpTimeout C.int, debug C.int)
 		}
 	}()
 
-	return 0
+	return &JSONCallResult{Code: 0, Msg: "success"}
 }
 
-//export StopTunnel
-func StopTunnel() {
+func stopTunnel() {
 	if globalCancel != nil {
 		globalCancel()
 	}
 }
-
-func main() {}
