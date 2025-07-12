@@ -10,7 +10,7 @@ import (
 	"runtime"
 	"sync"
 	"time"
-	"titan-tunnel/server/ws/pb"
+	"titan-tunnel/server/api/ws/pb"
 
 	"github.com/gorilla/websocket"
 	"github.com/zeromicro/go-zero/core/logx"

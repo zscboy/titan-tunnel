@@ -1,0 +1,172 @@
+// server.api
+type (
+	Pop {
+		ID         string `json:"id"`
+		Area       string `json:"area"`
+		Socks5Addr string `json:"socks5_addr"`
+		TotalNode  int    `json:"total_node"`
+	}
+	GetPopsResp {
+		Pops []*Pop
+	}
+	GetNodePopReq {
+		NodeId string `form:"nodeid"`
+	}
+	GetNodePopResp {
+		ServerURL   string `json:"server_url"`
+		AccessToken string `json:"access_token"`
+	}
+	ListNodeReq {
+		PopID string `form:"popid"`
+		// 1.all, 2.unbind, 3.bind
+		Type  int `form:"type"`
+		Start int `form:"start"`
+		End   int `form:"end"`
+	}
+	Node {
+		Id string `json:"id"`
+		IP string `json:"ip"`
+		// Milliseconds
+		NetDelay int    `json:"net_delay"`
+		BindUser string `json:"bind_user"`
+		Online   bool   `json:"online"`
+	}
+	ListNodeResp {
+		Nodes []*Node `json:"nodes"`
+		Total int     `json:"total"`
+	}
+	Route {
+		// 1. manual mode, 2. auto mode, 3. Timed switching点击并应用
+		Mode int
+		// if NodeID is empty, will auto allocate a node for user
+		NodeID string
+		// only work with Timed
+		Intervals int
+	}
+	TrafficLimit {
+		// start time timestamp
+		StartTime int64 `json:"start_time"`
+		// end time timestamp
+		EndTime int64 `json:"end_time"`
+		// Total traffic allowed to the user
+		// unit GB
+		TotalTraffic int64 `json:"total_traffic"`
+	}
+	CreateUserReq {
+		UserName string `json:"user_name"`
+		Password string `json:"password"`
+		// the id of pop(Point of Presence)
+		PopId string `json:"pop_id"`
+		// if TrafficLimit is nil, will allocate 1 mouth and 1000GB traffic
+		TrafficLimit *TrafficLimit `json:"traffic_limit,optional"`
+		// if Route is nil, will use manual mode
+		Route *Route `json:"route,optional"`
+	}
+	CreateUserResp {
+		UserName string `json:"user_name"`
+		// the id of pop(Point of Presence)
+		PopId string `json:"pod_id"`
+		// if TrafficLimit is nil, will allocate 1 mouth and 1000GB traffic
+		TrafficLimit *TrafficLimit `json:"traffic_limit"`
+		// if Route is nil, will use manual mode
+		Route  *Route `json:"route"`
+		NodeIP string `json:"node_ip"`
+	}
+	UserOperationResp {
+		Success bool   `json:"success"`
+		ErrMsg  string `json:"err_msg"`
+	}
+	ModifyUserPasswordReq {
+		UserName    string `json:"user_name"`
+		NewPassword string `json:"new_password"`
+	}
+	ModifyUserReq {
+		UserName     string        `json:"user_name"`
+		TrafficLimit *TrafficLimit `json:"total_traffic"`
+		Route        *Route        `json:"route"`
+	}
+	GetUserReq {
+		UserName string `form:"username"`
+	}
+	GetUserResp {
+		UserName string `json:"user_name"`
+		//  the id of pop(Point of Presence)
+		PopId        string        `json:"pod_id"`
+		TrafficLimit *TrafficLimit `json:"traffic_limit"`
+		Route        *Route        `json:"route"`
+		NodeIP       string        `json:"node_ip"`
+	}
+	SwitchUserRouteNodeReq {
+		UserName string `json:"user_name"`
+		NodeId   string `json:"node_id, optional"`
+	}
+	DeleteUserReq {
+		UserName string `json:"user_name"`
+	}
+	StartOrStopUserReq {
+		// action is 'start' or 'stop'
+		UserName string `json:"user_name"`
+		Action   string `json:"actoin"`
+	}
+	User {
+		UserName string `json:"user_name"`
+		// if TrafficLimit is nil, will allocate 1 mouth and 1000GB traffic
+		TrafficLimit *TrafficLimit `json:"traffic_limit"`
+		// if Route is nil, will use manual mode
+		Route          *Route `json:"route"`
+		NodeIP         string `json:"node_ip"`
+		CurrentTraffic int64  `json:"current_traffic"`
+		Off            bool   `json:"off"`
+	}
+	ListUserReq {
+		PopID string `form:"popid"`
+		Start int    `form:"start"`
+		End   int    `form:"end"`
+	}
+	ListUserResp {
+		Users []*User `json:"users"`
+		Total int     `json:"total"`
+	}
+)
+
+service server-api {
+	@handler getNodePop
+	get /node/pop (GetNodePopReq) returns (GetNodePopResp)
+}
+
+@server (
+	jwt: JwtAuth // Enable jwt authentication
+)
+service server-api {
+	// will move to center server
+	@handler getPops
+	get /pops returns (GetPopsResp)
+
+	@handler listNode
+	get /node/list (ListNodeReq) returns (ListNodeResp)
+
+	@handler createUser
+	post /user/create (CreateUserReq) returns (CreateUserResp)
+
+	@handler listUser
+	get /user/list (ListUserReq) returns (ListUserResp)
+
+	@handler modifyUserPassword
+	post /user/password/modify (ModifyUserPasswordReq) returns (UserOperationResp)
+
+	@handler modifyUser
+	post /user/modify (ModifyUserReq) returns (UserOperationResp)
+
+	@handler getUser
+	get /user/get (GetUserReq) returns (GetUserResp)
+
+	@handler deleteUser
+	post /user/delete (DeleteUserReq) returns (UserOperationResp)
+
+	@handler switchUserRouteNode
+	post /user/routenode/switch (SwitchUserRouteNodeReq) returns (UserOperationResp)
+
+	@handler startOrStopUser
+	post /user/startorstop (StartOrStopUserReq) returns (UserOperationResp)
+}
+
