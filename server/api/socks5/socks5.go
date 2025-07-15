@@ -76,31 +76,35 @@ func New(opts *Socks5ServerOptions) (*Socks5Server, error) {
 	return socks5Server, nil
 }
 
-func (socks5Server *Socks5Server) Startup() error {
+func (socks5Server *Socks5Server) Start() {
 	if socks5Server.listener != nil {
-		return fmt.Errorf("localsocks5.Socks5Server already startup")
+		panic("localsocks5.Socks5Server already startup")
+		// return fmt.Errorf("localsocks5.Socks5Server already startup")
 	}
 
 	var err error
 	addr, err := net.ResolveTCPAddr("tcp", socks5Server.opts.Address)
 	if err != nil {
-		return fmt.Errorf("localsocks5.Socks5Server resolve tcp address error:%s", err)
+		// return fmt.Errorf("localsocks5.Socks5Server resolve tcp address error:%s", err)
+		panic(fmt.Errorf("localsocks5.Socks5Server resolve tcp address error:%s", err))
 	}
 
 	socks5Server.listener, err = net.ListenTCP("tcp", addr)
 	if err != nil {
-		return fmt.Errorf("localsocks5.Socks5Server ListenTCP error:%s", err)
+		// return fmt.Errorf("localsocks5.Socks5Server ListenTCP error:%s", err)
+		panic(fmt.Errorf("localsocks5.Socks5Server ListenTCP error:%s", err))
 	}
 
 	logx.Infof("Socks5 server start at:%s", socks5Server.opts.Address)
 	go socks5Server.serveSocks5()
 
-	return nil
+	// return nil
 }
 
-func (socks5Server *Socks5Server) Shutdown() error {
+func (socks5Server *Socks5Server) Stop() {
 	if socks5Server.listener == nil {
-		return fmt.Errorf("localsocks5.Socks5Server isn't running")
+		// return fmt.Errorf("localsocks5.Socks5Server isn't running")
+		panic("localsocks5.Socks5Server isn't running")
 	}
 
 	err := socks5Server.listener.Close()
@@ -109,7 +113,7 @@ func (socks5Server *Socks5Server) Shutdown() error {
 	}
 
 	logx.Info("Socks5 server shutdown")
-	return nil
+	// return nil
 }
 
 func (socks5Server *Socks5Server) serveSocks5() {

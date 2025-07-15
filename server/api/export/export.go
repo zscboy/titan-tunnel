@@ -1,30 +1,23 @@
-package main
+package export
 
 import (
-	"flag"
-
 	"titan-tunnel/server/api/internal/config"
 	"titan-tunnel/server/api/internal/handler"
 	"titan-tunnel/server/api/internal/svc"
 	"titan-tunnel/server/api/socks5"
 
-	"github.com/zeromicro/go-zero/core/conf"
-	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/service"
 	"github.com/zeromicro/go-zero/rest"
 )
 
-var configFile = flag.String("f", "etc/server-api.yaml", "the config file")
+type APIServerConfig config.Config
 
-func main() {
-	flag.Parse()
-
-	var c config.Config
-	conf.MustLoad(*configFile, &c)
-
+func AddAPIService(group *service.ServiceGroup, c APIServerConfig) {
 	server := rest.MustNewServer(c.RestConf)
-	defer server.Stop()
+	group.Add(server)
+	// defer server.Stop()
 
-	ctx := svc.NewServiceContext(c)
+	ctx := svc.NewServiceContext(config.Config(c))
 	handler.RegisterHandlers(server, ctx)
 
 	opts := &socks5.Socks5ServerOptions{
@@ -39,10 +32,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	defer socks5.Stop()
+	// defer socks5.Stop()
 
-	socks5.Start()
+	// socks5.Startup()
 
-	logx.Infof("API server start at %s:%d...", c.Host, c.Port)
-	server.Start()
+	// group.Add(server)
+	group.Add(socks5)
+	// logx.Infof("API server start at %s:%d...", c.Host, c.Port)
+	// server.Start()
 }
