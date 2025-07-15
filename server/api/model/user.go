@@ -65,9 +65,15 @@ func GetUser(redis *redis.Redis, userName string) (*User, error) {
 	return user, nil
 }
 
+// TODO: use pip
 func DeleteUser(redis *redis.Redis, userName string) error {
 	key := fmt.Sprintf(redisKeyUser, userName)
 	_, err := redis.Del(key)
+	if err != nil {
+		return err
+	}
+
+	_, err = redis.Zrem(redisKeyUserZset, userName)
 	return err
 }
 

@@ -17,7 +17,7 @@ OUT_PATH=$SCRIPT_DIR/output
 # our lib name
 TARGET=libgoandroid.so
 
-LDFLAGS='-extldflags -Wl,-soname,'"$TARGET"''
+LDFLAGS='-s -w -extldflags -Wl,-soname,'"$TARGET"''
 
 GOOS=android GOARCH=amd64 CGO_ENABLED=1 CC=$CC_PATH/x86_64-linux-android34-clang go build -ldflags ''"$LDFLAGS"'' -buildmode=c-shared -o $OUT_PATH/x86_64/$TARGET ./client/golib
 

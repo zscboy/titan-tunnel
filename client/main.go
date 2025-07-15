@@ -19,8 +19,8 @@ func main() {
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "url",
-				Usage: "--url=ws://localhost:8888/ws/node",
-				Value: "ws://localhost:8888/ws/node",
+				Usage: "--url=http://localhost:8888/node/pop",
+				Value: "http://localhost:8888/node/pop",
 			},
 			&cli.StringFlag{
 				Name:     "uuid",

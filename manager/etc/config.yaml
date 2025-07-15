@@ -1,6 +1,6 @@
 Name: titan-tunnel-server
 Host: 0.0.0.0
-Port: 8888
+Port: 8000
 Redis:
   Host: 127.0.0.1:6379
 JwtAuth:
@@ -9,10 +9,11 @@ JwtAuth:
 Log:
   stat: false
   level: debug   
-
-ServerURL: ws://localhost:8888/ws/node
-PopID: 37c8e134-5be2-11f0-8909-00163e0ced7c
 Pops: 
   - ID: 37c8e134-5be2-11f0-8909-00163e0ced7c
     Area: Korea
     Socks5Addr: localhost:5000
+    WSServer: ws://localhost:8888/ws/node
+    RpcClient:
+      Target: localhost:8080
+      Timeout: 30000

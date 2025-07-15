@@ -19,6 +19,10 @@ type CreateUserResp struct {
 	NodeIP       string        `json:"node_ip"`
 }
 
+type DeleteUserCache struct {
+	UserName string `json:"user_name"`
+}
+
 type DeleteUserReq struct {
 	UserName string `json:"user_name"`
 }

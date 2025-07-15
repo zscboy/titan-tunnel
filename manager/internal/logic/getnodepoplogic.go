@@ -32,7 +32,7 @@ func (l *GetNodePopLogic) GetNodePop(req *types.GetNodePopReq) (resp *types.GetN
 	if err != nil {
 		return nil, err
 	}
-
+	// get node pop by node ip
 	pop := l.getNodePop(req)
 	if pop == nil {
 		return nil, fmt.Errorf("not found pop for node %s", req.NodeId)

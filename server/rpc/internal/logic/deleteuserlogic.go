@@ -42,11 +42,15 @@ func (l *DeleteUserLogic) DeleteUser(in *pb.DeleteUserReq) (*pb.UserOperationRes
 
 	if len(user.RouteNodeID) > 0 {
 		if err := model.UnbindNode(l.svcCtx.Redis, user.RouteNodeID); err != nil {
-			return nil, err
+			return &pb.UserOperationResp{ErrMsg: err.Error()}, nil
 		}
 	}
 
-	// l.svcCtx.TunMgr.DeleteUserFromCache(in.UserName)
-	// TODO: notify api service update user cache
+	deleteUserCacheLogic := NewDeleteUserCache(l.ctx, l.svcCtx)
+	if err := deleteUserCacheLogic.DeleteUserCache(in.UserName); err != nil {
+
+		return &pb.UserOperationResp{ErrMsg: err.Error()}, nil
+	}
+
 	return &pb.UserOperationResp{Success: true}, nil
 }

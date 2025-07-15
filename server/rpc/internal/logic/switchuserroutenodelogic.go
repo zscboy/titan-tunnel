@@ -67,8 +67,6 @@ func (l *SwitchUserRouteNodeLogic) SwitchUserRouteNode(in *pb.SwitchUserRouteNod
 		}
 	}
 
-	// l.svcCtx.TunMgr.DeleteUserFromCache(in.UserName)
-	// TODO: update user cache
 	return &pb.UserOperationResp{Success: true}, nil
 }
 

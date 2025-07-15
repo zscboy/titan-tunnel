@@ -1,6 +1,14 @@
 Name: server.rpc
 ListenOn: 0.0.0.0:8080
-Etcd:
-  Hosts:
-  - 127.0.0.1:2379
-  Key: server.rpc
+PopID:
+APIServer: localhost:8888
+Redis:
+  Host: 127.0.0.1:6379
+  Key: rpc:auth:user 
+Log:
+  stat: false
+  level: debug   
+# Etcd:
+#   Hosts:
+#   - 127.0.0.1:2379
+#   Key: server.rpc

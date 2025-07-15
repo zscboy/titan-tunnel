@@ -47,7 +47,11 @@ func (l *ModifyUserPasswordLogic) ModifyUserPassword(in *pb.ModifyUserPasswordRe
 		return &pb.UserOperationResp{ErrMsg: err.Error()}, nil
 	}
 
-	// l.svcCtx.TunMgr.DeleteUserFromCache(in.UserName)
-	// TODO: update user cache
+	deleteUserCacheLogic := NewDeleteUserCache(l.ctx, l.svcCtx)
+	if err := deleteUserCacheLogic.DeleteUserCache(in.UserName); err != nil {
+
+		return &pb.UserOperationResp{ErrMsg: err.Error()}, nil
+	}
+
 	return &pb.UserOperationResp{Success: true}, nil
 }

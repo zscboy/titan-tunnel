@@ -71,7 +71,11 @@ func (l *ModifyUserLogic) ModifyUser(in *pb.ModifyUserReq) (*pb.UserOperationRes
 		model.BindNode(l.svcCtx.Redis, user.RouteNodeID, user.UserName)
 	}
 
-	// l.svcCtx.TunMgr.DeleteUserFromCache(in.UserName)
-	// TODO: update cache
+	deleteUserCacheLogic := NewDeleteUserCache(l.ctx, l.svcCtx)
+	if err := deleteUserCacheLogic.DeleteUserCache(in.UserName); err != nil {
+
+		return &pb.UserOperationResp{ErrMsg: err.Error()}, nil
+	}
+
 	return &pb.UserOperationResp{Success: true}, nil
 }
