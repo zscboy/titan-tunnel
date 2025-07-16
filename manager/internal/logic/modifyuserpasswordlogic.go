@@ -32,13 +32,13 @@ func (l *ModifyUserPasswordLogic) ModifyUserPassword(req *types.ModifyUserPasswo
 		return &types.UserOperationResp{ErrMsg: err.Error()}, nil
 	}
 
-	api := l.svcCtx.ServerAPIs[user.PopID]
-	if api == nil {
+	server := l.svcCtx.Servers[user.PopID]
+	if server == nil {
 		return &types.UserOperationResp{ErrMsg: fmt.Sprintf("pop %s not found", user.PopID)}, nil
 	}
 
 	in := &serverapi.ModifyUserPasswordReq{UserName: user.UserName, NewPassword: req.NewPassword}
-	modifyUserPasswordResp, err := api.ModifyUserPassword(l.ctx, in)
+	modifyUserPasswordResp, err := server.API.ModifyUserPassword(l.ctx, in)
 	if err != nil {
 		return &types.UserOperationResp{ErrMsg: err.Error()}, nil
 	}

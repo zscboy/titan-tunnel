@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"titan-tunnel/manager/internal/config"
 	"titan-tunnel/manager/internal/svc"
 	"titan-tunnel/manager/internal/types"
 
@@ -37,7 +36,7 @@ func (l *GetNodePopLogic) GetNodePop(req *types.GetNodePopReq) (resp *types.GetN
 	if pop == nil {
 		return nil, fmt.Errorf("not found pop for node %s", req.NodeId)
 	}
-	return &types.GetNodePopResp{ServerURL: pop.WSServer, AccessToken: token}, nil
+	return &types.GetNodePopResp{ServerURL: pop.WSServerURL, AccessToken: token}, nil
 }
 
 func (l *GetNodePopLogic) generateJwtToken(secret string, expire int64, userName string) (string, error) {
@@ -52,9 +51,9 @@ func (l *GetNodePopLogic) generateJwtToken(secret string, expire int64, userName
 
 }
 
-func (l *GetNodePopLogic) getNodePop(req *types.GetNodePopReq) *config.Pop {
-	for _, pop := range l.svcCtx.Config.Pops {
-		return &pop
+func (l *GetNodePopLogic) getNodePop(req *types.GetNodePopReq) *svc.Server {
+	for _, pop := range l.svcCtx.Servers {
+		return pop
 	}
 	return nil
 }

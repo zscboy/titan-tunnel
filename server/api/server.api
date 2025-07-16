@@ -7,6 +7,10 @@ type (
 	DeleteUserCache {
 		UserName string `json:"user_name"`
 	}
+	ServerInfo {
+		Socks5Addr  string `json:"socks5_addr"`
+		WSServerURL string `json:"ws_server_url"`
+	}
 )
 
 // @server (
@@ -18,5 +22,8 @@ service server-api {
 
 	@handler deleteUserCache
 	post /user/cache/delete (DeleteUserCache)
+
+	@handler getServerInfo
+	get /server/info returns (ServerInfo)
 }
 

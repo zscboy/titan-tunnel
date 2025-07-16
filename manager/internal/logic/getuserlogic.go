@@ -32,12 +32,12 @@ func (l *GetUserLogic) GetUser(req *types.GetUserReq) (resp *types.GetUserResp, 
 		return nil, err
 	}
 
-	api := l.svcCtx.ServerAPIs[user.PopID]
-	if api == nil {
+	server := l.svcCtx.Servers[user.PopID]
+	if server == nil {
 		return nil, fmt.Errorf("pop %s not found", user.PopID)
 	}
 
-	getUserResp, err := api.GetUser(l.ctx, &serverapi.GetUserReq{UserName: user.UserName})
+	getUserResp, err := server.API.GetUser(l.ctx, &serverapi.GetUserReq{UserName: user.UserName})
 	if err != nil {
 		return nil, err
 	}

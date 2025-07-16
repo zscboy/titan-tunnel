@@ -27,8 +27,8 @@ func NewCreateUserLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Create
 }
 
 func (l *CreateUserLogic) CreateUser(req *types.CreateUserReq) (resp *types.CreateUserResp, err error) {
-	api := l.svcCtx.ServerAPIs[req.PopId]
-	if api == nil {
+	server := l.svcCtx.Servers[req.PopId]
+	if server == nil {
 		return nil, fmt.Errorf("pop %s not found", req.PopId)
 	}
 
@@ -46,7 +46,7 @@ func (l *CreateUserLogic) CreateUser(req *types.CreateUserReq) (resp *types.Crea
 		in.Route = toRouteReq(req.Route)
 	}
 
-	createUserResp, err := api.CreateUser(l.ctx, in)
+	createUserResp, err := server.API.CreateUser(l.ctx, in)
 	if err != nil {
 		return nil, err
 	}

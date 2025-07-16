@@ -1127,6 +1127,66 @@ func (x *ListUserResp) GetTotal() int32 {
 	return 0
 }
 
+type GetServerInfoResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Socks5Addr    string                 `protobuf:"bytes,2,opt,name=socks5_addr,json=socks5Addr,proto3" json:"socks5_addr,omitempty"`
+	WsServerUrl   string                 `protobuf:"bytes,3,opt,name=ws_server_url,json=wsServerUrl,proto3" json:"ws_server_url,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetServerInfoResp) Reset() {
+	*x = GetServerInfoResp{}
+	mi := &file_server_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetServerInfoResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetServerInfoResp) ProtoMessage() {}
+
+func (x *GetServerInfoResp) ProtoReflect() protoreflect.Message {
+	mi := &file_server_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetServerInfoResp.ProtoReflect.Descriptor instead.
+func (*GetServerInfoResp) Descriptor() ([]byte, []int) {
+	return file_server_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *GetServerInfoResp) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *GetServerInfoResp) GetSocks5Addr() string {
+	if x != nil {
+		return x.Socks5Addr
+	}
+	return ""
+}
+
+func (x *GetServerInfoResp) GetWsServerUrl() string {
+	if x != nil {
+		return x.WsServerUrl
+	}
+	return ""
+}
+
 type Empty struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -1135,7 +1195,7 @@ type Empty struct {
 
 func (x *Empty) Reset() {
 	*x = Empty{}
-	mi := &file_server_proto_msgTypes[18]
+	mi := &file_server_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1147,7 +1207,7 @@ func (x *Empty) String() string {
 func (*Empty) ProtoMessage() {}
 
 func (x *Empty) ProtoReflect() protoreflect.Message {
-	mi := &file_server_proto_msgTypes[18]
+	mi := &file_server_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1160,7 +1220,7 @@ func (x *Empty) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Empty.ProtoReflect.Descriptor instead.
 func (*Empty) Descriptor() ([]byte, []int) {
-	return file_server_proto_rawDescGZIP(), []int{18}
+	return file_server_proto_rawDescGZIP(), []int{19}
 }
 
 var File_server_proto protoreflect.FileDescriptor
@@ -1244,8 +1304,13 @@ const file_server_proto_rawDesc = "" +
 	"\x03end\x18\x03 \x01(\x05R\x03end\"H\n" +
 	"\fListUserResp\x12\"\n" +
 	"\x05users\x18\x01 \x03(\v2\f.server.UserR\x05users\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total\"\a\n" +
-	"\x05Empty2\xd6\x04\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\"h\n" +
+	"\x11GetServerInfoResp\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1f\n" +
+	"\vsocks5_addr\x18\x02 \x01(\tR\n" +
+	"socks5Addr\x12\"\n" +
+	"\rws_server_url\x18\x03 \x01(\tR\vwsServerUrl\"\a\n" +
+	"\x05Empty2\x91\x05\n" +
 	"\tServerAPI\x125\n" +
 	"\bListNode\x12\x13.server.ListNodeReq\x1a\x14.server.ListNodeResp\x12;\n" +
 	"\n" +
@@ -1258,7 +1323,8 @@ const file_server_proto_rawDesc = "" +
 	"\n" +
 	"DeleteUser\x12\x15.server.DeleteUserReq\x1a\x19.server.UserOperationResp\x12P\n" +
 	"\x13SwitchUserRouteNode\x12\x1e.server.SwitchUserRouteNodeReq\x1a\x19.server.UserOperationResp\x12H\n" +
-	"\x0fStartOrStopUser\x12\x1a.server.StartOrStopUserReq\x1a\x19.server.UserOperationRespB\x06Z\x04./pbb\x06proto3"
+	"\x0fStartOrStopUser\x12\x1a.server.StartOrStopUserReq\x1a\x19.server.UserOperationResp\x129\n" +
+	"\rGetServerInfo\x12\r.server.Empty\x1a\x19.server.GetServerInfoRespB\x06Z\x04./pbb\x06proto3"
 
 var (
 	file_server_proto_rawDescOnce sync.Once
@@ -1272,7 +1338,7 @@ func file_server_proto_rawDescGZIP() []byte {
 	return file_server_proto_rawDescData
 }
 
-var file_server_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_server_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
 var file_server_proto_goTypes = []any{
 	(*ListNodeReq)(nil),            // 0: server.ListNodeReq
 	(*Node)(nil),                   // 1: server.Node
@@ -1292,7 +1358,8 @@ var file_server_proto_goTypes = []any{
 	(*User)(nil),                   // 15: server.User
 	(*ListUserReq)(nil),            // 16: server.ListUserReq
 	(*ListUserResp)(nil),           // 17: server.ListUserResp
-	(*Empty)(nil),                  // 18: server.Empty
+	(*GetServerInfoResp)(nil),      // 18: server.GetServerInfoResp
+	(*Empty)(nil),                  // 19: server.Empty
 }
 var file_server_proto_depIdxs = []int32{
 	1,  // 0: server.ListNodeResp.nodes:type_name -> server.Node
@@ -1316,17 +1383,19 @@ var file_server_proto_depIdxs = []int32{
 	13, // 18: server.ServerAPI.DeleteUser:input_type -> server.DeleteUserReq
 	12, // 19: server.ServerAPI.SwitchUserRouteNode:input_type -> server.SwitchUserRouteNodeReq
 	14, // 20: server.ServerAPI.StartOrStopUser:input_type -> server.StartOrStopUserReq
-	2,  // 21: server.ServerAPI.ListNode:output_type -> server.ListNodeResp
-	6,  // 22: server.ServerAPI.CreateUser:output_type -> server.CreateUserResp
-	17, // 23: server.ServerAPI.ListUser:output_type -> server.ListUserResp
-	7,  // 24: server.ServerAPI.ModifyUserPassword:output_type -> server.UserOperationResp
-	7,  // 25: server.ServerAPI.ModifyUser:output_type -> server.UserOperationResp
-	11, // 26: server.ServerAPI.GetUser:output_type -> server.GetUserResp
-	7,  // 27: server.ServerAPI.DeleteUser:output_type -> server.UserOperationResp
-	7,  // 28: server.ServerAPI.SwitchUserRouteNode:output_type -> server.UserOperationResp
-	7,  // 29: server.ServerAPI.StartOrStopUser:output_type -> server.UserOperationResp
-	21, // [21:30] is the sub-list for method output_type
-	12, // [12:21] is the sub-list for method input_type
+	19, // 21: server.ServerAPI.GetServerInfo:input_type -> server.Empty
+	2,  // 22: server.ServerAPI.ListNode:output_type -> server.ListNodeResp
+	6,  // 23: server.ServerAPI.CreateUser:output_type -> server.CreateUserResp
+	17, // 24: server.ServerAPI.ListUser:output_type -> server.ListUserResp
+	7,  // 25: server.ServerAPI.ModifyUserPassword:output_type -> server.UserOperationResp
+	7,  // 26: server.ServerAPI.ModifyUser:output_type -> server.UserOperationResp
+	11, // 27: server.ServerAPI.GetUser:output_type -> server.GetUserResp
+	7,  // 28: server.ServerAPI.DeleteUser:output_type -> server.UserOperationResp
+	7,  // 29: server.ServerAPI.SwitchUserRouteNode:output_type -> server.UserOperationResp
+	7,  // 30: server.ServerAPI.StartOrStopUser:output_type -> server.UserOperationResp
+	18, // 31: server.ServerAPI.GetServerInfo:output_type -> server.GetServerInfoResp
+	22, // [22:32] is the sub-list for method output_type
+	12, // [12:22] is the sub-list for method input_type
 	12, // [12:12] is the sub-list for extension type_name
 	12, // [12:12] is the sub-list for extension extendee
 	0,  // [0:12] is the sub-list for field type_name
@@ -1343,7 +1412,7 @@ func file_server_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_server_proto_rawDesc), len(file_server_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   19,
+			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -18,6 +18,7 @@ type (
 	CreateUserResp         = pb.CreateUserResp
 	DeleteUserReq          = pb.DeleteUserReq
 	Empty                  = pb.Empty
+	GetServerInfoResp      = pb.GetServerInfoResp
 	GetUserReq             = pb.GetUserReq
 	GetUserResp            = pb.GetUserResp
 	ListNodeReq            = pb.ListNodeReq
@@ -44,6 +45,7 @@ type (
 		DeleteUser(ctx context.Context, in *DeleteUserReq, opts ...grpc.CallOption) (*UserOperationResp, error)
 		SwitchUserRouteNode(ctx context.Context, in *SwitchUserRouteNodeReq, opts ...grpc.CallOption) (*UserOperationResp, error)
 		StartOrStopUser(ctx context.Context, in *StartOrStopUserReq, opts ...grpc.CallOption) (*UserOperationResp, error)
+		GetServerInfo(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*GetServerInfoResp, error)
 	}
 
 	defaultServerAPI struct {
@@ -100,4 +102,9 @@ func (m *defaultServerAPI) SwitchUserRouteNode(ctx context.Context, in *SwitchUs
 func (m *defaultServerAPI) StartOrStopUser(ctx context.Context, in *StartOrStopUserReq, opts ...grpc.CallOption) (*UserOperationResp, error) {
 	client := pb.NewServerAPIClient(m.cli.Conn())
 	return client.StartOrStopUser(ctx, in, opts...)
+}
+
+func (m *defaultServerAPI) GetServerInfo(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*GetServerInfoResp, error) {
+	client := pb.NewServerAPIClient(m.cli.Conn())
+	return client.GetServerInfo(ctx, in, opts...)
 }

@@ -15,6 +15,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
 		[]rest.Route{
 			{
+				Method:  http.MethodGet,
+				Path:    "/server/info",
+				Handler: getServerInfoHandler(serverCtx),
+			},
+			{
 				Method:  http.MethodPost,
 				Path:    "/user/cache/delete",
 				Handler: deleteUserCacheHandler(serverCtx),

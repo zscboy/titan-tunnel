@@ -28,6 +28,7 @@ const (
 	ServerAPI_DeleteUser_FullMethodName          = "/server.ServerAPI/DeleteUser"
 	ServerAPI_SwitchUserRouteNode_FullMethodName = "/server.ServerAPI/SwitchUserRouteNode"
 	ServerAPI_StartOrStopUser_FullMethodName     = "/server.ServerAPI/StartOrStopUser"
+	ServerAPI_GetServerInfo_FullMethodName       = "/server.ServerAPI/GetServerInfo"
 )
 
 // ServerAPIClient is the client API for ServerAPI service.
@@ -43,6 +44,7 @@ type ServerAPIClient interface {
 	DeleteUser(ctx context.Context, in *DeleteUserReq, opts ...grpc.CallOption) (*UserOperationResp, error)
 	SwitchUserRouteNode(ctx context.Context, in *SwitchUserRouteNodeReq, opts ...grpc.CallOption) (*UserOperationResp, error)
 	StartOrStopUser(ctx context.Context, in *StartOrStopUserReq, opts ...grpc.CallOption) (*UserOperationResp, error)
+	GetServerInfo(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*GetServerInfoResp, error)
 }
 
 type serverAPIClient struct {
@@ -143,6 +145,16 @@ func (c *serverAPIClient) StartOrStopUser(ctx context.Context, in *StartOrStopUs
 	return out, nil
 }
 
+func (c *serverAPIClient) GetServerInfo(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*GetServerInfoResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetServerInfoResp)
+	err := c.cc.Invoke(ctx, ServerAPI_GetServerInfo_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ServerAPIServer is the server API for ServerAPI service.
 // All implementations must embed UnimplementedServerAPIServer
 // for forward compatibility.
@@ -156,6 +168,7 @@ type ServerAPIServer interface {
 	DeleteUser(context.Context, *DeleteUserReq) (*UserOperationResp, error)
 	SwitchUserRouteNode(context.Context, *SwitchUserRouteNodeReq) (*UserOperationResp, error)
 	StartOrStopUser(context.Context, *StartOrStopUserReq) (*UserOperationResp, error)
+	GetServerInfo(context.Context, *Empty) (*GetServerInfoResp, error)
 	mustEmbedUnimplementedServerAPIServer()
 }
 
@@ -192,6 +205,9 @@ func (UnimplementedServerAPIServer) SwitchUserRouteNode(context.Context, *Switch
 }
 func (UnimplementedServerAPIServer) StartOrStopUser(context.Context, *StartOrStopUserReq) (*UserOperationResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartOrStopUser not implemented")
+}
+func (UnimplementedServerAPIServer) GetServerInfo(context.Context, *Empty) (*GetServerInfoResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetServerInfo not implemented")
 }
 func (UnimplementedServerAPIServer) mustEmbedUnimplementedServerAPIServer() {}
 func (UnimplementedServerAPIServer) testEmbeddedByValue()                   {}
@@ -376,6 +392,24 @@ func _ServerAPI_StartOrStopUser_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ServerAPI_GetServerInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerAPIServer).GetServerInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ServerAPI_GetServerInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerAPIServer).GetServerInfo(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ServerAPI_ServiceDesc is the grpc.ServiceDesc for ServerAPI service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -418,6 +452,10 @@ var ServerAPI_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StartOrStopUser",
 			Handler:    _ServerAPI_StartOrStopUser_Handler,
+		},
+		{
+			MethodName: "GetServerInfo",
+			Handler:    _ServerAPI_GetServerInfo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

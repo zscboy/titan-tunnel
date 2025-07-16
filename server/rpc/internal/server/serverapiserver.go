@@ -67,3 +67,8 @@ func (s *ServerAPIServer) StartOrStopUser(ctx context.Context, in *pb.StartOrSto
 	l := logic.NewStartOrStopUserLogic(ctx, s.svcCtx)
 	return l.StartOrStopUser(in)
 }
+
+func (s *ServerAPIServer) GetServerInfo(ctx context.Context, in *pb.Empty) (*pb.GetServerInfoResp, error) {
+	l := logic.NewGetServerInfoLogic(ctx, s.svcCtx)
+	return l.GetServerInfo(in)
+}

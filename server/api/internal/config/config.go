@@ -12,7 +12,7 @@ type JwtAuth struct {
 
 type Socks5 struct {
 	Addr         string
-	UDPServerIP  string
+	ServerIP     string
 	UDPPortStart int
 	UDPPortEnd   int
 	EnableAuth   bool
@@ -25,4 +25,5 @@ type Config struct {
 	Redis   redis.RedisConf `json:",optional,inherit"`
 	JwtAuth JwtAuth
 	Socks5  Socks5
+	Domain  string `json:",optional"`
 }

@@ -12,11 +12,7 @@ type JwtAuth struct {
 }
 
 type Pop struct {
-	ID         string
-	Area       string
-	Socks5Addr string
-	// websocket server
-	WSServer  string
+	Area      string
 	RpcClient zrpc.RpcClientConf
 }
 

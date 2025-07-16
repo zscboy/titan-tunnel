@@ -2,7 +2,6 @@ package logic
 
 import (
 	"context"
-	"fmt"
 
 	"titan-tunnel/manager/internal/svc"
 	"titan-tunnel/manager/internal/types"
@@ -27,28 +26,14 @@ func NewGetPopsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetPopsLo
 
 func (l *GetPopsLogic) GetPops() (resp *types.GetPopsResp, err error) {
 	pops := make([]*types.Pop, 0, len(l.svcCtx.Config.Pops))
-	for _, pop := range l.svcCtx.Config.Pops {
-		totalNode, err := l.getTotalNode(pop.ID)
+	for id, server := range l.svcCtx.Servers {
+		listNodeResp, err := server.API.ListNode(l.ctx, &serverapi.ListNodeReq{PopId: id, Type: 1, Start: 0, End: 1})
 		if err != nil {
 			return nil, err
 		}
 
-		p := &types.Pop{ID: pop.ID, Area: pop.Area, TotalNode: totalNode, Socks5Addr: pop.Socks5Addr}
+		p := &types.Pop{ID: id, Area: server.Area, TotalNode: int(listNodeResp.Total), Socks5Addr: server.Socks5Addr}
 		pops = append(pops, p)
 	}
 	return &types.GetPopsResp{Pops: pops}, nil
-}
-
-func (l *GetPopsLogic) getTotalNode(popID string) (int, error) {
-	api := l.svcCtx.ServerAPIs[popID]
-	if api == nil {
-		return 0, fmt.Errorf("pop %s not found", popID)
-	}
-
-	listNodeResp, err := api.ListNode(l.ctx, &serverapi.ListNodeReq{PopId: popID, Type: 1, Start: 0, End: 1})
-	if err != nil {
-		return 0, err
-	}
-
-	return int(listNodeResp.Total), nil
 }

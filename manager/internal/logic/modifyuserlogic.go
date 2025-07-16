@@ -32,8 +32,8 @@ func (l *ModifyUserLogic) ModifyUser(req *types.ModifyUserReq) (resp *types.User
 		return &types.UserOperationResp{ErrMsg: err.Error()}, nil
 	}
 
-	api := l.svcCtx.ServerAPIs[user.PopID]
-	if api == nil {
+	server := l.svcCtx.Servers[user.PopID]
+	if server == nil {
 		return &types.UserOperationResp{ErrMsg: fmt.Sprintf("pop %s not found", user.PopID)}, nil
 	}
 
@@ -46,7 +46,7 @@ func (l *ModifyUserLogic) ModifyUser(req *types.ModifyUserReq) (resp *types.User
 		in.Route = toRouteReq(req.Route)
 	}
 
-	modifyUserResp, err := api.ModifyUser(l.ctx, in)
+	modifyUserResp, err := server.API.ModifyUser(l.ctx, in)
 	if err != nil {
 		return &types.UserOperationResp{ErrMsg: err.Error()}, nil
 	}

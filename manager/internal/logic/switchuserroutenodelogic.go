@@ -32,13 +32,13 @@ func (l *SwitchUserRouteNodeLogic) SwitchUserRouteNode(req *types.SwitchUserRout
 		return &types.UserOperationResp{ErrMsg: err.Error()}, nil
 	}
 
-	api := l.svcCtx.ServerAPIs[user.PopID]
-	if api == nil {
+	server := l.svcCtx.Servers[user.PopID]
+	if server == nil {
 		return &types.UserOperationResp{ErrMsg: fmt.Sprintf("pop %s not found", user.PopID)}, nil
 	}
 
 	in := &serverapi.SwitchUserRouteNodeReq{UserName: user.UserName, NodeId: req.NodeId}
-	startOrStopResp, err := api.SwitchUserRouteNode(l.ctx, in)
+	startOrStopResp, err := server.API.SwitchUserRouteNode(l.ctx, in)
 	if err != nil {
 		return &types.UserOperationResp{ErrMsg: err.Error()}, nil
 	}

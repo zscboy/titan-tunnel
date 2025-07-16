@@ -26,8 +26,8 @@ func NewListNodeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListNode
 }
 
 func (l *ListNodeLogic) ListNode(req *types.ListNodeReq) (resp *types.ListNodeResp, err error) {
-	api := l.svcCtx.ServerAPIs[req.PopID]
-	if api == nil {
+	server := l.svcCtx.Servers[req.PopID]
+	if server == nil {
 		return nil, fmt.Errorf("pop %s not found", req.PopID)
 	}
 
@@ -38,7 +38,7 @@ func (l *ListNodeLogic) ListNode(req *types.ListNodeReq) (resp *types.ListNodeRe
 		End:   int32(req.End),
 	}
 
-	listNodeResp, err := api.ListNode(l.ctx, in)
+	listNodeResp, err := server.API.ListNode(l.ctx, in)
 	if err != nil {
 		return nil, err
 	}

@@ -29,7 +29,7 @@ func main() {
 
 	opts := &socks5.Socks5ServerOptions{
 		Address:      c.Socks5.Addr,
-		UDPServerIP:  c.Socks5.UDPServerIP,
+		UDPServerIP:  c.Socks5.ServerIP,
 		UDPPortStart: c.Socks5.UDPPortStart,
 		UDPPortEnd:   c.Socks5.UDPPortEnd,
 		EnableAuth:   c.Socks5.EnableAuth,

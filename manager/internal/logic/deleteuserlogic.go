@@ -32,12 +32,12 @@ func (l *DeleteUserLogic) DeleteUser(req *types.DeleteUserReq) (resp *types.User
 		return &types.UserOperationResp{ErrMsg: err.Error()}, nil
 	}
 
-	api := l.svcCtx.ServerAPIs[user.PopID]
-	if api == nil {
+	server := l.svcCtx.Servers[user.PopID]
+	if server == nil {
 		return &types.UserOperationResp{ErrMsg: fmt.Sprintf("pop %s not found", user.PopID)}, nil
 	}
 
-	deleteUserResp, err := api.DeleteUser(l.ctx, &serverapi.DeleteUserReq{UserName: user.UserName})
+	deleteUserResp, err := server.API.DeleteUser(l.ctx, &serverapi.DeleteUserReq{UserName: user.UserName})
 	if err != nil {
 		return &types.UserOperationResp{ErrMsg: err.Error()}, nil
 	}

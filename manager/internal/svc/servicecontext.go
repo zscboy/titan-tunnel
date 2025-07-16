@@ -1,6 +1,7 @@
 package svc
 
 import (
+	"context"
 	"titan-tunnel/manager/internal/config"
 	"titan-tunnel/server/rpc/serverapi"
 
@@ -9,27 +10,38 @@ import (
 	"github.com/zeromicro/go-zero/zrpc"
 )
 
+type Server struct {
+	API         serverapi.ServerAPI
+	Socks5Addr  string
+	WSServerURL string
+	Area        string
+}
+
 type ServiceContext struct {
 	Config        config.Config
 	Redis         *redis.Redis
 	JwtMiddleware rest.Middleware
-	ServerAPIs    map[string]serverapi.ServerAPI
+	Servers       map[string]*Server
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	redis := redis.MustNewRedis(c.Redis)
 	return &ServiceContext{
-		Config:     c,
-		Redis:      redis,
-		ServerAPIs: newServerAPIS(c),
+		Config:  c,
+		Redis:   redis,
+		Servers: newServers(c),
 	}
 }
 
-func newServerAPIS(c config.Config) map[string]serverapi.ServerAPI {
-	apis := make(map[string]serverapi.ServerAPI)
+func newServers(c config.Config) map[string]*Server {
+	apis := make(map[string]*Server)
 	for _, pop := range c.Pops {
 		api := serverapi.NewServerAPI(zrpc.MustNewClient(pop.RpcClient))
-		apis[pop.ID] = api
+		resp, err := api.GetServerInfo(context.Background(), &serverapi.Empty{})
+		if err != nil {
+			panic("Get server info failed:" + err.Error())
+		}
+		apis[resp.Id] = &Server{API: api, Socks5Addr: resp.Socks5Addr, WSServerURL: resp.WsServerUrl, Area: pop.Area}
 	}
 	return apis
 }

@@ -117,7 +117,13 @@ message ListUserResp {
   int32 total = 2;
 }
 
-message Empty {}
+message GetServerInfoResp {
+  string id = 1;
+  string socks5_addr = 2;
+  string ws_server_url = 3;
+}
+
+ message Empty {}
 
 // ---- Service Definition ----
 
@@ -131,4 +137,5 @@ service ServerAPI {
   rpc DeleteUser(DeleteUserReq) returns (UserOperationResp);
   rpc SwitchUserRouteNode(SwitchUserRouteNodeReq) returns (UserOperationResp);
   rpc StartOrStopUser(StartOrStopUserReq) returns (UserOperationResp);
+  rpc GetServerInfo (Empty) returns (GetServerInfoResp);
 }

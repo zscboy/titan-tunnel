@@ -32,13 +32,13 @@ func (l *StartOrStopUserLogic) StartOrStopUser(req *types.StartOrStopUserReq) (r
 		return &types.UserOperationResp{ErrMsg: err.Error()}, nil
 	}
 
-	api := l.svcCtx.ServerAPIs[user.PopID]
-	if api == nil {
+	server := l.svcCtx.Servers[user.PopID]
+	if server == nil {
 		return &types.UserOperationResp{ErrMsg: fmt.Sprintf("pop %s not found", user.PopID)}, nil
 	}
 
 	in := &serverapi.StartOrStopUserReq{UserName: user.UserName, Action: req.Action}
-	startOrStopResp, err := api.StartOrStopUser(l.ctx, in)
+	startOrStopResp, err := server.API.StartOrStopUser(l.ctx, in)
 	if err != nil {
 		return &types.UserOperationResp{ErrMsg: err.Error()}, nil
 	}
