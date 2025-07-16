@@ -10,10 +10,10 @@ Log:
   stat: false
   level: debug   
 Pops: 
-  - ID: 37c8e134-5be2-11f0-8909-00163e0ced7c
+  - ID: 14bf4178-6160-11f0-a0c5-00163e023040
     Area: Korea
     Socks5Addr: localhost:5000
-    WSServer: ws://localhost:8888/ws/node
+    WSServer: ws://localhost:8080/ws/node
     RpcClient:
-      Target: localhost:8080
+      Target: localhost:8081
       Timeout: 30000

@@ -22,10 +22,3 @@ Socks5:
 Log:
   stat: false
   level: debug   
-
-ServerURL: ws://localhost:8888/ws/node
-PopID: 37c8e134-5be2-11f0-8909-00163e0ced7c
-Pops: 
-  - ID: 37c8e134-5be2-11f0-8909-00163e0ced7c
-    Area: Korea
-    Socks5Addr: localhost:5000

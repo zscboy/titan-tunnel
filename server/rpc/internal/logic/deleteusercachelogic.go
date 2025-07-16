@@ -27,7 +27,7 @@ func NewDeleteUserCache(ctx context.Context, svcCtx *svc.ServiceContext) *Delete
 }
 
 func (l *DeleteUserCacheLogic) DeleteUserCache(userName string) error {
-	url := fmt.Sprintf("http://localhost:%d/user/cache/delete", l.svcCtx.Config.APIServer)
+	url := fmt.Sprintf("http://%s/user/cache/delete", l.svcCtx.Config.APIServer)
 
 	deleteUserCacheReq := struct {
 		UserName string `json:"user_name"`

@@ -8,7 +8,9 @@ import (
 	rpc "titan-tunnel/server/rpc/export"
 
 	"github.com/zeromicro/go-zero/core/conf"
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/service"
+	"github.com/zeromicro/go-zero/core/stores/redis"
 )
 
 var configFile = flag.String("f", "etc/server.yaml", "the config file")
@@ -19,12 +21,18 @@ func main() {
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
 
-	group := service.NewServiceGroup()
-	api.AddAPIService(group, c.APIServerConfig)
-	rpc.AddRPCService(group, c.RPCServerConfig)
+	// Override Log and Redis
+	c.APIServer.Log = c.Log
+	c.RPCServer.Redis = redis.RedisKeyConf{RedisConf: c.Redis}
+	c.RPCServer.Log = c.Log
+	c.RPCServer.APIServer = fmt.Sprintf("localhost:%d", c.APIServer.Port)
 
-	fmt.Printf("Starting api server at %s:%d\n", c.APIServerConfig.Host, c.APIServerConfig.Port)
-	fmt.Printf("Starting rpc server at %s...\n", c.RPCServerConfig.ListenOn)
+	group := service.NewServiceGroup()
+	api.AddAPIService(group, c.APIServer)
+	rpc.AddRPCService(group, c.RPCServer)
+
+	logx.Infof("Starting api server at %s:%d", c.APIServer.Host, c.APIServer.Port)
+	logx.Infof("Starting rpc server at %s...", c.RPCServer.ListenOn)
 	group.Start()
 
 }

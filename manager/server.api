@@ -106,7 +106,7 @@ type (
 	StartOrStopUserReq {
 		// action is 'start' or 'stop'
 		UserName string `json:"user_name"`
-		Action   string `json:"actoin"`
+		Action   string `json:"action"`
 	}
 	User {
 		UserName string `json:"user_name"`

@@ -105,7 +105,7 @@ type Route struct {
 
 type StartOrStopUserReq struct {
 	UserName string `json:"user_name"`
-	Action   string `json:"actoin"`
+	Action   string `json:"action"`
 }
 
 type SwitchUserRouteNodeReq struct {

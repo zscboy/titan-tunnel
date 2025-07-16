@@ -6,7 +6,6 @@ import (
 
 type Config struct {
 	zrpc.RpcServerConf
-	// Redis     redis.RedisConf
 	PopID     string
-	APIServer string
+	APIServer string `json:",optional"`
 }

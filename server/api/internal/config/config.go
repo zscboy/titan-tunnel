@@ -20,20 +20,9 @@ type Socks5 struct {
 	UDPTimeout   int64
 }
 
-type Pop struct {
-	ID         string
-	Area       string
-	Socks5Addr string
-}
-
 type Config struct {
 	rest.RestConf
-	Redis   redis.RedisConf
+	Redis   redis.RedisConf `json:",optional,inherit"`
 	JwtAuth JwtAuth
 	Socks5  Socks5
-	PopID   string
-	// todo: will move to center server
-	ServerURL string
-	// todo: will move to center server
-	Pops []Pop
 }
