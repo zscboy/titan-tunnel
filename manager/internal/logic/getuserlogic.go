@@ -32,6 +32,10 @@ func (l *GetUserLogic) GetUser(req *types.GetUserReq) (resp *types.GetUserResp, 
 		return nil, err
 	}
 
+	if user == nil {
+		return nil, fmt.Errorf("user %s not exist", req.UserName)
+	}
+
 	server := l.svcCtx.Servers[user.PopID]
 	if server == nil {
 		return nil, fmt.Errorf("pop %s not found", user.PopID)
@@ -46,10 +50,13 @@ func (l *GetUserLogic) GetUser(req *types.GetUserReq) (resp *types.GetUserResp, 
 	route := toRouteResp(getUserResp.Route)
 
 	return &types.GetUserResp{
-		UserName:     getUserResp.UserName,
-		PopId:        user.PopID,
-		NodeIP:       getUserResp.NodeIp,
-		TrafficLimit: traffic,
-		Route:        route,
+		UserName:       getUserResp.UserName,
+		PopId:          user.PopID,
+		NodeIP:         getUserResp.NodeIp,
+		NodeOnline:     getUserResp.NodeOnline,
+		CurrentTraffic: getUserResp.CurrentTraffic,
+		Off:            getUserResp.Off,
+		TrafficLimit:   traffic,
+		Route:          route,
 	}, nil
 }

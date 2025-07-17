@@ -1,6 +1,5 @@
 Name: server.rpc
 ListenOn: 0.0.0.0:8080
-PopID:
 APIServer: localhost:8888
 Redis:
   Host: 127.0.0.1:6379

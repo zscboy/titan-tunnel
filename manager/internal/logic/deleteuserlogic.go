@@ -32,6 +32,10 @@ func (l *DeleteUserLogic) DeleteUser(req *types.DeleteUserReq) (resp *types.User
 		return &types.UserOperationResp{ErrMsg: err.Error()}, nil
 	}
 
+	if user == nil {
+		return &types.UserOperationResp{ErrMsg: fmt.Sprintf("user %s not exist", req.UserName)}, nil
+	}
+
 	server := l.svcCtx.Servers[user.PopID]
 	if server == nil {
 		return &types.UserOperationResp{ErrMsg: fmt.Sprintf("pop %s not found", user.PopID)}, nil

@@ -3,6 +3,14 @@
 
 package types
 
+type AccessTokenReq struct {
+	NodeId string `form:"nodeid"`
+}
+
+type AccessTokenResp struct {
+	Token string `json:"token"`
+}
+
 type DeleteUserCache struct {
 	UserName string `json:"user_name"`
 }

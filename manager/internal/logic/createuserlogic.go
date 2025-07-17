@@ -32,12 +32,7 @@ func (l *CreateUserLogic) CreateUser(req *types.CreateUserReq) (resp *types.Crea
 		return nil, fmt.Errorf("pop %s not found", req.PopId)
 	}
 
-	//   UserName     string        `json:"user_name"`
-	// Password     string        `json:"password"`
-	// PopId        string        `json:"pop_id"`
-	// TrafficLimit *TrafficLimit `json:"traffic_limit,optional"`
-	// Route        *Route        `json:"route,optional"`
-	in := &serverapi.CreateUserReq{UserName: req.UserName, Password: req.Password, PopId: req.PopId}
+	in := &serverapi.CreateUserReq{UserName: req.UserName, Password: req.Password}
 	if req.TrafficLimit != nil {
 		in.TrafficLimit = toTrafficLimitReq(req.TrafficLimit)
 	}

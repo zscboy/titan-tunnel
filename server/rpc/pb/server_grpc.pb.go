@@ -29,6 +29,7 @@ const (
 	ServerAPI_SwitchUserRouteNode_FullMethodName = "/server.ServerAPI/SwitchUserRouteNode"
 	ServerAPI_StartOrStopUser_FullMethodName     = "/server.ServerAPI/StartOrStopUser"
 	ServerAPI_GetServerInfo_FullMethodName       = "/server.ServerAPI/GetServerInfo"
+	ServerAPI_GetNodeAccessToken_FullMethodName  = "/server.ServerAPI/GetNodeAccessToken"
 )
 
 // ServerAPIClient is the client API for ServerAPI service.
@@ -40,11 +41,12 @@ type ServerAPIClient interface {
 	ListUser(ctx context.Context, in *ListUserReq, opts ...grpc.CallOption) (*ListUserResp, error)
 	ModifyUserPassword(ctx context.Context, in *ModifyUserPasswordReq, opts ...grpc.CallOption) (*UserOperationResp, error)
 	ModifyUser(ctx context.Context, in *ModifyUserReq, opts ...grpc.CallOption) (*UserOperationResp, error)
-	GetUser(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*GetUserResp, error)
+	GetUser(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*User, error)
 	DeleteUser(ctx context.Context, in *DeleteUserReq, opts ...grpc.CallOption) (*UserOperationResp, error)
 	SwitchUserRouteNode(ctx context.Context, in *SwitchUserRouteNodeReq, opts ...grpc.CallOption) (*UserOperationResp, error)
 	StartOrStopUser(ctx context.Context, in *StartOrStopUserReq, opts ...grpc.CallOption) (*UserOperationResp, error)
 	GetServerInfo(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*GetServerInfoResp, error)
+	GetNodeAccessToken(ctx context.Context, in *GetNodeAccessTokenReq, opts ...grpc.CallOption) (*GetNodeAccessTokenResp, error)
 }
 
 type serverAPIClient struct {
@@ -105,9 +107,9 @@ func (c *serverAPIClient) ModifyUser(ctx context.Context, in *ModifyUserReq, opt
 	return out, nil
 }
 
-func (c *serverAPIClient) GetUser(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*GetUserResp, error) {
+func (c *serverAPIClient) GetUser(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*User, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetUserResp)
+	out := new(User)
 	err := c.cc.Invoke(ctx, ServerAPI_GetUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -155,6 +157,16 @@ func (c *serverAPIClient) GetServerInfo(ctx context.Context, in *Empty, opts ...
 	return out, nil
 }
 
+func (c *serverAPIClient) GetNodeAccessToken(ctx context.Context, in *GetNodeAccessTokenReq, opts ...grpc.CallOption) (*GetNodeAccessTokenResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetNodeAccessTokenResp)
+	err := c.cc.Invoke(ctx, ServerAPI_GetNodeAccessToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ServerAPIServer is the server API for ServerAPI service.
 // All implementations must embed UnimplementedServerAPIServer
 // for forward compatibility.
@@ -164,11 +176,12 @@ type ServerAPIServer interface {
 	ListUser(context.Context, *ListUserReq) (*ListUserResp, error)
 	ModifyUserPassword(context.Context, *ModifyUserPasswordReq) (*UserOperationResp, error)
 	ModifyUser(context.Context, *ModifyUserReq) (*UserOperationResp, error)
-	GetUser(context.Context, *GetUserReq) (*GetUserResp, error)
+	GetUser(context.Context, *GetUserReq) (*User, error)
 	DeleteUser(context.Context, *DeleteUserReq) (*UserOperationResp, error)
 	SwitchUserRouteNode(context.Context, *SwitchUserRouteNodeReq) (*UserOperationResp, error)
 	StartOrStopUser(context.Context, *StartOrStopUserReq) (*UserOperationResp, error)
 	GetServerInfo(context.Context, *Empty) (*GetServerInfoResp, error)
+	GetNodeAccessToken(context.Context, *GetNodeAccessTokenReq) (*GetNodeAccessTokenResp, error)
 	mustEmbedUnimplementedServerAPIServer()
 }
 
@@ -194,7 +207,7 @@ func (UnimplementedServerAPIServer) ModifyUserPassword(context.Context, *ModifyU
 func (UnimplementedServerAPIServer) ModifyUser(context.Context, *ModifyUserReq) (*UserOperationResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ModifyUser not implemented")
 }
-func (UnimplementedServerAPIServer) GetUser(context.Context, *GetUserReq) (*GetUserResp, error) {
+func (UnimplementedServerAPIServer) GetUser(context.Context, *GetUserReq) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
 }
 func (UnimplementedServerAPIServer) DeleteUser(context.Context, *DeleteUserReq) (*UserOperationResp, error) {
@@ -208,6 +221,9 @@ func (UnimplementedServerAPIServer) StartOrStopUser(context.Context, *StartOrSto
 }
 func (UnimplementedServerAPIServer) GetServerInfo(context.Context, *Empty) (*GetServerInfoResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServerInfo not implemented")
+}
+func (UnimplementedServerAPIServer) GetNodeAccessToken(context.Context, *GetNodeAccessTokenReq) (*GetNodeAccessTokenResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetNodeAccessToken not implemented")
 }
 func (UnimplementedServerAPIServer) mustEmbedUnimplementedServerAPIServer() {}
 func (UnimplementedServerAPIServer) testEmbeddedByValue()                   {}
@@ -410,6 +426,24 @@ func _ServerAPI_GetServerInfo_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ServerAPI_GetNodeAccessToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetNodeAccessTokenReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServerAPIServer).GetNodeAccessToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ServerAPI_GetNodeAccessToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServerAPIServer).GetNodeAccessToken(ctx, req.(*GetNodeAccessTokenReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ServerAPI_ServiceDesc is the grpc.ServiceDesc for ServerAPI service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -456,6 +490,10 @@ var ServerAPI_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetServerInfo",
 			Handler:    _ServerAPI_GetServerInfo_Handler,
+		},
+		{
+			MethodName: "GetNodeAccessToken",
+			Handler:    _ServerAPI_GetNodeAccessToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

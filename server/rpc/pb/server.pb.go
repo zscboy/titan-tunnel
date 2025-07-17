@@ -25,10 +25,9 @@ const (
 // ---- Message Types ----
 type ListNodeReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PopId         string                 `protobuf:"bytes,1,opt,name=pop_id,json=popId,proto3" json:"pop_id,omitempty"`
-	Type          int32                  `protobuf:"varint,2,opt,name=type,proto3" json:"type,omitempty"`
-	Start         int32                  `protobuf:"varint,3,opt,name=start,proto3" json:"start,omitempty"`
-	End           int32                  `protobuf:"varint,4,opt,name=end,proto3" json:"end,omitempty"`
+	Type          int32                  `protobuf:"varint,1,opt,name=type,proto3" json:"type,omitempty"`
+	Start         int32                  `protobuf:"varint,2,opt,name=start,proto3" json:"start,omitempty"`
+	End           int32                  `protobuf:"varint,3,opt,name=end,proto3" json:"end,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -61,13 +60,6 @@ func (x *ListNodeReq) ProtoReflect() protoreflect.Message {
 // Deprecated: Use ListNodeReq.ProtoReflect.Descriptor instead.
 func (*ListNodeReq) Descriptor() ([]byte, []int) {
 	return file_server_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *ListNodeReq) GetPopId() string {
-	if x != nil {
-		return x.PopId
-	}
-	return ""
 }
 
 func (x *ListNodeReq) GetType() int32 {
@@ -343,9 +335,8 @@ type CreateUserReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserName      string                 `protobuf:"bytes,1,opt,name=user_name,json=userName,proto3" json:"user_name,omitempty"`
 	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
-	PopId         string                 `protobuf:"bytes,3,opt,name=pop_id,json=popId,proto3" json:"pop_id,omitempty"`
-	TrafficLimit  *TrafficLimit          `protobuf:"bytes,4,opt,name=traffic_limit,json=trafficLimit,proto3" json:"traffic_limit,omitempty"`
-	Route         *Route                 `protobuf:"bytes,5,opt,name=route,proto3" json:"route,omitempty"`
+	TrafficLimit  *TrafficLimit          `protobuf:"bytes,3,opt,name=traffic_limit,json=trafficLimit,proto3" json:"traffic_limit,omitempty"`
+	Route         *Route                 `protobuf:"bytes,4,opt,name=route,proto3" json:"route,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -394,13 +385,6 @@ func (x *CreateUserReq) GetPassword() string {
 	return ""
 }
 
-func (x *CreateUserReq) GetPopId() string {
-	if x != nil {
-		return x.PopId
-	}
-	return ""
-}
-
 func (x *CreateUserReq) GetTrafficLimit() *TrafficLimit {
 	if x != nil {
 		return x.TrafficLimit
@@ -418,10 +402,9 @@ func (x *CreateUserReq) GetRoute() *Route {
 type CreateUserResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserName      string                 `protobuf:"bytes,1,opt,name=user_name,json=userName,proto3" json:"user_name,omitempty"`
-	PopId         string                 `protobuf:"bytes,2,opt,name=pop_id,json=popId,proto3" json:"pop_id,omitempty"`
-	TrafficLimit  *TrafficLimit          `protobuf:"bytes,3,opt,name=traffic_limit,json=trafficLimit,proto3" json:"traffic_limit,omitempty"`
-	Route         *Route                 `protobuf:"bytes,4,opt,name=route,proto3" json:"route,omitempty"`
-	NodeIp        string                 `protobuf:"bytes,5,opt,name=node_ip,json=nodeIp,proto3" json:"node_ip,omitempty"`
+	TrafficLimit  *TrafficLimit          `protobuf:"bytes,2,opt,name=traffic_limit,json=trafficLimit,proto3" json:"traffic_limit,omitempty"`
+	Route         *Route                 `protobuf:"bytes,3,opt,name=route,proto3" json:"route,omitempty"`
+	NodeIp        string                 `protobuf:"bytes,4,opt,name=node_ip,json=nodeIp,proto3" json:"node_ip,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -459,13 +442,6 @@ func (*CreateUserResp) Descriptor() ([]byte, []int) {
 func (x *CreateUserResp) GetUserName() string {
 	if x != nil {
 		return x.UserName
-	}
-	return ""
-}
-
-func (x *CreateUserResp) GetPopId() string {
-	if x != nil {
-		return x.PopId
 	}
 	return ""
 }
@@ -598,9 +574,8 @@ func (x *ModifyUserPasswordReq) GetNewPassword() string {
 type ModifyUserReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserName      string                 `protobuf:"bytes,1,opt,name=user_name,json=userName,proto3" json:"user_name,omitempty"`
-	PopId         string                 `protobuf:"bytes,2,opt,name=pop_id,json=popId,proto3" json:"pop_id,omitempty"`
-	TrafficLimit  *TrafficLimit          `protobuf:"bytes,3,opt,name=traffic_limit,json=trafficLimit,proto3" json:"traffic_limit,omitempty"`
-	Route         *Route                 `protobuf:"bytes,4,opt,name=route,proto3" json:"route,omitempty"`
+	TrafficLimit  *TrafficLimit          `protobuf:"bytes,2,opt,name=traffic_limit,json=trafficLimit,proto3" json:"traffic_limit,omitempty"`
+	Route         *Route                 `protobuf:"bytes,3,opt,name=route,proto3" json:"route,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -638,13 +613,6 @@ func (*ModifyUserReq) Descriptor() ([]byte, []int) {
 func (x *ModifyUserReq) GetUserName() string {
 	if x != nil {
 		return x.UserName
-	}
-	return ""
-}
-
-func (x *ModifyUserReq) GetPopId() string {
-	if x != nil {
-		return x.PopId
 	}
 	return ""
 }
@@ -707,82 +675,6 @@ func (x *GetUserReq) GetUserName() string {
 	return ""
 }
 
-type GetUserResp struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserName      string                 `protobuf:"bytes,1,opt,name=user_name,json=userName,proto3" json:"user_name,omitempty"`
-	PopId         string                 `protobuf:"bytes,2,opt,name=pop_id,json=popId,proto3" json:"pop_id,omitempty"`
-	TrafficLimit  *TrafficLimit          `protobuf:"bytes,3,opt,name=traffic_limit,json=trafficLimit,proto3" json:"traffic_limit,omitempty"`
-	Route         *Route                 `protobuf:"bytes,4,opt,name=route,proto3" json:"route,omitempty"`
-	NodeIp        string                 `protobuf:"bytes,5,opt,name=node_ip,json=nodeIp,proto3" json:"node_ip,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetUserResp) Reset() {
-	*x = GetUserResp{}
-	mi := &file_server_proto_msgTypes[11]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetUserResp) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetUserResp) ProtoMessage() {}
-
-func (x *GetUserResp) ProtoReflect() protoreflect.Message {
-	mi := &file_server_proto_msgTypes[11]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetUserResp.ProtoReflect.Descriptor instead.
-func (*GetUserResp) Descriptor() ([]byte, []int) {
-	return file_server_proto_rawDescGZIP(), []int{11}
-}
-
-func (x *GetUserResp) GetUserName() string {
-	if x != nil {
-		return x.UserName
-	}
-	return ""
-}
-
-func (x *GetUserResp) GetPopId() string {
-	if x != nil {
-		return x.PopId
-	}
-	return ""
-}
-
-func (x *GetUserResp) GetTrafficLimit() *TrafficLimit {
-	if x != nil {
-		return x.TrafficLimit
-	}
-	return nil
-}
-
-func (x *GetUserResp) GetRoute() *Route {
-	if x != nil {
-		return x.Route
-	}
-	return nil
-}
-
-func (x *GetUserResp) GetNodeIp() string {
-	if x != nil {
-		return x.NodeIp
-	}
-	return ""
-}
-
 type SwitchUserRouteNodeReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserName      string                 `protobuf:"bytes,1,opt,name=user_name,json=userName,proto3" json:"user_name,omitempty"`
@@ -793,7 +685,7 @@ type SwitchUserRouteNodeReq struct {
 
 func (x *SwitchUserRouteNodeReq) Reset() {
 	*x = SwitchUserRouteNodeReq{}
-	mi := &file_server_proto_msgTypes[12]
+	mi := &file_server_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -805,7 +697,7 @@ func (x *SwitchUserRouteNodeReq) String() string {
 func (*SwitchUserRouteNodeReq) ProtoMessage() {}
 
 func (x *SwitchUserRouteNodeReq) ProtoReflect() protoreflect.Message {
-	mi := &file_server_proto_msgTypes[12]
+	mi := &file_server_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -818,7 +710,7 @@ func (x *SwitchUserRouteNodeReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SwitchUserRouteNodeReq.ProtoReflect.Descriptor instead.
 func (*SwitchUserRouteNodeReq) Descriptor() ([]byte, []int) {
-	return file_server_proto_rawDescGZIP(), []int{12}
+	return file_server_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *SwitchUserRouteNodeReq) GetUserName() string {
@@ -844,7 +736,7 @@ type DeleteUserReq struct {
 
 func (x *DeleteUserReq) Reset() {
 	*x = DeleteUserReq{}
-	mi := &file_server_proto_msgTypes[13]
+	mi := &file_server_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -856,7 +748,7 @@ func (x *DeleteUserReq) String() string {
 func (*DeleteUserReq) ProtoMessage() {}
 
 func (x *DeleteUserReq) ProtoReflect() protoreflect.Message {
-	mi := &file_server_proto_msgTypes[13]
+	mi := &file_server_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -869,7 +761,7 @@ func (x *DeleteUserReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteUserReq.ProtoReflect.Descriptor instead.
 func (*DeleteUserReq) Descriptor() ([]byte, []int) {
-	return file_server_proto_rawDescGZIP(), []int{13}
+	return file_server_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *DeleteUserReq) GetUserName() string {
@@ -889,7 +781,7 @@ type StartOrStopUserReq struct {
 
 func (x *StartOrStopUserReq) Reset() {
 	*x = StartOrStopUserReq{}
-	mi := &file_server_proto_msgTypes[14]
+	mi := &file_server_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -901,7 +793,7 @@ func (x *StartOrStopUserReq) String() string {
 func (*StartOrStopUserReq) ProtoMessage() {}
 
 func (x *StartOrStopUserReq) ProtoReflect() protoreflect.Message {
-	mi := &file_server_proto_msgTypes[14]
+	mi := &file_server_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -914,7 +806,7 @@ func (x *StartOrStopUserReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartOrStopUserReq.ProtoReflect.Descriptor instead.
 func (*StartOrStopUserReq) Descriptor() ([]byte, []int) {
-	return file_server_proto_rawDescGZIP(), []int{14}
+	return file_server_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *StartOrStopUserReq) GetUserName() string {
@@ -937,15 +829,16 @@ type User struct {
 	TrafficLimit   *TrafficLimit          `protobuf:"bytes,2,opt,name=traffic_limit,json=trafficLimit,proto3" json:"traffic_limit,omitempty"`
 	Route          *Route                 `protobuf:"bytes,3,opt,name=route,proto3" json:"route,omitempty"`
 	NodeIp         string                 `protobuf:"bytes,4,opt,name=node_ip,json=nodeIp,proto3" json:"node_ip,omitempty"`
-	CurrentTraffic int64                  `protobuf:"varint,5,opt,name=current_traffic,json=currentTraffic,proto3" json:"current_traffic,omitempty"`
-	Off            bool                   `protobuf:"varint,6,opt,name=off,proto3" json:"off,omitempty"`
+	NodeOnline     bool                   `protobuf:"varint,5,opt,name=node_online,json=nodeOnline,proto3" json:"node_online,omitempty"`
+	CurrentTraffic int64                  `protobuf:"varint,6,opt,name=current_traffic,json=currentTraffic,proto3" json:"current_traffic,omitempty"`
+	Off            bool                   `protobuf:"varint,7,opt,name=off,proto3" json:"off,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
 
 func (x *User) Reset() {
 	*x = User{}
-	mi := &file_server_proto_msgTypes[15]
+	mi := &file_server_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -957,7 +850,7 @@ func (x *User) String() string {
 func (*User) ProtoMessage() {}
 
 func (x *User) ProtoReflect() protoreflect.Message {
-	mi := &file_server_proto_msgTypes[15]
+	mi := &file_server_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -970,7 +863,7 @@ func (x *User) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use User.ProtoReflect.Descriptor instead.
 func (*User) Descriptor() ([]byte, []int) {
-	return file_server_proto_rawDescGZIP(), []int{15}
+	return file_server_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *User) GetUserName() string {
@@ -1001,6 +894,13 @@ func (x *User) GetNodeIp() string {
 	return ""
 }
 
+func (x *User) GetNodeOnline() bool {
+	if x != nil {
+		return x.NodeOnline
+	}
+	return false
+}
+
 func (x *User) GetCurrentTraffic() int64 {
 	if x != nil {
 		return x.CurrentTraffic
@@ -1017,16 +917,15 @@ func (x *User) GetOff() bool {
 
 type ListUserReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PopId         string                 `protobuf:"bytes,1,opt,name=pop_id,json=popId,proto3" json:"pop_id,omitempty"`
-	Start         int32                  `protobuf:"varint,2,opt,name=start,proto3" json:"start,omitempty"`
-	End           int32                  `protobuf:"varint,3,opt,name=end,proto3" json:"end,omitempty"`
+	Start         int32                  `protobuf:"varint,1,opt,name=start,proto3" json:"start,omitempty"`
+	End           int32                  `protobuf:"varint,2,opt,name=end,proto3" json:"end,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ListUserReq) Reset() {
 	*x = ListUserReq{}
-	mi := &file_server_proto_msgTypes[16]
+	mi := &file_server_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1038,7 +937,7 @@ func (x *ListUserReq) String() string {
 func (*ListUserReq) ProtoMessage() {}
 
 func (x *ListUserReq) ProtoReflect() protoreflect.Message {
-	mi := &file_server_proto_msgTypes[16]
+	mi := &file_server_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1051,14 +950,7 @@ func (x *ListUserReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListUserReq.ProtoReflect.Descriptor instead.
 func (*ListUserReq) Descriptor() ([]byte, []int) {
-	return file_server_proto_rawDescGZIP(), []int{16}
-}
-
-func (x *ListUserReq) GetPopId() string {
-	if x != nil {
-		return x.PopId
-	}
-	return ""
+	return file_server_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ListUserReq) GetStart() int32 {
@@ -1085,7 +977,7 @@ type ListUserResp struct {
 
 func (x *ListUserResp) Reset() {
 	*x = ListUserResp{}
-	mi := &file_server_proto_msgTypes[17]
+	mi := &file_server_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1097,7 +989,7 @@ func (x *ListUserResp) String() string {
 func (*ListUserResp) ProtoMessage() {}
 
 func (x *ListUserResp) ProtoReflect() protoreflect.Message {
-	mi := &file_server_proto_msgTypes[17]
+	mi := &file_server_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1110,7 +1002,7 @@ func (x *ListUserResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListUserResp.ProtoReflect.Descriptor instead.
 func (*ListUserResp) Descriptor() ([]byte, []int) {
-	return file_server_proto_rawDescGZIP(), []int{17}
+	return file_server_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ListUserResp) GetUsers() []*User {
@@ -1129,16 +1021,15 @@ func (x *ListUserResp) GetTotal() int32 {
 
 type GetServerInfoResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Socks5Addr    string                 `protobuf:"bytes,2,opt,name=socks5_addr,json=socks5Addr,proto3" json:"socks5_addr,omitempty"`
-	WsServerUrl   string                 `protobuf:"bytes,3,opt,name=ws_server_url,json=wsServerUrl,proto3" json:"ws_server_url,omitempty"`
+	Socks5Addr    string                 `protobuf:"bytes,1,opt,name=socks5_addr,json=socks5Addr,proto3" json:"socks5_addr,omitempty"`
+	WsServerUrl   string                 `protobuf:"bytes,2,opt,name=ws_server_url,json=wsServerUrl,proto3" json:"ws_server_url,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetServerInfoResp) Reset() {
 	*x = GetServerInfoResp{}
-	mi := &file_server_proto_msgTypes[18]
+	mi := &file_server_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1150,7 +1041,7 @@ func (x *GetServerInfoResp) String() string {
 func (*GetServerInfoResp) ProtoMessage() {}
 
 func (x *GetServerInfoResp) ProtoReflect() protoreflect.Message {
-	mi := &file_server_proto_msgTypes[18]
+	mi := &file_server_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1163,14 +1054,7 @@ func (x *GetServerInfoResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetServerInfoResp.ProtoReflect.Descriptor instead.
 func (*GetServerInfoResp) Descriptor() ([]byte, []int) {
-	return file_server_proto_rawDescGZIP(), []int{18}
-}
-
-func (x *GetServerInfoResp) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
+	return file_server_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *GetServerInfoResp) GetSocks5Addr() string {
@@ -1187,6 +1071,94 @@ func (x *GetServerInfoResp) GetWsServerUrl() string {
 	return ""
 }
 
+type GetNodeAccessTokenReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	NodeId        string                 `protobuf:"bytes,1,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetNodeAccessTokenReq) Reset() {
+	*x = GetNodeAccessTokenReq{}
+	mi := &file_server_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetNodeAccessTokenReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetNodeAccessTokenReq) ProtoMessage() {}
+
+func (x *GetNodeAccessTokenReq) ProtoReflect() protoreflect.Message {
+	mi := &file_server_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetNodeAccessTokenReq.ProtoReflect.Descriptor instead.
+func (*GetNodeAccessTokenReq) Descriptor() ([]byte, []int) {
+	return file_server_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *GetNodeAccessTokenReq) GetNodeId() string {
+	if x != nil {
+		return x.NodeId
+	}
+	return ""
+}
+
+type GetNodeAccessTokenResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetNodeAccessTokenResp) Reset() {
+	*x = GetNodeAccessTokenResp{}
+	mi := &file_server_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetNodeAccessTokenResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetNodeAccessTokenResp) ProtoMessage() {}
+
+func (x *GetNodeAccessTokenResp) ProtoReflect() protoreflect.Message {
+	mi := &file_server_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetNodeAccessTokenResp.ProtoReflect.Descriptor instead.
+func (*GetNodeAccessTokenResp) Descriptor() ([]byte, []int) {
+	return file_server_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *GetNodeAccessTokenResp) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
 type Empty struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -1195,7 +1167,7 @@ type Empty struct {
 
 func (x *Empty) Reset() {
 	*x = Empty{}
-	mi := &file_server_proto_msgTypes[19]
+	mi := &file_server_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1207,7 +1179,7 @@ func (x *Empty) String() string {
 func (*Empty) ProtoMessage() {}
 
 func (x *Empty) ProtoReflect() protoreflect.Message {
-	mi := &file_server_proto_msgTypes[19]
+	mi := &file_server_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1220,19 +1192,18 @@ func (x *Empty) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Empty.ProtoReflect.Descriptor instead.
 func (*Empty) Descriptor() ([]byte, []int) {
-	return file_server_proto_rawDescGZIP(), []int{19}
+	return file_server_proto_rawDescGZIP(), []int{20}
 }
 
 var File_server_proto protoreflect.FileDescriptor
 
 const file_server_proto_rawDesc = "" +
 	"\n" +
-	"\fserver.proto\x12\x06server\x1a\x1bgoogle/protobuf/empty.proto\"`\n" +
-	"\vListNodeReq\x12\x15\n" +
-	"\x06pop_id\x18\x01 \x01(\tR\x05popId\x12\x12\n" +
-	"\x04type\x18\x02 \x01(\x05R\x04type\x12\x14\n" +
-	"\x05start\x18\x03 \x01(\x05R\x05start\x12\x10\n" +
-	"\x03end\x18\x04 \x01(\x05R\x03end\"x\n" +
+	"\fserver.proto\x12\x06server\x1a\x1bgoogle/protobuf/empty.proto\"I\n" +
+	"\vListNodeReq\x12\x12\n" +
+	"\x04type\x18\x01 \x01(\x05R\x04type\x12\x14\n" +
+	"\x05start\x18\x02 \x01(\x05R\x05start\x12\x10\n" +
+	"\x03end\x18\x03 \x01(\x05R\x03end\"x\n" +
 	"\x04Node\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x0e\n" +
 	"\x02ip\x18\x02 \x01(\tR\x02ip\x12\x1b\n" +
@@ -1250,39 +1221,30 @@ const file_server_proto_rawDesc = "" +
 	"\n" +
 	"start_time\x18\x01 \x01(\x03R\tstartTime\x12\x19\n" +
 	"\bend_time\x18\x02 \x01(\x03R\aendTime\x12#\n" +
-	"\rtotal_traffic\x18\x03 \x01(\x03R\ftotalTraffic\"\xbf\x01\n" +
+	"\rtotal_traffic\x18\x03 \x01(\x03R\ftotalTraffic\"\xa8\x01\n" +
 	"\rCreateUserReq\x12\x1b\n" +
 	"\tuser_name\x18\x01 \x01(\tR\buserName\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x15\n" +
-	"\x06pop_id\x18\x03 \x01(\tR\x05popId\x129\n" +
-	"\rtraffic_limit\x18\x04 \x01(\v2\x14.server.TrafficLimitR\ftrafficLimit\x12#\n" +
-	"\x05route\x18\x05 \x01(\v2\r.server.RouteR\x05route\"\xbd\x01\n" +
-	"\x0eCreateUserResp\x12\x1b\n" +
-	"\tuser_name\x18\x01 \x01(\tR\buserName\x12\x15\n" +
-	"\x06pop_id\x18\x02 \x01(\tR\x05popId\x129\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\x129\n" +
 	"\rtraffic_limit\x18\x03 \x01(\v2\x14.server.TrafficLimitR\ftrafficLimit\x12#\n" +
-	"\x05route\x18\x04 \x01(\v2\r.server.RouteR\x05route\x12\x17\n" +
-	"\anode_ip\x18\x05 \x01(\tR\x06nodeIp\"F\n" +
+	"\x05route\x18\x04 \x01(\v2\r.server.RouteR\x05route\"\xa6\x01\n" +
+	"\x0eCreateUserResp\x12\x1b\n" +
+	"\tuser_name\x18\x01 \x01(\tR\buserName\x129\n" +
+	"\rtraffic_limit\x18\x02 \x01(\v2\x14.server.TrafficLimitR\ftrafficLimit\x12#\n" +
+	"\x05route\x18\x03 \x01(\v2\r.server.RouteR\x05route\x12\x17\n" +
+	"\anode_ip\x18\x04 \x01(\tR\x06nodeIp\"F\n" +
 	"\x11UserOperationResp\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x17\n" +
 	"\aerr_msg\x18\x02 \x01(\tR\x06errMsg\"W\n" +
 	"\x15ModifyUserPasswordReq\x12\x1b\n" +
 	"\tuser_name\x18\x01 \x01(\tR\buserName\x12!\n" +
-	"\fnew_password\x18\x02 \x01(\tR\vnewPassword\"\xa3\x01\n" +
+	"\fnew_password\x18\x02 \x01(\tR\vnewPassword\"\x8c\x01\n" +
 	"\rModifyUserReq\x12\x1b\n" +
-	"\tuser_name\x18\x01 \x01(\tR\buserName\x12\x15\n" +
-	"\x06pop_id\x18\x02 \x01(\tR\x05popId\x129\n" +
-	"\rtraffic_limit\x18\x03 \x01(\v2\x14.server.TrafficLimitR\ftrafficLimit\x12#\n" +
-	"\x05route\x18\x04 \x01(\v2\r.server.RouteR\x05route\")\n" +
+	"\tuser_name\x18\x01 \x01(\tR\buserName\x129\n" +
+	"\rtraffic_limit\x18\x02 \x01(\v2\x14.server.TrafficLimitR\ftrafficLimit\x12#\n" +
+	"\x05route\x18\x03 \x01(\v2\r.server.RouteR\x05route\")\n" +
 	"\n" +
 	"GetUserReq\x12\x1b\n" +
-	"\tuser_name\x18\x01 \x01(\tR\buserName\"\xba\x01\n" +
-	"\vGetUserResp\x12\x1b\n" +
-	"\tuser_name\x18\x01 \x01(\tR\buserName\x12\x15\n" +
-	"\x06pop_id\x18\x02 \x01(\tR\x05popId\x129\n" +
-	"\rtraffic_limit\x18\x03 \x01(\v2\x14.server.TrafficLimitR\ftrafficLimit\x12#\n" +
-	"\x05route\x18\x04 \x01(\v2\r.server.RouteR\x05route\x12\x17\n" +
-	"\anode_ip\x18\x05 \x01(\tR\x06nodeIp\"N\n" +
+	"\tuser_name\x18\x01 \x01(\tR\buserName\"N\n" +
 	"\x16SwitchUserRouteNodeReq\x12\x1b\n" +
 	"\tuser_name\x18\x01 \x01(\tR\buserName\x12\x17\n" +
 	"\anode_id\x18\x02 \x01(\tR\x06nodeId\",\n" +
@@ -1290,27 +1252,31 @@ const file_server_proto_rawDesc = "" +
 	"\tuser_name\x18\x01 \x01(\tR\buserName\"I\n" +
 	"\x12StartOrStopUserReq\x12\x1b\n" +
 	"\tuser_name\x18\x01 \x01(\tR\buserName\x12\x16\n" +
-	"\x06action\x18\x02 \x01(\tR\x06action\"\xd7\x01\n" +
+	"\x06action\x18\x02 \x01(\tR\x06action\"\xf8\x01\n" +
 	"\x04User\x12\x1b\n" +
 	"\tuser_name\x18\x01 \x01(\tR\buserName\x129\n" +
 	"\rtraffic_limit\x18\x02 \x01(\v2\x14.server.TrafficLimitR\ftrafficLimit\x12#\n" +
 	"\x05route\x18\x03 \x01(\v2\r.server.RouteR\x05route\x12\x17\n" +
-	"\anode_ip\x18\x04 \x01(\tR\x06nodeIp\x12'\n" +
-	"\x0fcurrent_traffic\x18\x05 \x01(\x03R\x0ecurrentTraffic\x12\x10\n" +
-	"\x03off\x18\x06 \x01(\bR\x03off\"L\n" +
-	"\vListUserReq\x12\x15\n" +
-	"\x06pop_id\x18\x01 \x01(\tR\x05popId\x12\x14\n" +
-	"\x05start\x18\x02 \x01(\x05R\x05start\x12\x10\n" +
-	"\x03end\x18\x03 \x01(\x05R\x03end\"H\n" +
+	"\anode_ip\x18\x04 \x01(\tR\x06nodeIp\x12\x1f\n" +
+	"\vnode_online\x18\x05 \x01(\bR\n" +
+	"nodeOnline\x12'\n" +
+	"\x0fcurrent_traffic\x18\x06 \x01(\x03R\x0ecurrentTraffic\x12\x10\n" +
+	"\x03off\x18\a \x01(\bR\x03off\"5\n" +
+	"\vListUserReq\x12\x14\n" +
+	"\x05start\x18\x01 \x01(\x05R\x05start\x12\x10\n" +
+	"\x03end\x18\x02 \x01(\x05R\x03end\"H\n" +
 	"\fListUserResp\x12\"\n" +
 	"\x05users\x18\x01 \x03(\v2\f.server.UserR\x05users\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total\"h\n" +
-	"\x11GetServerInfoResp\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1f\n" +
-	"\vsocks5_addr\x18\x02 \x01(\tR\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\"X\n" +
+	"\x11GetServerInfoResp\x12\x1f\n" +
+	"\vsocks5_addr\x18\x01 \x01(\tR\n" +
 	"socks5Addr\x12\"\n" +
-	"\rws_server_url\x18\x03 \x01(\tR\vwsServerUrl\"\a\n" +
-	"\x05Empty2\x91\x05\n" +
+	"\rws_server_url\x18\x02 \x01(\tR\vwsServerUrl\"0\n" +
+	"\x15GetNodeAccessTokenReq\x12\x17\n" +
+	"\anode_id\x18\x01 \x01(\tR\x06nodeId\".\n" +
+	"\x16GetNodeAccessTokenResp\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\"\a\n" +
+	"\x05Empty2\xdf\x05\n" +
 	"\tServerAPI\x125\n" +
 	"\bListNode\x12\x13.server.ListNodeReq\x1a\x14.server.ListNodeResp\x12;\n" +
 	"\n" +
@@ -1318,13 +1284,14 @@ const file_server_proto_rawDesc = "" +
 	"\bListUser\x12\x13.server.ListUserReq\x1a\x14.server.ListUserResp\x12N\n" +
 	"\x12ModifyUserPassword\x12\x1d.server.ModifyUserPasswordReq\x1a\x19.server.UserOperationResp\x12>\n" +
 	"\n" +
-	"ModifyUser\x12\x15.server.ModifyUserReq\x1a\x19.server.UserOperationResp\x122\n" +
-	"\aGetUser\x12\x12.server.GetUserReq\x1a\x13.server.GetUserResp\x12>\n" +
+	"ModifyUser\x12\x15.server.ModifyUserReq\x1a\x19.server.UserOperationResp\x12+\n" +
+	"\aGetUser\x12\x12.server.GetUserReq\x1a\f.server.User\x12>\n" +
 	"\n" +
 	"DeleteUser\x12\x15.server.DeleteUserReq\x1a\x19.server.UserOperationResp\x12P\n" +
 	"\x13SwitchUserRouteNode\x12\x1e.server.SwitchUserRouteNodeReq\x1a\x19.server.UserOperationResp\x12H\n" +
 	"\x0fStartOrStopUser\x12\x1a.server.StartOrStopUserReq\x1a\x19.server.UserOperationResp\x129\n" +
-	"\rGetServerInfo\x12\r.server.Empty\x1a\x19.server.GetServerInfoRespB\x06Z\x04./pbb\x06proto3"
+	"\rGetServerInfo\x12\r.server.Empty\x1a\x19.server.GetServerInfoResp\x12S\n" +
+	"\x12GetNodeAccessToken\x12\x1d.server.GetNodeAccessTokenReq\x1a\x1e.server.GetNodeAccessTokenRespB\x06Z\x04./pbb\x06proto3"
 
 var (
 	file_server_proto_rawDescOnce sync.Once
@@ -1338,7 +1305,7 @@ func file_server_proto_rawDescGZIP() []byte {
 	return file_server_proto_rawDescData
 }
 
-var file_server_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
+var file_server_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
 var file_server_proto_goTypes = []any{
 	(*ListNodeReq)(nil),            // 0: server.ListNodeReq
 	(*Node)(nil),                   // 1: server.Node
@@ -1351,15 +1318,16 @@ var file_server_proto_goTypes = []any{
 	(*ModifyUserPasswordReq)(nil),  // 8: server.ModifyUserPasswordReq
 	(*ModifyUserReq)(nil),          // 9: server.ModifyUserReq
 	(*GetUserReq)(nil),             // 10: server.GetUserReq
-	(*GetUserResp)(nil),            // 11: server.GetUserResp
-	(*SwitchUserRouteNodeReq)(nil), // 12: server.SwitchUserRouteNodeReq
-	(*DeleteUserReq)(nil),          // 13: server.DeleteUserReq
-	(*StartOrStopUserReq)(nil),     // 14: server.StartOrStopUserReq
-	(*User)(nil),                   // 15: server.User
-	(*ListUserReq)(nil),            // 16: server.ListUserReq
-	(*ListUserResp)(nil),           // 17: server.ListUserResp
-	(*GetServerInfoResp)(nil),      // 18: server.GetServerInfoResp
-	(*Empty)(nil),                  // 19: server.Empty
+	(*SwitchUserRouteNodeReq)(nil), // 11: server.SwitchUserRouteNodeReq
+	(*DeleteUserReq)(nil),          // 12: server.DeleteUserReq
+	(*StartOrStopUserReq)(nil),     // 13: server.StartOrStopUserReq
+	(*User)(nil),                   // 14: server.User
+	(*ListUserReq)(nil),            // 15: server.ListUserReq
+	(*ListUserResp)(nil),           // 16: server.ListUserResp
+	(*GetServerInfoResp)(nil),      // 17: server.GetServerInfoResp
+	(*GetNodeAccessTokenReq)(nil),  // 18: server.GetNodeAccessTokenReq
+	(*GetNodeAccessTokenResp)(nil), // 19: server.GetNodeAccessTokenResp
+	(*Empty)(nil),                  // 20: server.Empty
 }
 var file_server_proto_depIdxs = []int32{
 	1,  // 0: server.ListNodeResp.nodes:type_name -> server.Node
@@ -1369,36 +1337,36 @@ var file_server_proto_depIdxs = []int32{
 	3,  // 4: server.CreateUserResp.route:type_name -> server.Route
 	4,  // 5: server.ModifyUserReq.traffic_limit:type_name -> server.TrafficLimit
 	3,  // 6: server.ModifyUserReq.route:type_name -> server.Route
-	4,  // 7: server.GetUserResp.traffic_limit:type_name -> server.TrafficLimit
-	3,  // 8: server.GetUserResp.route:type_name -> server.Route
-	4,  // 9: server.User.traffic_limit:type_name -> server.TrafficLimit
-	3,  // 10: server.User.route:type_name -> server.Route
-	15, // 11: server.ListUserResp.users:type_name -> server.User
-	0,  // 12: server.ServerAPI.ListNode:input_type -> server.ListNodeReq
-	5,  // 13: server.ServerAPI.CreateUser:input_type -> server.CreateUserReq
-	16, // 14: server.ServerAPI.ListUser:input_type -> server.ListUserReq
-	8,  // 15: server.ServerAPI.ModifyUserPassword:input_type -> server.ModifyUserPasswordReq
-	9,  // 16: server.ServerAPI.ModifyUser:input_type -> server.ModifyUserReq
-	10, // 17: server.ServerAPI.GetUser:input_type -> server.GetUserReq
-	13, // 18: server.ServerAPI.DeleteUser:input_type -> server.DeleteUserReq
-	12, // 19: server.ServerAPI.SwitchUserRouteNode:input_type -> server.SwitchUserRouteNodeReq
-	14, // 20: server.ServerAPI.StartOrStopUser:input_type -> server.StartOrStopUserReq
-	19, // 21: server.ServerAPI.GetServerInfo:input_type -> server.Empty
-	2,  // 22: server.ServerAPI.ListNode:output_type -> server.ListNodeResp
-	6,  // 23: server.ServerAPI.CreateUser:output_type -> server.CreateUserResp
-	17, // 24: server.ServerAPI.ListUser:output_type -> server.ListUserResp
-	7,  // 25: server.ServerAPI.ModifyUserPassword:output_type -> server.UserOperationResp
-	7,  // 26: server.ServerAPI.ModifyUser:output_type -> server.UserOperationResp
-	11, // 27: server.ServerAPI.GetUser:output_type -> server.GetUserResp
-	7,  // 28: server.ServerAPI.DeleteUser:output_type -> server.UserOperationResp
-	7,  // 29: server.ServerAPI.SwitchUserRouteNode:output_type -> server.UserOperationResp
-	7,  // 30: server.ServerAPI.StartOrStopUser:output_type -> server.UserOperationResp
-	18, // 31: server.ServerAPI.GetServerInfo:output_type -> server.GetServerInfoResp
-	22, // [22:32] is the sub-list for method output_type
-	12, // [12:22] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	4,  // 7: server.User.traffic_limit:type_name -> server.TrafficLimit
+	3,  // 8: server.User.route:type_name -> server.Route
+	14, // 9: server.ListUserResp.users:type_name -> server.User
+	0,  // 10: server.ServerAPI.ListNode:input_type -> server.ListNodeReq
+	5,  // 11: server.ServerAPI.CreateUser:input_type -> server.CreateUserReq
+	15, // 12: server.ServerAPI.ListUser:input_type -> server.ListUserReq
+	8,  // 13: server.ServerAPI.ModifyUserPassword:input_type -> server.ModifyUserPasswordReq
+	9,  // 14: server.ServerAPI.ModifyUser:input_type -> server.ModifyUserReq
+	10, // 15: server.ServerAPI.GetUser:input_type -> server.GetUserReq
+	12, // 16: server.ServerAPI.DeleteUser:input_type -> server.DeleteUserReq
+	11, // 17: server.ServerAPI.SwitchUserRouteNode:input_type -> server.SwitchUserRouteNodeReq
+	13, // 18: server.ServerAPI.StartOrStopUser:input_type -> server.StartOrStopUserReq
+	20, // 19: server.ServerAPI.GetServerInfo:input_type -> server.Empty
+	18, // 20: server.ServerAPI.GetNodeAccessToken:input_type -> server.GetNodeAccessTokenReq
+	2,  // 21: server.ServerAPI.ListNode:output_type -> server.ListNodeResp
+	6,  // 22: server.ServerAPI.CreateUser:output_type -> server.CreateUserResp
+	16, // 23: server.ServerAPI.ListUser:output_type -> server.ListUserResp
+	7,  // 24: server.ServerAPI.ModifyUserPassword:output_type -> server.UserOperationResp
+	7,  // 25: server.ServerAPI.ModifyUser:output_type -> server.UserOperationResp
+	14, // 26: server.ServerAPI.GetUser:output_type -> server.User
+	7,  // 27: server.ServerAPI.DeleteUser:output_type -> server.UserOperationResp
+	7,  // 28: server.ServerAPI.SwitchUserRouteNode:output_type -> server.UserOperationResp
+	7,  // 29: server.ServerAPI.StartOrStopUser:output_type -> server.UserOperationResp
+	17, // 30: server.ServerAPI.GetServerInfo:output_type -> server.GetServerInfoResp
+	19, // 31: server.ServerAPI.GetNodeAccessToken:output_type -> server.GetNodeAccessTokenResp
+	21, // [21:32] is the sub-list for method output_type
+	10, // [10:21] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_server_proto_init() }
@@ -1412,7 +1380,7 @@ func file_server_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_server_proto_rawDesc), len(file_server_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   20,
+			NumMessages:   21,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

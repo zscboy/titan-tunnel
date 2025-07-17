@@ -7,10 +7,9 @@ import "google/protobuf/empty.proto";
 
 // ---- Message Types ----
 message ListNodeReq {
-  string pop_id = 1;
-  int32 type = 2;
-  int32 start = 3;
-  int32 end = 4;
+  int32 type = 1;
+  int32 start = 2;
+  int32 end = 3;
 }
 
 message Node {
@@ -41,17 +40,15 @@ message TrafficLimit {
 message CreateUserReq {
   string user_name = 1;
   string password = 2;
-  string pop_id = 3;
-  TrafficLimit traffic_limit = 4;
-  Route route = 5;
+  TrafficLimit traffic_limit = 3;
+  Route route = 4;
 }
 
 message CreateUserResp {
   string user_name = 1;
-  string pop_id = 2;
-  TrafficLimit traffic_limit = 3;
-  Route route = 4;
-  string node_ip = 5;
+  TrafficLimit traffic_limit = 2;
+  Route route = 3;
+  string node_ip = 4;
 }
 
 message UserOperationResp {
@@ -66,21 +63,12 @@ message ModifyUserPasswordReq {
 
 message ModifyUserReq {
   string user_name = 1;
-  string pop_id = 2;
-  TrafficLimit traffic_limit = 3;
-  Route route = 4;
+  TrafficLimit traffic_limit = 2;
+  Route route = 3;
 }
 
 message GetUserReq {
   string user_name = 1;
-}
-
-message GetUserResp {
-  string user_name = 1;
-  string pop_id = 2;
-  TrafficLimit traffic_limit = 3;
-  Route route = 4;
-  string node_ip = 5;
 }
 
 message SwitchUserRouteNodeReq {
@@ -102,14 +90,14 @@ message User {
   TrafficLimit traffic_limit = 2;
   Route route = 3;
   string node_ip = 4;
-  int64 current_traffic = 5;
-  bool off = 6;
+  bool node_online = 5;
+  int64 current_traffic = 6;
+  bool off = 7;
 }
 
 message ListUserReq {
-  string pop_id = 1;
-  int32 start = 2;
-  int32 end = 3;
+  int32 start = 1;
+  int32 end = 2;
 }
 
 message ListUserResp {
@@ -118,9 +106,16 @@ message ListUserResp {
 }
 
 message GetServerInfoResp {
-  string id = 1;
-  string socks5_addr = 2;
-  string ws_server_url = 3;
+  string socks5_addr = 1;
+  string ws_server_url = 2;
+}
+
+message GetNodeAccessTokenReq {
+  string node_id = 1;
+}
+
+message GetNodeAccessTokenResp {
+  string token = 1;
 }
 
  message Empty {}
@@ -133,9 +128,10 @@ service ServerAPI {
   rpc ListUser(ListUserReq) returns (ListUserResp);
   rpc ModifyUserPassword(ModifyUserPasswordReq) returns (UserOperationResp);
   rpc ModifyUser(ModifyUserReq) returns (UserOperationResp);
-  rpc GetUser(GetUserReq) returns (GetUserResp);
+  rpc GetUser(GetUserReq) returns (User);
   rpc DeleteUser(DeleteUserReq) returns (UserOperationResp);
   rpc SwitchUserRouteNode(SwitchUserRouteNodeReq) returns (UserOperationResp);
   rpc StartOrStopUser(StartOrStopUserReq) returns (UserOperationResp);
   rpc GetServerInfo (Empty) returns (GetServerInfoResp);
+  rpc GetNodeAccessToken(GetNodeAccessTokenReq) returns (GetNodeAccessTokenResp);
 }

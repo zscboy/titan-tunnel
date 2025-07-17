@@ -1,17 +1,15 @@
 APIServer:
   Name: titan-tunnel-server
   Host: 0.0.0.0
-  Port: 8080
-  # Redis:
-  #   Host: 127.0.0.1:6379
+  Port: 41005
   JwtAuth:
-    AccessSecret: ef61299a-53e6-11f0-87d4-e72f7b1c2247
-    AccessExpire: 86400
+    AccessSecret: 5c92f1c4-5c70-11f0-a38c-339a56c61685
+    AccessExpire: 2592000
   Socks5:
-    Addr: 0.0.0.0:5000
-    UDPServerIP: 127.0.0.1
-    UDPPortStart: 7100
-    UDPPortEnd: 7200
+    Addr: 0.0.0.0:41003
+    ServerIP: 192.168.0.104
+    UDPPortStart: 40101
+    UDPPortEnd: 41000
     EnableAuth: true
     ## 4 seconds
     ### example: dail dest timeout
@@ -20,17 +18,13 @@ APIServer:
     ### udp proxy timeout if no data transfer
     ### client udp proxy timeout is 60s
     UDPTimeout: 120
-  # Log:
-  #   stat: false
-  #   level: debug 
+
 RPCServer:
   Name: server.rpc
-  ListenOn: 0.0.0.0:8081
-  PopID: 14bf4178-6160-11f0-a0c5-00163e023040
+  ListenOn: 127.0.0.1:8080
   # APIServer: localhost:8888
 Redis:
   Host: 127.0.0.1:6379
-  Key: rpc:auth:user 
 Log:
   stat: false
   level: debug   

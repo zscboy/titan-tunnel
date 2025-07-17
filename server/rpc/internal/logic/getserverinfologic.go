@@ -28,8 +28,6 @@ func NewGetServerInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Get
 }
 
 func (l *GetServerInfoLogic) GetServerInfo(in *pb.Empty) (*pb.GetServerInfoResp, error) {
-	// todo: add your logic here and delete this line
-
 	return l.getServerInfo()
 }
 
@@ -62,5 +60,5 @@ func (l *GetServerInfoLogic) getServerInfo() (*pb.GetServerInfoResp, error) {
 		return nil, err
 	}
 
-	return &pb.GetServerInfoResp{Id: l.svcCtx.Config.PopID, Socks5Addr: serverInfo.Socks5Addr, WsServerUrl: serverInfo.WSServerURL}, nil
+	return &pb.GetServerInfoResp{Socks5Addr: serverInfo.Socks5Addr, WsServerUrl: serverInfo.WSServerURL}, nil
 }

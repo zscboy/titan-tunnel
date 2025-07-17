@@ -91,10 +91,13 @@ type (
 	GetUserResp {
 		UserName string `json:"user_name"`
 		//  the id of pop(Point of Presence)
-		PopId        string        `json:"pod_id"`
-		TrafficLimit *TrafficLimit `json:"traffic_limit"`
-		Route        *Route        `json:"route"`
-		NodeIP       string        `json:"node_ip"`
+		PopId          string        `json:"pod_id"`
+		TrafficLimit   *TrafficLimit `json:"traffic_limit"`
+		Route          *Route        `json:"route"`
+		NodeIP         string        `json:"node_ip"`
+		NodeOnline     bool          `json:"node_online"`
+		CurrentTraffic int64         `json:"current_traffic"`
+		Off            bool          `json:"off"`
 	}
 	SwitchUserRouteNodeReq {
 		UserName string `json:"user_name"`
@@ -115,6 +118,7 @@ type (
 		// if Route is nil, will use manual mode
 		Route          *Route `json:"route"`
 		NodeIP         string `json:"node_ip"`
+		NodeOnline     bool   `json:"node_online"`
 		CurrentTraffic int64  `json:"current_traffic"`
 		Off            bool   `json:"off"`
 	}

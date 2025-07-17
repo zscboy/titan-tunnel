@@ -6,7 +6,6 @@ package main
 import "C"
 
 import (
-	"context"
 	"encoding/json"
 	"time"
 
@@ -20,7 +19,8 @@ const (
 	defaultTCPTimeout = 3
 )
 
-var globalCancel context.CancelFunc
+// var globalCancel context.CancelFunc
+var mytunnel *tunnel.Tunnel
 
 func startTunnel(jsonParams string /* cUrl, cUuid *C.char, udpTimeout, tcpTimeout C.int, debug C.int*/) *JSONCallResult {
 
@@ -69,46 +69,38 @@ func startTunnel(jsonParams string /* cUrl, cUuid *C.char, udpTimeout, tcpTimeou
 		return &JSONCallResult{Code: -1, Msg: err.Error()}
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
-	globalCancel = cancel
+	mytunnel = tun
 
-	go func() {
-		defer cancel()
-		for {
-			select {
-			case <-ctx.Done():
-				logx.Info("Tunnel stopped by context")
-				return
-			default:
-				tun.Serve()
-				if tun.IsDestroy() {
-					return
-				}
-				logx.Error("wait 5 seconds to retry connect")
-				time.Sleep(5 * time.Second)
-
-				for {
-					select {
-					case <-ctx.Done():
-						return
-					default:
-						if err := tun.Connect(); err == nil {
-							break
-						}
-						logx.Error("connect failed again, retry in 5s")
-						time.Sleep(5 * time.Second)
-					}
-				}
-			}
-		}
-	}()
+	go tunServe(tun)
 
 	return &JSONCallResult{Code: 0, Msg: "success"}
 }
 
+func tunServe(tun *tunnel.Tunnel) {
+	for {
+		tun.Serve()
+
+		if tun.IsDestroy() {
+			return
+		}
+
+		var err error
+		for {
+			err = tun.Connect()
+			if err == nil {
+				break
+			}
+
+			logx.Error("wait seconds to retry connect")
+			time.Sleep(5 * time.Second)
+		}
+	}
+}
+
 func stopTunnel() *JSONCallResult {
-	if globalCancel != nil {
-		globalCancel()
+	if mytunnel != nil {
+		mytunnel.Destroy()
+		mytunnel = nil
 	}
 
 	return &JSONCallResult{Code: 0, Msg: "success"}

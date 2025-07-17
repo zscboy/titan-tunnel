@@ -38,6 +38,23 @@ func (l *ListUserLogic) ListUser(in *pb.ListUserReq) (*pb.ListUserResp, error) {
 		us = append(us, u)
 	}
 
+	// TODO: use redis transactions to get all node
+	for _, user := range us {
+		if user.Route == nil {
+			continue
+		}
+		route := user.Route
+
+		node, err := model.GetNode(l.svcCtx.Redis, route.NodeId)
+		if err != nil {
+			logx.Errorf("get node %v", err)
+			continue
+		}
+
+		user.NodeIp = node.IP
+		user.NodeOnline = node.Online
+	}
+
 	total, err := model.GetUserLen(l.svcCtx.Redis)
 	if err != nil {
 		return nil, err

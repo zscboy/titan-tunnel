@@ -12,6 +12,7 @@ type JwtAuth struct {
 }
 
 type Pop struct {
+	Id        string
 	Area      string
 	RpcClient zrpc.RpcClientConf
 }

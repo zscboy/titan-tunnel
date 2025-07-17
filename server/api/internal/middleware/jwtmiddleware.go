@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"net/http"
 	"strings"
@@ -34,7 +35,7 @@ func (m *JwtMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 				return
 			}
 
-			tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
+			tokenStr = strings.TrimPrefix(authHeader, "Bearer ")
 			if tokenStr == authHeader {
 				http.Error(w, "Invalid Authorization Header", http.StatusUnauthorized)
 				return
@@ -49,7 +50,7 @@ func (m *JwtMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 		})
 
 		if err != nil || !token.Valid {
-			http.Error(w, "Invalid token", http.StatusUnauthorized)
+			http.Error(w, fmt.Sprintf("Invalid token error:%v, token:'%s',", err, tokenStr), http.StatusUnauthorized)
 			return
 		}
 

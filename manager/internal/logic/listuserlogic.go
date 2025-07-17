@@ -32,7 +32,6 @@ func (l *ListUserLogic) ListUser(req *types.ListUserReq) (resp *types.ListUserRe
 	}
 
 	in := &serverapi.ListUserReq{
-		PopId: req.PopID,
 		Start: int32(req.Start),
 		End:   int32(req.End),
 	}
@@ -47,6 +46,7 @@ func (l *ListUserLogic) ListUser(req *types.ListUserReq) (resp *types.ListUserRe
 		u := &types.User{
 			UserName:       user.UserName,
 			NodeIP:         user.NodeIp,
+			NodeOnline:     user.NodeOnline,
 			CurrentTraffic: user.CurrentTraffic,
 			Off:            user.Off,
 			TrafficLimit:   toTrafficLimitResp(user.TrafficLimit),

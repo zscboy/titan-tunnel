@@ -48,7 +48,7 @@ func (s *ServerAPIServer) ModifyUser(ctx context.Context, in *pb.ModifyUserReq) 
 	return l.ModifyUser(in)
 }
 
-func (s *ServerAPIServer) GetUser(ctx context.Context, in *pb.GetUserReq) (*pb.GetUserResp, error) {
+func (s *ServerAPIServer) GetUser(ctx context.Context, in *pb.GetUserReq) (*pb.User, error) {
 	l := logic.NewGetUserLogic(ctx, s.svcCtx)
 	return l.GetUser(in)
 }
@@ -71,4 +71,9 @@ func (s *ServerAPIServer) StartOrStopUser(ctx context.Context, in *pb.StartOrSto
 func (s *ServerAPIServer) GetServerInfo(ctx context.Context, in *pb.Empty) (*pb.GetServerInfoResp, error) {
 	l := logic.NewGetServerInfoLogic(ctx, s.svcCtx)
 	return l.GetServerInfo(in)
+}
+
+func (s *ServerAPIServer) GetNodeAccessToken(ctx context.Context, in *pb.GetNodeAccessTokenReq) (*pb.GetNodeAccessTokenResp, error) {
+	l := logic.NewGetNodeAccessTokenLogic(ctx, s.svcCtx)
+	return l.GetNodeAccessToken(in)
 }

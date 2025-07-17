@@ -25,7 +25,7 @@ func NewGetUserLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUserLo
 	}
 }
 
-func (l *GetUserLogic) GetUser(in *pb.GetUserReq) (*pb.GetUserResp, error) {
+func (l *GetUserLogic) GetUser(in *pb.GetUserReq) (*pb.User, error) {
 	user, err := model.GetUser(l.svcCtx.Redis, in.UserName)
 	if err != nil {
 		return nil, err
@@ -42,5 +42,14 @@ func (l *GetUserLogic) GetUser(in *pb.GetUserReq) (*pb.GetUserResp, error) {
 
 	trafficLimit := &pb.TrafficLimit{StartTime: user.StartTime, EndTime: user.EndTime, TotalTraffic: user.TotalTraffic}
 	route := &pb.Route{Mode: int32(user.RouteMode), NodeId: user.RouteNodeID, Intervals: int32(user.UpdateRouteIntervals)}
-	return &pb.GetUserResp{UserName: in.UserName, TrafficLimit: trafficLimit, Route: route, NodeIp: node.IP}, nil
+	u := &pb.User{
+		UserName:       in.UserName,
+		TrafficLimit:   trafficLimit,
+		Route:          route,
+		NodeIp:         node.IP,
+		NodeOnline:     node.Online,
+		CurrentTraffic: user.CurrentTraffic,
+		Off:            user.Off,
+	}
+	return u, nil
 }

@@ -8,7 +8,6 @@ import (
 func toCreateUserResp(in *serverapi.CreateUserResp) *types.CreateUserResp {
 	resp := &types.CreateUserResp{
 		UserName: in.UserName,
-		PopId:    in.PopId,
 		NodeIP:   in.NodeIp,
 	}
 

@@ -11,11 +11,17 @@ type (
 		Socks5Addr  string `json:"socks5_addr"`
 		WSServerURL string `json:"ws_server_url"`
 	}
+	AccessTokenReq {
+		NodeId string `form:"nodeid"`
+	}
+	AccessTokenResp {
+		Token string `json:"token"`
+	}
 )
 
-// @server (
-//  middleware: JwtMiddleware // Enable jwt authentication
-// )
+@server (
+	middleware: JwtMiddleware // Enable jwt authentication
+)
 service server-api {
 	@handler nodeWS
 	get /ws/node
@@ -25,5 +31,8 @@ service server-api {
 
 	@handler getServerInfo
 	get /server/info returns (ServerInfo)
+
+	@handler getNodeAccessToken
+	get /node/access/token (AccessTokenReq) returns (AccessTokenResp)
 }
 

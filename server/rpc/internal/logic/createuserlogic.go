@@ -35,9 +35,6 @@ func NewCreateUserLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Create
 }
 
 func (l *CreateUserLogic) CreateUser(in *pb.CreateUserReq) (*pb.CreateUserResp, error) {
-	if in.PopId != l.svcCtx.Config.PopID {
-		return nil, fmt.Errorf("pop id not match, require pop id %s", l.svcCtx.Config.PopID)
-	}
 	user, err := model.GetUser(l.svcCtx.Redis, in.UserName)
 	if err != nil {
 		return nil, err

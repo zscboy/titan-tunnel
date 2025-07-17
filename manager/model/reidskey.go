@@ -1,5 +1,5 @@
 package model
 
 const (
-	redisKeyUser = "titan:user:%s"
+	redisKeyUser = "titan:manager:user:%s"
 )

@@ -33,6 +33,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	}
 }
 
+// TODO: can not get server info in here, server may be stop
 func newServers(c config.Config) map[string]*Server {
 	apis := make(map[string]*Server)
 	for _, pop := range c.Pops {
@@ -41,7 +42,7 @@ func newServers(c config.Config) map[string]*Server {
 		if err != nil {
 			panic("Get server info failed:" + err.Error())
 		}
-		apis[resp.Id] = &Server{API: api, Socks5Addr: resp.Socks5Addr, WSServerURL: resp.WsServerUrl, Area: pop.Area}
+		apis[pop.Id] = &Server{API: api, Socks5Addr: resp.Socks5Addr, WSServerURL: resp.WsServerUrl, Area: pop.Area}
 	}
 	return apis
 }

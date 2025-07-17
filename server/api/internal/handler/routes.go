@@ -13,22 +13,30 @@ import (
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodGet,
-				Path:    "/server/info",
-				Handler: getServerInfoHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/user/cache/delete",
-				Handler: deleteUserCacheHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/ws/node",
-				Handler: nodeWSHandler(serverCtx),
-			},
-		},
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.JwtMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodGet,
+					Path:    "/node/access/token",
+					Handler: getNodeAccessTokenHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodGet,
+					Path:    "/server/info",
+					Handler: getServerInfoHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/user/cache/delete",
+					Handler: deleteUserCacheHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodGet,
+					Path:    "/ws/node",
+					Handler: nodeWSHandler(serverCtx),
+				},
+			}...,
+		),
 	)
 }

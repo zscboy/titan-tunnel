@@ -55,7 +55,7 @@ func (l *DeleteUserCacheLogic) DeleteUserCache(userName string) error {
 
 	if resp.StatusCode != 200 {
 		buf, _ := io.ReadAll(resp.Body)
-		return fmt.Errorf("status code %s, error:%s", resp.StatusCode, string(buf))
+		return fmt.Errorf("status code %d, error:%s", resp.StatusCode, string(buf))
 	}
 
 	return nil

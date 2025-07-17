@@ -27,7 +27,7 @@ func NewGetPopsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetPopsLo
 func (l *GetPopsLogic) GetPops() (resp *types.GetPopsResp, err error) {
 	pops := make([]*types.Pop, 0, len(l.svcCtx.Config.Pops))
 	for id, server := range l.svcCtx.Servers {
-		listNodeResp, err := server.API.ListNode(l.ctx, &serverapi.ListNodeReq{PopId: id, Type: 1, Start: 0, End: 1})
+		listNodeResp, err := server.API.ListNode(l.ctx, &serverapi.ListNodeReq{Type: 1, Start: 0, End: 1})
 		if err != nil {
 			return nil, err
 		}

@@ -18,9 +18,10 @@ type (
 	CreateUserResp         = pb.CreateUserResp
 	DeleteUserReq          = pb.DeleteUserReq
 	Empty                  = pb.Empty
+	GetNodeAccessTokenReq  = pb.GetNodeAccessTokenReq
+	GetNodeAccessTokenResp = pb.GetNodeAccessTokenResp
 	GetServerInfoResp      = pb.GetServerInfoResp
 	GetUserReq             = pb.GetUserReq
-	GetUserResp            = pb.GetUserResp
 	ListNodeReq            = pb.ListNodeReq
 	ListNodeResp           = pb.ListNodeResp
 	ListUserReq            = pb.ListUserReq
@@ -41,11 +42,12 @@ type (
 		ListUser(ctx context.Context, in *ListUserReq, opts ...grpc.CallOption) (*ListUserResp, error)
 		ModifyUserPassword(ctx context.Context, in *ModifyUserPasswordReq, opts ...grpc.CallOption) (*UserOperationResp, error)
 		ModifyUser(ctx context.Context, in *ModifyUserReq, opts ...grpc.CallOption) (*UserOperationResp, error)
-		GetUser(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*GetUserResp, error)
+		GetUser(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*User, error)
 		DeleteUser(ctx context.Context, in *DeleteUserReq, opts ...grpc.CallOption) (*UserOperationResp, error)
 		SwitchUserRouteNode(ctx context.Context, in *SwitchUserRouteNodeReq, opts ...grpc.CallOption) (*UserOperationResp, error)
 		StartOrStopUser(ctx context.Context, in *StartOrStopUserReq, opts ...grpc.CallOption) (*UserOperationResp, error)
 		GetServerInfo(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*GetServerInfoResp, error)
+		GetNodeAccessToken(ctx context.Context, in *GetNodeAccessTokenReq, opts ...grpc.CallOption) (*GetNodeAccessTokenResp, error)
 	}
 
 	defaultServerAPI struct {
@@ -84,7 +86,7 @@ func (m *defaultServerAPI) ModifyUser(ctx context.Context, in *ModifyUserReq, op
 	return client.ModifyUser(ctx, in, opts...)
 }
 
-func (m *defaultServerAPI) GetUser(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*GetUserResp, error) {
+func (m *defaultServerAPI) GetUser(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*User, error) {
 	client := pb.NewServerAPIClient(m.cli.Conn())
 	return client.GetUser(ctx, in, opts...)
 }
@@ -107,4 +109,9 @@ func (m *defaultServerAPI) StartOrStopUser(ctx context.Context, in *StartOrStopU
 func (m *defaultServerAPI) GetServerInfo(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*GetServerInfoResp, error) {
 	client := pb.NewServerAPIClient(m.cli.Conn())
 	return client.GetServerInfo(ctx, in, opts...)
+}
+
+func (m *defaultServerAPI) GetNodeAccessToken(ctx context.Context, in *GetNodeAccessTokenReq, opts ...grpc.CallOption) (*GetNodeAccessTokenResp, error) {
+	client := pb.NewServerAPIClient(m.cli.Conn())
+	return client.GetNodeAccessToken(ctx, in, opts...)
 }

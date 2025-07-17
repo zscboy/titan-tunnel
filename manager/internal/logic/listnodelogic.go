@@ -32,7 +32,6 @@ func (l *ListNodeLogic) ListNode(req *types.ListNodeReq) (resp *types.ListNodeRe
 	}
 
 	in := &serverapi.ListNodeReq{
-		PopId: req.PopID,
 		Type:  int32(req.Type),
 		Start: int32(req.Start),
 		End:   int32(req.End),
