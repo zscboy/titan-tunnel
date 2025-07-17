@@ -23,7 +23,7 @@ const (
 var mytunnel *tunnel.Tunnel
 
 func startTunnel(jsonParams string /* cUrl, cUuid *C.char, udpTimeout, tcpTimeout C.int, debug C.int*/) *JSONCallResult {
-
+	LogDebug("golib", "startTunnel: "+jsonParams)
 	var input = struct {
 		ServerURL  string `json:"server_url"`
 		UUID       string `json:"uuid"`
@@ -77,6 +77,7 @@ func startTunnel(jsonParams string /* cUrl, cUuid *C.char, udpTimeout, tcpTimeou
 }
 
 func tunServe(tun *tunnel.Tunnel) {
+	defer logx.Info("tun client stop")
 	for {
 		tun.Serve()
 
@@ -91,7 +92,8 @@ func tunServe(tun *tunnel.Tunnel) {
 				break
 			}
 
-			logx.Error("wait seconds to retry connect")
+			// logx.Error("wait seconds to retry connect")
+			LogDebug("golib", "wait seconds to retry connect")
 			time.Sleep(5 * time.Second)
 		}
 	}
