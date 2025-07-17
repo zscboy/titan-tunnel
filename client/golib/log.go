@@ -6,7 +6,6 @@ package main
 import "C"
 import (
 	"runtime"
-	"unsafe"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -21,7 +20,6 @@ func androidLogDebug(tag, msg string) {
 	cMsg := C.CString(msg)
 	defer freeCString(cTag)
 	defer freeCString(cMsg)
-	defer C.free(unsafe.Pointer(cMsg))
 	logToAndroid(C.ANDROID_LOG_DEBUG, cTag, cMsg)
 }
 
