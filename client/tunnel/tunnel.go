@@ -11,6 +11,7 @@ import (
 	"runtime"
 	"sync"
 	"time"
+	"titan-tunnel/client/log"
 	"titan-tunnel/server/api/ws/pb"
 
 	"github.com/gorilla/websocket"
@@ -395,7 +396,7 @@ func (t *Tunnel) keepalive() {
 	for {
 		select {
 		case <-ticker.C:
-			logx.Debug("keepalive tick")
+			log.LogDebug("tunnel", "keepalive tick")
 			if t.conn == nil {
 				return
 			}

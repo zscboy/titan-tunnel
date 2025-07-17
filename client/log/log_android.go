@@ -1,4 +1,6 @@
-package main
+//go:build android
+
+package log
 
 /*
 #include <android/log.h>

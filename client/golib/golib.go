@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
+	"titan-tunnel/client/log"
 	"titan-tunnel/client/tunnel"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -18,7 +19,7 @@ const (
 var mytunnel *tunnel.Tunnel
 
 func startTunnel(jsonParams string) *JSONCallResult {
-	LogDebug("golib", "startTunnel: "+jsonParams)
+	log.LogDebug("golib", "startTunnel: "+jsonParams)
 	var input = struct {
 		ServerURL  string `json:"server_url"`
 		UUID       string `json:"uuid"`
@@ -88,7 +89,7 @@ func tunServe(tun *tunnel.Tunnel) {
 			}
 
 			// logx.Error("wait seconds to retry connect")
-			LogDebug("golib", "wait seconds to retry connect")
+			log.LogDebug("golib", "wait seconds to retry connect")
 			time.Sleep(5 * time.Second)
 		}
 	}
