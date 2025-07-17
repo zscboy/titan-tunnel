@@ -1,5 +1,9 @@
 package main
 
+/*
+#include <android/log.h>
+*/
+import "C"
 import (
 	"runtime"
 	"unsafe"
@@ -24,6 +28,6 @@ func LogDebug(tag, msg string) {
 	if runtime.GOOS == "android" {
 		androidLogDebug(tag, msg)
 	} else {
-		logx.Debug(tag, msg)
+		logx.Debugf("[%s] %s", tag, msg)
 	}
 }
