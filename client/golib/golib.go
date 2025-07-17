@@ -81,13 +81,10 @@ func tunServe(tun *tunnel.Tunnel) {
 			return
 		}
 
-		var err error
 		for {
-			err = tun.Connect()
-			if err == nil {
+			if err := tun.Connect(); err == nil {
 				break
 			}
-
 			// logx.Error("wait seconds to retry connect")
 			log.LogDebug("golib", "wait seconds to retry connect")
 			time.Sleep(5 * time.Second)
