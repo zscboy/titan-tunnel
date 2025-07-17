@@ -47,7 +47,6 @@ type Tunnel struct {
 }
 
 func NewTunnel(serverUrl, uuid string, udpTimeout, tcpTimeout int) (*Tunnel, error) {
-	ctx, cancel := context.WithCancel(context.Background())
 	tun := &Tunnel{
 		uuid:       uuid,
 		writeLock:  sync.Mutex{},
@@ -55,8 +54,6 @@ func NewTunnel(serverUrl, uuid string, udpTimeout, tcpTimeout int) (*Tunnel, err
 		isDestroy:  false,
 		udpTimeout: udpTimeout,
 		tcpTimeout: tcpTimeout,
-		ctx:        ctx,
-		ctxCancel:  cancel,
 	}
 
 	return tun, nil
@@ -95,6 +92,8 @@ func (t *Tunnel) Connect() error {
 		return nil
 	})
 
+	t.ctx, t.ctxCancel = context.WithCancel(context.Background())
+
 	t.waitpone = 0
 	t.conn = conn
 
@@ -126,7 +125,6 @@ func (t *Tunnel) getPop(serverURL string) (*Pop, error) {
 }
 
 func (t *Tunnel) Destroy() error {
-	t.ctxCancel()
 	if t.conn != nil {
 		t.isDestroy = true
 		return t.conn.Close()
@@ -141,6 +139,7 @@ func (t *Tunnel) IsDestroy() bool {
 
 func (t *Tunnel) Serve() error {
 	conn := t.conn
+	defer t.ctxCancel()
 	defer conn.Close()
 
 	for {
@@ -398,7 +397,7 @@ func (t *Tunnel) keepalive() {
 		case <-ticker.C:
 			logx.Debug("keepalive tick")
 			if t.conn == nil {
-				continue
+				return
 			}
 
 			if t.waitpone > waitPoneTimeout {
