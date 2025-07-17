@@ -19,7 +19,8 @@ func logToAndroid(level C.int, tag, msg *C.char) {
 func androidLogDebug(tag, msg string) {
 	cTag := C.CString(tag)
 	cMsg := C.CString(msg)
-	defer C.free(unsafe.Pointer(cTag))
+	defer freeCString(cTag)
+	defer freeCString(cMsg)
 	defer C.free(unsafe.Pointer(cMsg))
 	logToAndroid(C.ANDROID_LOG_DEBUG, cTag, cMsg)
 }

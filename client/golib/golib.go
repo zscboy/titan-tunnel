@@ -1,10 +1,5 @@
 package main
 
-/*
-#include <stdlib.h>
-*/
-import "C"
-
 import (
 	"encoding/json"
 	"time"
@@ -22,7 +17,7 @@ const (
 // var globalCancel context.CancelFunc
 var mytunnel *tunnel.Tunnel
 
-func startTunnel(jsonParams string /* cUrl, cUuid *C.char, udpTimeout, tcpTimeout C.int, debug C.int*/) *JSONCallResult {
+func startTunnel(jsonParams string) *JSONCallResult {
 	LogDebug("golib", "startTunnel: "+jsonParams)
 	var input = struct {
 		ServerURL  string `json:"server_url"`

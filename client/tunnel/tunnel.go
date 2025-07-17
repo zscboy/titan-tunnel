@@ -2,6 +2,7 @@ package tunnel
 
 import (
 	"context"
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -17,6 +18,11 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+const (
+	keepaliveInterval = 10
+	waitPoneTimeout   = 3
+)
+
 type Pop struct {
 	URL   string `json:"server_url"`
 	Token string `json:"access_token"`
@@ -28,7 +34,7 @@ type Tunnel struct {
 	writeLock sync.Mutex
 
 	url      string
-	waitping int
+	waitpone int
 
 	proxySessions sync.Map
 	proxyUDPs     sync.Map
@@ -36,9 +42,12 @@ type Tunnel struct {
 	// secondes
 	udpTimeout int
 	tcpTimeout int
+	ctx        context.Context
+	ctxCancel  context.CancelFunc
 }
 
 func NewTunnel(serverUrl, uuid string, udpTimeout, tcpTimeout int) (*Tunnel, error) {
+	ctx, cancel := context.WithCancel(context.Background())
 	tun := &Tunnel{
 		uuid:       uuid,
 		writeLock:  sync.Mutex{},
@@ -46,6 +55,8 @@ func NewTunnel(serverUrl, uuid string, udpTimeout, tcpTimeout int) (*Tunnel, err
 		isDestroy:  false,
 		udpTimeout: udpTimeout,
 		tcpTimeout: tcpTimeout,
+		ctx:        ctx,
+		ctxCancel:  cancel,
 	}
 
 	return tun, nil
@@ -84,7 +95,10 @@ func (t *Tunnel) Connect() error {
 		return nil
 	})
 
+	t.waitpone = 0
 	t.conn = conn
+
+	go t.keepalive()
 
 	logx.Infof("new tun %s", url)
 	return nil
@@ -112,6 +126,7 @@ func (t *Tunnel) getPop(serverURL string) (*Pop, error) {
 }
 
 func (t *Tunnel) Destroy() error {
+	t.ctxCancel()
 	if t.conn != nil {
 		t.isDestroy = true
 		return t.conn.Close()
@@ -148,7 +163,7 @@ func (t *Tunnel) Serve() error {
 	}
 
 	logx.Debugf("tunnel %s close", t.uuid)
-
+	t.conn = nil
 	return nil
 }
 
@@ -357,12 +372,50 @@ func (t *Tunnel) writePong(msg []byte) error {
 	return t.conn.WriteMessage(websocket.PongMessage, msg)
 }
 
+func (t *Tunnel) writePing(msg []byte) error {
+	t.writeLock.Lock()
+	defer t.writeLock.Unlock()
+	return t.conn.WriteMessage(websocket.PingMessage, msg)
+}
+
 func (t *Tunnel) onPong(_ []byte) {
-	t.waitping = 0
+	t.waitpone = 0
 }
 
 func (t *Tunnel) write(msg []byte) error {
 	t.writeLock.Lock()
 	defer t.writeLock.Unlock()
 	return t.conn.WriteMessage(websocket.BinaryMessage, msg)
+}
+
+func (t *Tunnel) keepalive() {
+	ticker := time.NewTicker(keepaliveInterval * time.Second)
+	defer ticker.Stop()
+	defer logx.Debug("keepalive exit")
+
+	for {
+		select {
+		case <-ticker.C:
+			logx.Debug("keepalive tick")
+			if t.conn == nil {
+				continue
+			}
+
+			if t.waitpone > waitPoneTimeout {
+				t.conn.Close()
+			} else {
+				t.waitpone++
+
+				b := make([]byte, 8)
+				now := time.Now().Unix()
+				binary.LittleEndian.PutUint64(b, uint64(now))
+
+				t.writePing(b)
+			}
+		case <-t.ctx.Done():
+			logx.Debug("keepalive stopped")
+			return
+
+		}
+	}
 }
