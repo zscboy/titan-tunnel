@@ -65,7 +65,7 @@ type (
 	CreateUserResp {
 		UserName string `json:"user_name"`
 		// the id of pop(Point of Presence)
-		PopId string `json:"pod_id"`
+		PopId string `json:"pop_id"`
 		// if TrafficLimit is nil, will allocate 1 mouth and 1000GB traffic
 		TrafficLimit *TrafficLimit `json:"traffic_limit"`
 		// if Route is nil, will use manual mode
@@ -91,7 +91,7 @@ type (
 	GetUserResp {
 		UserName string `json:"user_name"`
 		//  the id of pop(Point of Presence)
-		PopId          string        `json:"pod_id"`
+		PopId          string        `json:"pop_id"`
 		TrafficLimit   *TrafficLimit `json:"traffic_limit"`
 		Route          *Route        `json:"route"`
 		NodeIP         string        `json:"node_ip"`

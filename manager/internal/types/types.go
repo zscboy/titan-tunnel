@@ -13,7 +13,7 @@ type CreateUserReq struct {
 
 type CreateUserResp struct {
 	UserName     string        `json:"user_name"`
-	PopId        string        `json:"pod_id"`
+	PopId        string        `json:"pop_id"`
 	TrafficLimit *TrafficLimit `json:"traffic_limit"`
 	Route        *Route        `json:"route"`
 	NodeIP       string        `json:"node_ip"`
@@ -42,11 +42,11 @@ type GetUserReq struct {
 
 type GetUserResp struct {
 	UserName       string        `json:"user_name"`
-	PopId          string        `json:"pod_id"`
+	PopId          string        `json:"pop_id"`
 	TrafficLimit   *TrafficLimit `json:"traffic_limit"`
 	Route          *Route        `json:"route"`
 	NodeIP         string        `json:"node_ip"`
-	NodeOnline     bool          `json:"is_node_online"`
+	NodeOnline     bool          `json:"node_online"`
 	CurrentTraffic int64         `json:"current_traffic"`
 	Off            bool          `json:"off"`
 }

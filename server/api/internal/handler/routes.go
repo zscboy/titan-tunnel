@@ -39,4 +39,14 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			}...,
 		),
 	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodGet,
+				Path:    "/node/pop",
+				Handler: getNodePopHandler(serverCtx),
+			},
+		},
+	)
 }

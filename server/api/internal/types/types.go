@@ -15,6 +15,15 @@ type DeleteUserCache struct {
 	UserName string `json:"user_name"`
 }
 
+type GetNodePopReq struct {
+	NodeId string `form:"nodeid"`
+}
+
+type GetNodePopResp struct {
+	ServerURL   string `json:"server_url"`
+	AccessToken string `json:"access_token"`
+}
+
 type NodeWSReq struct {
 	NodeId string `form:"id"`
 	OS     string `form:"os"`

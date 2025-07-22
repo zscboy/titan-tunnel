@@ -21,6 +21,13 @@ type (
 	AccessTokenResp {
 		Token string `json:"token"`
 	}
+	GetNodePopReq {
+		NodeId string `form:"nodeid"`
+	}
+	GetNodePopResp {
+		ServerURL   string `json:"server_url"`
+		AccessToken string `json:"access_token"`
+	}
 )
 
 @server (
@@ -38,5 +45,11 @@ service server-api {
 
 	@handler getNodeAccessToken
 	get /node/access/token (AccessTokenReq) returns (AccessTokenResp)
+}
+
+// TODO: will remove next version
+service server-api {
+	@handler getNodePop
+	get /node/pop (GetNodePopReq) returns (GetNodePopResp)
 }
 

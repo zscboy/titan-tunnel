@@ -32,6 +32,15 @@ func (l *CreateUserLogic) CreateUser(req *types.CreateUserReq) (resp *types.Crea
 		return nil, fmt.Errorf("pop %s not found", req.PopId)
 	}
 
+	user, err := model.GetUser(l.svcCtx.Redis, req.UserName)
+	if err != nil {
+		return nil, fmt.Errorf("get user %s failed: %v", req.UserName, err)
+	}
+
+	if user != nil {
+		return nil, fmt.Errorf("user already %s exist", req.UserName)
+	}
+
 	in := &serverapi.CreateUserReq{UserName: req.UserName, Password: req.Password}
 	if req.TrafficLimit != nil {
 		in.TrafficLimit = toTrafficLimitReq(req.TrafficLimit)
