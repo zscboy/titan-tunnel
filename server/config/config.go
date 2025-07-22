@@ -13,4 +13,5 @@ type Config struct {
 	RPCServer rpc.RPCServerConfig
 	Redis     redis.RedisConf
 	Log       logx.LogConf
+	HTTPProxy string
 }

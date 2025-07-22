@@ -24,3 +24,8 @@ type ServerInfo struct {
 	Socks5Addr  string `json:"socks5_addr"`
 	WSServerURL string `json:"ws_server_url"`
 }
+
+type WebWSReq struct {
+	NodeId string `form:"id"`
+	OS     string `form:"os"`
+}

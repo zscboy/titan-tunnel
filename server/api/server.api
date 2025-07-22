@@ -4,6 +4,10 @@ type (
 		NodeId string `form:"id"`
 		OS     string `form:"os"`
 	}
+	WebWSReq {
+		NodeId string `form:"id"`
+		OS     string `form:"os"`
+	}
 	DeleteUserCache {
 		UserName string `json:"user_name"`
 	}

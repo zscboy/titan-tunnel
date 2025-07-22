@@ -68,8 +68,15 @@ func (t *Tunnel) writePong(msg []byte) error {
 	return t.conn.WriteMessage(websocket.PongMessage, msg)
 }
 
+func (t *Tunnel) writePing(msg []byte) error {
+	t.writeLock.Lock()
+	defer t.writeLock.Unlock()
+	return t.conn.WriteMessage(websocket.PingMessage, msg)
+}
+
 func (t *Tunnel) onPong() {
 	t.waitping = 0
+	model.SetNodeOnline(t.tunMgr.redis, t.opts.Id)
 }
 
 func (t *Tunnel) serve() {
@@ -314,17 +321,11 @@ func (t *Tunnel) keepalive() {
 		return
 	}
 
-	t.writeLock.Lock()
-	defer t.writeLock.Unlock()
-
-	model.SetNodeOnline(t.tunMgr.redis, t.opts.Id)
-
 	b := make([]byte, 8)
-
 	now := time.Now().Unix()
 	binary.LittleEndian.PutUint64(b, uint64(now))
 
-	t.conn.WriteMessage(websocket.PingMessage, b)
+	t.writePing(b)
 
 	t.waitping++
 }
