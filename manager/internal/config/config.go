@@ -22,5 +22,6 @@ type Config struct {
 	Redis   redis.RedisConf
 	JwtAuth JwtAuth
 	// todo: will move to center server
-	Pops []Pop
+	Pops        []Pop
+	CurrentArea string
 }

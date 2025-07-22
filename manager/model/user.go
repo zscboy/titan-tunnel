@@ -7,7 +7,7 @@ import (
 )
 
 type User struct {
-	UserName string `redis:"user_name"`
+	UserName string
 	PopID    string `redis:"pop_id"`
 }
 
@@ -38,6 +38,7 @@ func GetUser(redis *redis.Redis, userName string) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
+	user.UserName = userName
 
 	return user, nil
 }

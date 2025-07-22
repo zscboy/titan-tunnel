@@ -41,7 +41,9 @@ func (l *GetNodePopLogic) GetNodePop(req *types.GetNodePopReq) (resp *types.GetN
 
 func (l *GetNodePopLogic) getNodePop(_ *types.GetNodePopReq) *svc.Server {
 	for _, pop := range l.svcCtx.Servers {
-		return pop
+		if pop.Area == l.svcCtx.Config.CurrentArea {
+			return pop
+		}
 	}
 	return nil
 }

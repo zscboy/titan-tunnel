@@ -10,14 +10,14 @@ import (
 func TestToken(t *testing.T) {
 	claims := jwt.MapClaims{
 		"user": "abc",
-		"exp":  time.Now().Add(time.Second * time.Duration(86400)).Unix(),
+		"exp":  time.Now().Add(time.Second * time.Duration(8640000)).Unix(),
 		"iat":  time.Now().Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString([]byte("ef61299a-53e6-11f0-87d4-e72f7b1c2247"))
 	if err != nil {
-		t.Logf(err.Error())
+		t.Log(err.Error())
 		return
 	}
 	t.Log("token", tokenString)

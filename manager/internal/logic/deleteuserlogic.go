@@ -46,5 +46,9 @@ func (l *DeleteUserLogic) DeleteUser(req *types.DeleteUserReq) (resp *types.User
 		return &types.UserOperationResp{ErrMsg: err.Error()}, nil
 	}
 
+	if err := model.DeleteUser(l.svcCtx.Redis, req.UserName); err != nil {
+		return &types.UserOperationResp{ErrMsg: err.Error()}, nil
+	}
+
 	return &types.UserOperationResp{Success: deleteUserResp.Success, ErrMsg: deleteUserResp.ErrMsg}, nil
 }

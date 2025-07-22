@@ -15,3 +15,4 @@ Pops:
     RpcClient:
       Target: localhost:8080
       Timeout: 30000
+CurrentArea: Korea
