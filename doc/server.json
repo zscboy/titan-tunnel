@@ -154,6 +154,7 @@
                     "required": [
                       "id",
                       "area",
+                      "socks5_addr",
                       "total_node"
                     ],
                     "properties": {
@@ -161,6 +162,9 @@
                         "type": "string"
                       },
                       "id": {
+                        "type": "string"
+                      },
+                      "socks5_addr": {
                         "type": "string"
                       },
                       "total_node": {
@@ -256,7 +260,7 @@
                 "node_ip": {
                   "type": "string"
                 },
-                "pod_id": {
+                "pop_id": {
                   "type": "string"
                 },
                 "route": {
@@ -374,10 +378,19 @@
             "schema": {
               "type": "object",
               "properties": {
+                "current_traffic": {
+                  "type": "integer"
+                },
                 "node_ip": {
                   "type": "string"
                 },
-                "pod_id": {
+                "node_online": {
+                  "type": "boolean"
+                },
+                "off": {
+                  "type": "boolean"
+                },
+                "pop_id": {
                   "type": "string"
                 },
                 "route": {
@@ -470,6 +483,7 @@
                       "traffic_limit",
                       "route",
                       "node_ip",
+                      "node_online",
                       "current_traffic",
                       "off"
                     ],
@@ -479,6 +493,9 @@
                       },
                       "node_ip": {
                         "type": "string"
+                      },
+                      "node_online": {
+                        "type": "boolean"
                       },
                       "off": {
                         "type": "boolean"
@@ -550,14 +567,10 @@
               "type": "object",
               "required": [
                 "user_name",
-                "pod_id",
                 "total_traffic",
                 "route"
               ],
               "properties": {
-                "pod_id": {
-                  "type": "string"
-                },
                 "route": {
                   "type": "object",
                   "properties": {
@@ -744,10 +757,10 @@
               "type": "object",
               "required": [
                 "user_name",
-                "actoin"
+                "action"
               ],
               "properties": {
-                "actoin": {
+                "action": {
                   "type": "string"
                 },
                 "user_name": {
@@ -774,27 +787,9 @@
           }
         }
       }
-    },
-    "/ws/node": {
-      "get": {
-        "produces": [
-          "application/json"
-        ],
-        "schemes": [
-          "https"
-        ],
-        "summary": "nodeWS",
-        "operationId": "nodeWS",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {}
-          }
-        }
-      }
     }
   },
-  "x-date": "2025-07-09 10:05:31",
+  "x-date": "2025-07-22 17:28:24",
   "x-description": "This is a goctl generated swagger file.",
   "x-github": "https://github.com/zeromicro/go-zero",
   "x-go-zero-doc": "https://go-zero.dev/",

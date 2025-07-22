@@ -2,40 +2,6 @@
 
 1. route definition
 
-- Url: /node/list
-- Method: GET
-- Request: `ListNodeReq`
-- Response: `ListNodeResp`
-
-2. request definition
-
-
-
-```golang
-type ListNodeReq struct {
-	PopID string `form:"popid"`
-	Type int `form:"type"`
-	Start int `form:"start"`
-	End int `form:"end"`
-}
-```
-
-
-3. response definition
-
-
-
-```golang
-type ListNodeResp struct {
-	Nodes []Node `json:"nodes"`
-	Total int `json:"total"`
-}
-```
-
-### 2. N/A
-
-1. route definition
-
 - Url: /node/pop
 - Method: GET
 - Request: `GetNodePopReq`
@@ -63,6 +29,40 @@ type GetNodePopResp struct {
 }
 ```
 
+### 2. N/A
+
+1. route definition
+
+- Url: /node/list
+- Method: GET
+- Request: `ListNodeReq`
+- Response: `ListNodeResp`
+
+2. request definition
+
+
+
+```golang
+type ListNodeReq struct {
+	PopID string `form:"popid"`
+	Type int `form:"type"`
+	Start int `form:"start"`
+	End int `form:"end"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type ListNodeResp struct {
+	Nodes []*Node `json:"nodes"`
+	Total int `json:"total"`
+}
+```
+
 ### 3. N/A
 
 1. route definition
@@ -82,7 +82,7 @@ type GetNodePopResp struct {
 
 ```golang
 type GetPopsResp struct {
-	Pops []Pop 
+	Pops []*Pop 
 }
 ```
 
@@ -117,7 +117,7 @@ type CreateUserReq struct {
 ```golang
 type CreateUserResp struct {
 	UserName string `json:"user_name"`
-	PopId string `json:"pod_id"`
+	PopId string `json:"pop_id"`
 	TrafficLimit *TrafficLimit `json:"traffic_limit"`
 	Route *Route `json:"route"`
 	NodeIP string `json:"node_ip"`
@@ -182,10 +182,13 @@ type GetUserReq struct {
 ```golang
 type GetUserResp struct {
 	UserName string `json:"user_name"`
-	PopId string `json:"pod_id"`
+	PopId string `json:"pop_id"`
 	TrafficLimit *TrafficLimit `json:"traffic_limit"`
 	Route *Route `json:"route"`
 	NodeIP string `json:"node_ip"`
+	NodeOnline bool `json:"node_online"`
+	CurrentTraffic int64 `json:"current_traffic"`
+	Off bool `json:"off"`
 }
 ```
 
@@ -238,7 +241,6 @@ type ListUserResp struct {
 ```golang
 type ModifyUserReq struct {
 	UserName string `json:"user_name"`
-	PopId string `json:"pod_id"`
 	TrafficLimit *TrafficLimit `json:"total_traffic"`
 	Route *Route `json:"route"`
 }
@@ -336,7 +338,7 @@ type UserOperationResp struct {
 ```golang
 type StartOrStopUserReq struct {
 	UserName string `json:"user_name"`
-	Action string `json:"actoin"`
+	Action string `json:"action"`
 }
 ```
 
@@ -351,20 +353,4 @@ type UserOperationResp struct {
 	ErrMsg string `json:"err_msg"`
 }
 ```
-
-### 12. N/A
-
-1. route definition
-
-- Url: /ws/node
-- Method: GET
-- Request: `-`
-- Response: `-`
-
-2. request definition
-
-
-
-3. response definition
-
 
