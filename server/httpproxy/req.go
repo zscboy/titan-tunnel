@@ -15,6 +15,12 @@ type Req struct {
 	rspContentLength int64
 }
 
+func (r *Req) close() {
+	if r.conn != nil {
+		r.conn.Close()
+	}
+}
+
 func (r *Req) write(data []byte) error {
 	_, err := r.conn.Write(data)
 	return err

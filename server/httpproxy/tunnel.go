@@ -14,12 +14,12 @@ import (
 )
 
 const (
-	uuidLength = 16
+	uuidLength = 32
 )
 
 type TunOptions struct {
 	Id string
-	OS string
+	// OS string
 	IP string
 }
 
@@ -68,7 +68,7 @@ func (t *Tunnel) writePing(msg []byte) error {
 
 func (t *Tunnel) onPong() {
 	t.waitping = 0
-	model.SetBrowserOnline(t.tunMgr.redis, t.opts.Id)
+	model.SetNodeOnline(t.tunMgr.redis, t.opts.Id)
 }
 
 func (t *Tunnel) serve() {
@@ -84,7 +84,7 @@ func (t *Tunnel) serve() {
 
 		if messageType == websocket.TextMessage {
 			if err := t.onTextMessage(message); err != nil {
-				logx.Error("Tunnel.serve onTextMessage failed:%v", err.Error())
+				logx.Errorf("Tunnel.serve onTextMessage failed:%v", err.Error())
 			}
 		} else if messageType == websocket.BinaryMessage {
 			if err := t.onBinaryMessage(message); err != nil {
@@ -97,18 +97,47 @@ func (t *Tunnel) serve() {
 }
 
 func (t *Tunnel) onTextMessage(data []byte) error {
-	response := &ProxyResponse{}
-	err := json.Unmarshal(data, response)
+	logx.Debugf("onTextMessage %s", string(data))
+	msg := &Message{}
+	err := json.Unmarshal(data, msg)
 	if err != nil {
 		return err
 	}
 
-	if len(response.ID) == 0 {
-		return fmt.Errorf("invalid response %v", *response)
+	if msg.Type != ClientResponseHeaders && msg.Type != ClientResponseError {
+		return fmt.Errorf("invalid message type")
+	}
+
+	switch msg.Type {
+	case ClientResponseHeaders:
+		return t.handleClientResponseHeaders(msg)
+	case ClientResponseError:
+		return t.handleClientResponseErr(msg)
+	default:
+		return fmt.Errorf("unsupport msg type %d", msg.Type)
+	}
+
+}
+
+func (t *Tunnel) handleClientResponseHeaders(msg *Message) error {
+	payloadMap, ok := msg.Payload.(map[string]interface{})
+	if !ok {
+		return fmt.Errorf("handleClientResponseHeaders, payload not map")
+	}
+
+	payloadBytes, err := json.Marshal(payloadMap)
+	if err != nil {
+		return err
+	}
+
+	var response HTTPResponseHeader
+	err = json.Unmarshal(payloadBytes, &response)
+	if err != nil {
+		return err
 	}
 
 	headerBuilder := response.rebuildHTTPHeaders()
-
+	logx.Debugf("header:%s", headerBuilder.String())
 	contentLength, err := getContentLength(response.Header)
 	if err != nil {
 		return err
@@ -121,32 +150,73 @@ func (t *Tunnel) onTextMessage(data []byte) error {
 
 	req := v.(*Req)
 	req.rspContentLength = contentLength
-	return req.write([]byte(headerBuilder.String()))
-}
-
-func (t *Tunnel) onBinaryMessage(data []byte) error {
-	if len(data) <= uuidLength {
-		return fmt.Errorf("invalid data, data length < %d", uuidLength)
+	if err := req.write([]byte(headerBuilder.String())); err != nil {
+		return err
 	}
 
-	uid, err := uuid.ParseBytes(data[:uuidLength])
+	logx.Debugf("handleClientResponseHeaders contentLength:%d", contentLength)
+	if contentLength == 0 {
+		req.close()
+	}
+
+	return nil
+}
+
+func (t *Tunnel) handleClientResponseErr(msg *Message) error {
+	payloadMap, ok := msg.Payload.(map[string]interface{})
+	if !ok {
+		return fmt.Errorf("handleClientResponseHeaders, payload not map")
+	}
+
+	payloadBytes, err := json.Marshal(payloadMap)
 	if err != nil {
 		return err
 	}
 
-	id := uid.String()
+	var response HTTPResponseError
+	err = json.Unmarshal(payloadBytes, &response)
+	if err != nil {
+		return err
+	}
+
+	v, ok := t.reqs.Load(response.ID)
+	if !ok {
+		return fmt.Errorf("http request %s not exist", response.ID)
+	}
+	req := v.(*Req)
+	req.close()
+
+	return nil
+	// headerBuilder := response.rebuildHTTPHeaders()
+	// logx.Debugf("header:%s", headerBuilder.String())
+	// contentLength, err := getContentLength(response.Header)
+	// if err != nil {
+	// 	return err
+	// }
+}
+
+func (t *Tunnel) onBinaryMessage(data []byte) error {
+	if len(data) <= uuidLength {
+		return fmt.Errorf("invalid data length %d < %d", len(data), uuidLength)
+	}
+	id := string(data[:uuidLength])
 
 	v, ok := t.reqs.Load(id)
 	if !ok {
 		return fmt.Errorf("can not find request %s", id)
 	}
 
+	// logx.Debugf("data:%s", string(data[uuidLength:]))
+	// logx.Debugf("onBinaryMessage data length:%d", len(data[uuidLength:]))
+
 	req := v.(*Req)
 	req.rspDataLength = req.rspDataLength + int64(len(data[uuidLength:]))
 	req.write(data[uuidLength:])
 
 	if req.rspDataLength >= req.rspContentLength {
+		req.close()
 		t.reqs.Delete(id)
+		logx.Debugf("onBinaryMessage %s recive complete", id)
 	}
 	return nil
 }
@@ -157,21 +227,17 @@ func (t *Tunnel) onHTTPRequest(targetInfo *TargetInfo) error {
 	t.reqs.Store(req.ID, req)
 	defer t.reqs.Delete(req.ID)
 
-	reqData, err := json.Marshal(targetInfo.req)
+	msg := &Message{Type: ServerRequest, Payload: targetInfo.req}
+
+	reqData, err := json.Marshal(msg)
 	if err != nil {
 		return err
 	}
 
-	logx.Debugf("onHTTPRequest:%v", *targetInfo.req)
+	logx.Debugf("onHTTPRequest:%s", string(reqData))
 
 	if err := t.writeText(reqData); err != nil {
 		return err
-	}
-
-	if len(targetInfo.extraBytes) > 0 {
-		if err := t.onHTTPData(targetInfo.req.ID, targetInfo.extraBytes); err != nil {
-			return err
-		}
 	}
 
 	return req.proxy()

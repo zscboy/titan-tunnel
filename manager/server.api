@@ -136,6 +136,9 @@ type (
 service server-api {
 	@handler getNodePop
 	get /node/pop (GetNodePopReq) returns (GetNodePopResp)
+
+	@handler getAuthToken
+	get /auth/token returns (string)
 }
 
 @server (

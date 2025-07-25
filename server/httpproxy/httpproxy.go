@@ -2,10 +2,17 @@ package httpproxy
 
 import (
 	"bufio"
+	"bytes"
+	"crypto/md5"
+	"crypto/tls"
+	"encoding/base64"
+	"encoding/hex"
 	"fmt"
 	"io"
-	"net"
+	"log"
 	"net/http"
+	"strings"
+	"titan-tunnel/server/api/model"
 
 	"github.com/google/uuid"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -13,26 +20,32 @@ import (
 
 const (
 	anonymousUserName = "anonymous"
+	maxBodySize       = 8 << 20 // 8MB
 )
 
 type HttpProxy struct {
-	tunMgr *TunnelManager
+	tunMgr    *TunnelManager
+	tlsConfig *tls.Config
 }
 
-func newHttProxy(tunMgr *TunnelManager) *HttpProxy {
-	return &HttpProxy{tunMgr: tunMgr}
+func newHttProxy(tunMgr *TunnelManager, tlsConfig *tls.Config) *HttpProxy {
+	return &HttpProxy{tunMgr: tunMgr, tlsConfig: tlsConfig}
 }
 
 func (httpProxy *HttpProxy) HandleProxy(w http.ResponseWriter, r *http.Request) {
-	logx.Debug("HandleProxy")
+	r.Body = http.MaxBytesReader(w, r.Body, maxBodySize)
+
 	auth := r.Header.Get("Proxy-Authorization")
-	userName, ok := httpProxy.checkAuth(auth)
-	if !ok {
+	userNameBytes, err := httpProxy.checkAuth(auth)
+	if err != nil {
+		logx.Errorf("check auth %v", err.Error())
 		w.Header().Set("Proxy-Authenticate", `Basic realm="Restricted"`)
 		w.WriteHeader(http.StatusProxyAuthRequired)
 		_, _ = w.Write([]byte("407 Proxy Authentication Required\n"))
 		return
 	}
+
+	userName := string(userNameBytes)
 
 	if r.Method == http.MethodConnect {
 		httpProxy.handleHTTPS(w, r, userName)
@@ -42,6 +55,68 @@ func (httpProxy *HttpProxy) HandleProxy(w http.ResponseWriter, r *http.Request) 
 }
 
 func (httpProxy *HttpProxy) handleHTTPS(w http.ResponseWriter, r *http.Request, userName string) {
+	// http.Error(w, "not support https now", http.StatusInternalServerError)
+	hij, ok := w.(http.Hijacker)
+	if !ok {
+		http.Error(w, "Hijacking not supported", http.StatusInternalServerError)
+		return
+	}
+
+	client, _, err := hij.Hijack()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusServiceUnavailable)
+		return
+	}
+	defer client.Close()
+
+	_, _ = client.Write([]byte("HTTP/1.1 200 Connection Established\r\n\r\n"))
+	tlsConn := tls.Server(client, httpProxy.tlsConfig)
+	defer tlsConn.Close()
+
+	reader := bufio.NewReader(tlsConn)
+	req, err := http.ReadRequest(reader)
+	if err != nil {
+		log.Println("ReadRequest:", err)
+		return
+	}
+	defer req.Body.Close()
+
+	log.Println("Method:", req.Method)
+	log.Println("Headers:", req.Header)
+
+	body, err := io.ReadAll(req.Body)
+	if err != nil {
+		log.Println("读取请求体失败:", err)
+		return
+	}
+	log.Println("Body:", string(body))
+
+	target := r.Host
+	newReq, err := http.NewRequest(req.Method, "https://"+target, bytes.NewReader(body))
+	if err != nil {
+		log.Println("构造新请求失败:", err)
+		return
+	}
+	newReq.Header = req.Header
+
+	resp, err := http.DefaultClient.Do(newReq)
+	if err != nil {
+		log.Println("请求目标服务器失败:", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	resp.Write(tlsConn)
+}
+
+func (httpProxy *HttpProxy) handleHTTP(w http.ResponseWriter, r *http.Request, userName string) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Failed to read body", http.StatusBadRequest)
+		return
+	}
+	r.Body.Close()
+
 	hij, ok := w.(http.Hijacker)
 	if !ok {
 		http.Error(w, "Hijacking not supported", http.StatusInternalServerError)
@@ -50,112 +125,68 @@ func (httpProxy *HttpProxy) handleHTTPS(w http.ResponseWriter, r *http.Request, 
 
 	clientConn, _, err := hij.Hijack()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusServiceUnavailable)
-		return
-	}
-
-	target := r.Host
-	serverConn, err := net.Dial("tcp", target)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusServiceUnavailable)
-		clientConn.Close()
-		return
-	}
-
-	_, _ = clientConn.Write([]byte("HTTP/1.1 200 Connection Established\r\n\r\n"))
-
-	go io.Copy(serverConn, clientConn)
-	go io.Copy(clientConn, serverConn)
-}
-
-func (httpProxy *HttpProxy) handleHTTP(w http.ResponseWriter, r *http.Request, userName string) {
-	// req, err := http.NewRequest(r.Method, r.RequestURI, r.Body)
-	// if err != nil {
-	// 	http.Error(w, err.Error(), http.StatusBadRequest)
-	// 	return
-	// }
-	// req.Header = r.Header
-
-	// resp, err := http.DefaultTransport.RoundTrip(req)
-	// if err != nil {
-	// 	http.Error(w, err.Error(), http.StatusBadGateway)
-	// 	return
-	// }
-	// defer resp.Body.Close()
-
-	// for k, vv := range resp.Header {
-	// 	for _, v := range vv {
-	// 		w.Header().Add(k, v)
-	// 	}
-	// }
-	// w.WriteHeader(resp.StatusCode)
-	// io.Copy(w, resp.Body)
-	// req := &ProxyRequest{
-	// 	ID:      uuid.NewString(),
-	// 	Method:  r.Method,
-	// 	URL:     r.RequestURI,
-	// 	Header:  r.Header,
-	// 	BodyLen: r.ContentLength,
-	// }
-	hij, ok := w.(http.Hijacker)
-	if !ok {
-		http.Error(w, "Hijacking not supported", http.StatusInternalServerError)
-		return
-	}
-
-	clientConn, bufrw, err := hij.Hijack()
-	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	defer clientConn.Close()
 
-	req := ProxyRequest{
-		ID:     uuid.NewString(),
+	uid := uuid.New()
+	req := HTTPRequest{
+		ID:     hex.EncodeToString(uid[:]),
 		Method: r.Method,
 		URL:    r.URL.String(),
 		Header: r.Header,
 	}
 
-	targetInfo := &TargetInfo{conn: clientConn, req: &req, userName: userName}
-	if bufrw.Reader.Buffered() > 0 {
-		targetInfo.extraBytes, err = httpProxy.drainBuffered(bufrw)
-		if err != nil {
-			logx.Errorf("drainBuffered %v", err)
-			return
-		}
+	if len(body) > 0 {
+		req.Body = body
 	}
+
+	targetInfo := &TargetInfo{conn: clientConn, req: &req, userName: userName}
 
 	if err := httpProxy.tunMgr.onHTTPRequest(targetInfo); err != nil {
 		logx.Errorf("onHTTPRequest %v", err)
 	}
 }
 
-func (httpProxy *HttpProxy) drainBuffered(bufrw *bufio.ReadWriter) ([]byte, error) {
-	buffered := bufrw.Reader.Buffered()
-	extraBytes := make([]byte, buffered)
-	n, err := bufrw.Reader.Read(extraBytes)
+// return userName
+func (httpProxy *HttpProxy) checkAuth(auth string) ([]byte, error) {
+	if !strings.HasPrefix(auth, "Basic ") {
+		return nil, fmt.Errorf("client not include Proxy-Authorization Basic ")
+	}
+	payload, err := base64.StdEncoding.DecodeString(auth[len("Basic "):])
 	if err != nil {
-		return nil, fmt.Errorf("localhttp.drainBuffered read bufrw failed:%s", err)
+		return nil, fmt.Errorf("decode Basic failed:%v", err.Error())
+	}
+	pair := strings.SplitN(string(payload), ":", 2)
+	if len(pair) != 2 {
+		return nil, fmt.Errorf("invalid user and password")
 	}
 
-	if n != buffered {
-		return nil, fmt.Errorf("localhttp.ServeHTTP read bufrw not match, expected:%d, read:%d", buffered, n)
+	userName := pair[0]
+	if len(userName) == 0 {
+		return nil, fmt.Errorf("invalid user")
 	}
 
-	return extraBytes, nil
-}
+	user, err := model.GetUser(httpProxy.tunMgr.redis, userName)
+	if err != nil {
+		return nil, fmt.Errorf("get user failed:%v", err.Error())
+	}
 
-func (httpProxy *HttpProxy) checkAuth(auth string) (string, bool) {
-	// if !strings.HasPrefix(auth, "Basic ") {
-	// 	return false
-	// }
-	// payload, err := base64.StdEncoding.DecodeString(auth[len("Basic "):])
-	// if err != nil {
-	// 	return false
-	// }
-	// pair := strings.SplitN(string(payload), ":", 2)
-	// return len(pair) == 2 && pair[0] == authUser && pair[1] == authPass
-	// _ = payload
-	return anonymousUserName, true
+	if user == nil {
+		return nil, fmt.Errorf("user %s not exist", userName)
+	}
+
+	password := pair[1]
+	if len(password) == 0 {
+		return nil, fmt.Errorf("invalid password")
+	}
+
+	hash := md5.Sum([]byte(password))
+	passwordMD5 := hex.EncodeToString(hash[:])
+	if passwordMD5 != user.PasswordMD5 {
+		return nil, fmt.Errorf("password not match")
+	}
+
+	return []byte(userName), nil
 }

@@ -36,36 +36,36 @@ func NewTunnelManager(redis *redis.Redis) *TunnelManager {
 	return tm
 }
 
-func (tm *TunnelManager) acceptWebsocket(conn *websocket.Conn, browser *model.Browser) {
-	logx.Debugf("TunnelManager:%s accept websocket ", browser.Id)
-	v, ok := tm.tunnels.Load(browser.Id)
+func (tm *TunnelManager) acceptWebsocket(conn *websocket.Conn, node *model.Node) {
+	logx.Debugf("TunnelManager:%s accept websocket ", node.Id)
+	v, ok := tm.tunnels.Load(node.Id)
 	if ok {
 		oldTun := v.(*Tunnel)
 		oldTun.close()
 	}
 
-	tun := newTunnel(conn, tm, &TunOptions{Id: browser.Id, OS: browser.OS, IP: browser.IP})
+	tun := newTunnel(conn, tm, &TunOptions{Id: node.Id, IP: node.IP})
 
-	tm.tunnels.Store(browser.Id, tun)
-	defer tm.tunnels.Delete(browser.Id)
+	tm.tunnels.Store(node.Id, tun)
+	defer tm.tunnels.Delete(node.Id)
 
-	if err := model.SetBrowserAndZadd(context.Background(), tm.redis, browser); err != nil {
+	if err := model.SetNodeAndZadd(context.Background(), tm.redis, node); err != nil {
 		logx.Errorf("SetNode failed:%s", err.Error())
 		return
 	}
 
-	if err := model.SetBrowserOnline(tm.redis, browser.Id); err != nil {
+	if err := model.SetNodeOnline(tm.redis, node.Id); err != nil {
 		logx.Errorf("SetNodeOnline failed:%s", err.Error())
 		return
 	}
 
-	// if len(browser.BindUser) > 0 {
-	// 	model.BindBrowser(tm.redis, browser.Id, browser.BindUser)
-	// } else {
-	// 	model.UnbindNode(tm.redis, browser.Id)
-	// }
+	if len(node.BindUser) > 0 {
+		model.BindNode(tm.redis, node.Id, node.BindUser)
+	} else {
+		model.UnbindNode(tm.redis, node.Id)
+	}
 
-	defer model.SetBrowserOffline(tm.redis, browser.Id)
+	defer model.SetNodeOffline(tm.redis, node.Id)
 
 	tun.serve()
 }
