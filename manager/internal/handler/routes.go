@@ -16,6 +16,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodGet,
+				Path:    "/auth/token",
+				Handler: getAuthTokenHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
 				Path:    "/node/pop",
 				Handler: getNodePopHandler(serverCtx),
 			},

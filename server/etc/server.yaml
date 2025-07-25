@@ -29,3 +29,6 @@ HTTPProxy: 0.0.0.0:8001
 Log:
   stat: false
   level: debug   
+TLSKeyPair:
+   Cert: ./cert.pem
+   Key: ./key.pem

@@ -162,7 +162,7 @@ func (tm *TunnelManager) HandleUserAuth(userName, password string) error {
 
 	hash := md5.Sum([]byte(password))
 	passwordMD5 := hex.EncodeToString(hash[:])
-	if user.UserName != userName || user.PasswordMD5 != passwordMD5 {
+	if user.PasswordMD5 != passwordMD5 {
 		return fmt.Errorf("password not match")
 	}
 

@@ -9,9 +9,15 @@ import (
 )
 
 type Config struct {
-	APIServer api.APIServerConfig
-	RPCServer rpc.RPCServerConfig
-	Redis     redis.RedisConf
-	Log       logx.LogConf
-	// HTTPProxy string
+	APIServer  api.APIServerConfig
+	RPCServer  rpc.RPCServerConfig
+	Redis      redis.RedisConf
+	Log        logx.LogConf
+	HTTPProxy  string
+	TLSKeyPair TLSKeyPair
+}
+
+type TLSKeyPair struct {
+	Cert string
+	Key  string
 }

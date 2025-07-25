@@ -2,21 +2,36 @@ package httpproxy
 
 import (
 	"context"
+	"crypto/tls"
+	"fmt"
 	"log"
 	"net/http"
+	"sync"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/redis"
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
-type Handle struct {
-	routes map[string]http.HandlerFunc
-	tunMgr *TunnelManager
+const (
+	maxConnectionsPerIP = 5
+)
+
+type TLSKeyPair struct {
+	Cert string
+	Key  string
 }
 
-func newHandler(tunManager *TunnelManager) *Handle {
-	h := &Handle{routes: make(map[string]http.HandlerFunc), tunMgr: tunManager}
+type Handle struct {
+	routes      map[string]http.HandlerFunc
+	tunMgr      *TunnelManager
+	tlsConfig   *tls.Config
+	ipConnCount map[string]int
+	ipConnLock  sync.Mutex
+}
+
+func newHandler(tunManager *TunnelManager, tlsConfig *tls.Config) *Handle {
+	h := &Handle{routes: make(map[string]http.HandlerFunc), tunMgr: tunManager, tlsConfig: tlsConfig, ipConnCount: make(map[string]int)}
 	h.routes["/ws/web"] = h.handleWS
 	return h
 }
@@ -32,24 +47,41 @@ func (h *Handle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handle) handleWS(w http.ResponseWriter, r *http.Request) {
-	var req WebWSReq
-	if err := httpx.Parse(r, &req); err != nil {
+	ip, err := getRemoteIP(r)
+	if err != nil {
 		httpx.ErrorCtx(r.Context(), w, err)
 		return
 	}
 
+	h.ipConnLock.Lock()
+	if h.ipConnCount[ip] >= maxConnectionsPerIP {
+		h.ipConnLock.Unlock()
+		httpx.ErrorCtx(r.Context(), w, fmt.Errorf("too many connections from ip %s", ip))
+		return
+	}
+	h.ipConnCount[ip]++
+	h.ipConnLock.Unlock()
+
+	defer func() {
+		h.ipConnLock.Lock()
+		h.ipConnCount[ip]--
+		if h.ipConnCount[ip] <= 0 {
+			delete(h.ipConnCount, ip)
+		}
+		h.ipConnLock.Unlock()
+	}()
+
 	browserws := newBrowserWS(h.tunMgr)
-	err := browserws.ServeWS(w, r, &req)
+	err = browserws.ServeWS(w, r)
 	if err != nil {
+		logx.Errorf("ServeWS error %v", err)
 		httpx.ErrorCtx(r.Context(), w, err)
 		return
-	} else {
-		httpx.Ok(w)
 	}
 }
 
 func (h *Handle) handleHttpProxy(w http.ResponseWriter, r *http.Request) {
-	httpProxy := newHttProxy(h.tunMgr)
+	httpProxy := newHttProxy(h.tunMgr, h.tlsConfig)
 	httpProxy.HandleProxy(w, r)
 }
 
@@ -60,10 +92,14 @@ type Server struct {
 	// router  *http.ServeMux
 }
 
-func NewServer(addr string, redisConf redis.RedisConf) *Server {
+func NewServer(addr string, redisConf redis.RedisConf, tlsKeyPair *TLSKeyPair) *Server {
+	tlsConfig, err := loadTLSConfig(tlsKeyPair)
+	if err != nil {
+		panic(err)
+	}
 	redis := redis.MustNewRedis(redisConf)
 	tunManager := NewTunnelManager(redis)
-	return &Server{addr: addr, Handler: newHandler(tunManager)}
+	return &Server{addr: addr, Handler: newHandler(tunManager, tlsConfig)}
 }
 
 func (s *Server) Start() {
@@ -97,4 +133,17 @@ func (s *Server) Stop() {
 		logx.Error("server shutdown failed: %v", err)
 	}
 
+}
+
+func loadTLSConfig(keyPair *TLSKeyPair) (*tls.Config, error) {
+	cert, err := tls.LoadX509KeyPair(keyPair.Cert, keyPair.Key)
+	if err != nil {
+		return nil, err
+	}
+
+	tlsConfig := &tls.Config{
+		Certificates: []tls.Certificate{cert},
+	}
+
+	return tlsConfig, nil
 }

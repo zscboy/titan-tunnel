@@ -1,14 +1,14 @@
 package httpproxy
 
 import (
-	"net"
 	"net/http"
-	"strings"
 	"time"
 	"titan-tunnel/server/api/model"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 const (
@@ -16,12 +16,16 @@ const (
 )
 
 var (
-	upgrader = websocket.Upgrader{} // use default options
+	upgrader = websocket.Upgrader{
+		CheckOrigin: func(r *http.Request) bool {
+			return true // Allow all origins for development.
+		},
+	} // use default options
 )
 
 type WebWSReq struct {
-	NodeId string `form:"id"`
-	OS     string `form:"os"`
+	NodeId string `form:"id,optional"`
+	// OS     string `form:"os"`
 }
 
 type BrowserWS struct {
@@ -32,28 +36,38 @@ func newBrowserWS(tunMgr *TunnelManager) *BrowserWS {
 	return &BrowserWS{tunMgr: tunMgr}
 }
 
-func (ws *BrowserWS) ServeWS(w http.ResponseWriter, r *http.Request, req *WebWSReq) error {
-	logx.Infof("WebWS.ServeWS %s, %v", r.URL.Path, req)
-
-	ip, err := ws.getRemoteIP(r)
+func (ws *BrowserWS) ServeWS(w http.ResponseWriter, r *http.Request) error {
+	logx.Infof("ServeWS")
+	ip, err := getRemoteIP(r)
 	if err != nil {
 		return err
 	}
 
-	browser, err := model.GetBrowser(ws.tunMgr.redis, req.NodeId)
+	var req WebWSReq
+	if err := httpx.Parse(r, &req); err != nil {
+		return err
+	}
+
+	if len(req.NodeId) == 0 {
+		req.NodeId = uuid.NewString()
+	}
+
+	logx.Infof("WebWS.ServeWS %s, ip: %s", r.URL.Path, ip)
+
+	node, err := model.GetNode(ws.tunMgr.redis, req.NodeId)
 	if err != nil {
 		logx.Errorf("ServeWS, get node %s", err.Error())
 		return err
 	}
 
-	if browser == nil {
-		browser = &model.Browser{Id: req.NodeId, RegisterAt: time.Now().Format(timeLayout)}
+	if node == nil {
+		node = &model.Node{Id: req.NodeId, RegisterAt: time.Now().Format(timeLayout)}
 	}
 
-	browser.OS = req.OS
-	browser.IP = ip
-	browser.Online = true
-	browser.LoginAt = time.Now().Format(timeLayout)
+	// browser.OS = req.OS
+	node.IP = ip
+	node.Online = true
+	node.LoginAt = time.Now().Format(timeLayout)
 
 	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -61,28 +75,7 @@ func (ws *BrowserWS) ServeWS(w http.ResponseWriter, r *http.Request, req *WebWSR
 	}
 	defer c.Close()
 
-	ws.tunMgr.acceptWebsocket(c, browser)
+	ws.tunMgr.acceptWebsocket(c, node)
 
 	return nil
-}
-
-func (ws *BrowserWS) getRemoteIP(r *http.Request) (string, error) {
-	ip := r.Header.Get("X-Real-IP")
-	if len(ip) != 0 {
-		return ip, nil
-	}
-
-	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
-		ips := strings.Split(xff, ",")
-		for _, ip := range ips {
-			ip = strings.TrimSpace(ip)
-			return ip, nil
-		}
-	}
-
-	ip, _, err := net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		return "", err
-	}
-	return ip, nil
 }
