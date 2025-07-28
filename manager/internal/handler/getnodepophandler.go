@@ -1,12 +1,14 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 
-	"github.com/zeromicro/go-zero/rest/httpx"
 	"titan-tunnel/manager/internal/logic"
 	"titan-tunnel/manager/internal/svc"
 	"titan-tunnel/manager/internal/types"
+
+	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 func getNodePopHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
@@ -17,7 +19,10 @@ func getNodePopHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			return
 		}
 
-		l := logic.NewGetNodePopLogic(r.Context(), svcCtx)
+		ip := getClientIP(r)
+
+		ctx := context.WithValue(r.Context(), "Remote-IP", ip)
+		l := logic.NewGetNodePopLogic(ctx, svcCtx)
 		resp, err := l.GetNodePop(&req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)

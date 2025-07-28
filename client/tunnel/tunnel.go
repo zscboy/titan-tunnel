@@ -11,6 +11,7 @@ import (
 	"runtime"
 	"sync"
 	"time"
+	"titan-tunnel/client/log"
 	"titan-tunnel/server/api/ws/pb"
 
 	"github.com/gorilla/websocket"
@@ -33,8 +34,8 @@ type Tunnel struct {
 	conn      *websocket.Conn
 	writeLock sync.Mutex
 
-	url      string
-	waitpone int
+	bootstraps []string
+	waitpone   int
 
 	proxySessions sync.Map
 	proxyUDPs     sync.Map
@@ -46,11 +47,11 @@ type Tunnel struct {
 	ctxCancel  context.CancelFunc
 }
 
-func NewTunnel(serverUrl, uuid string, udpTimeout, tcpTimeout int) (*Tunnel, error) {
+func NewTunnel(uuid string, udpTimeout, tcpTimeout int, bootstraps []string) (*Tunnel, error) {
 	tun := &Tunnel{
 		uuid:       uuid,
 		writeLock:  sync.Mutex{},
-		url:        serverUrl,
+		bootstraps: bootstraps,
 		isDestroy:  false,
 		udpTimeout: udpTimeout,
 		tcpTimeout: tcpTimeout,
@@ -60,10 +61,9 @@ func NewTunnel(serverUrl, uuid string, udpTimeout, tcpTimeout int) (*Tunnel, err
 }
 
 func (t *Tunnel) Connect() error {
-	serverURL := fmt.Sprintf("%s?nodeid=%s", t.url, t.uuid)
-	pop, err := t.getPop(serverURL)
+	pop, err := t.getPop()
 	if err != nil {
-		return fmt.Errorf("get pop %s, failed:%v", serverURL, err)
+		return fmt.Errorf("Tunnel.Connect get pop failed:%v", err)
 	}
 
 	header := http.Header{}
@@ -99,19 +99,75 @@ func (t *Tunnel) Connect() error {
 
 	go t.keepalive()
 
-	logx.Infof("new tun %s", url)
+	log.LogInfo("Tunnel", fmt.Sprintf("new tun %s", url))
 	return nil
 }
 
-func (t *Tunnel) getPop(serverURL string) (*Pop, error) {
-	resp, err := http.Get(serverURL)
+func (t *Tunnel) getPop() (*Pop, error) {
+	accessPoints := t.getAccessPoint()
+	if len(accessPoints) == 0 {
+		return nil, fmt.Errorf("no access point found")
+	}
+
+	for _, acaccessPoint := range accessPoints {
+		serverURL := fmt.Sprintf("%s?nodeid=%s", acaccessPoint, t.uuid)
+		bytes, err := t.httGet(serverURL)
+		if err != nil {
+			log.LogInfo("Tunnel", fmt.Sprintf("Tunnel.getPop httpGet %v, url:%s", err, serverURL))
+			continue
+		}
+
+		pop := &Pop{}
+		err = json.Unmarshal(bytes, pop)
+		if err != nil {
+			log.LogInfo("Tunnel", fmt.Sprintf("Tunnel.getPop httpGet %v", err))
+			continue
+		}
+
+		return pop, nil
+	}
+
+	return nil, fmt.Errorf("no pop found")
+}
+
+func (t *Tunnel) getAccessPoint() []string {
+	for _, bootstrapURL := range t.bootstraps {
+		bytes, err := t.httGet(bootstrapURL)
+		if err != nil {
+			log.LogInfo("Tunnel", fmt.Sprintf("Tunnel.getAccessPoint httpGet %v, url:%s", err, bootstrapURL))
+			continue
+		}
+
+		type Config struct {
+			AccessPoints []string `json:"accesspoints"`
+		}
+
+		cfg := &Config{}
+		err = json.Unmarshal(bytes, cfg)
+		if err != nil {
+			log.LogInfo("Tunnel", fmt.Sprintf("Tunnel.getAccessPoint Unmarshal %v", err))
+			continue
+		}
+
+		return cfg.AccessPoints
+	}
+
+	return []string{}
+}
+
+func (t *Tunnel) httGet(url string) ([]byte, error) {
+	client := &http.Client{
+		Timeout: 3 * time.Second,
+	}
+
+	resp, err := client.Get(url)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("status code:%d", resp.StatusCode)
+		return nil, fmt.Errorf("StatusCode %d", resp.StatusCode)
 	}
 
 	body, err := io.ReadAll(resp.Body)
@@ -119,13 +175,7 @@ func (t *Tunnel) getPop(serverURL string) (*Pop, error) {
 		return nil, err
 	}
 
-	pop := &Pop{}
-	err = json.Unmarshal(body, pop)
-	if err != nil {
-		return nil, err
-	}
-
-	return pop, nil
+	return body, nil
 }
 
 func (t *Tunnel) Destroy() error {
@@ -399,7 +449,7 @@ func (t *Tunnel) keepalive() {
 	for {
 		select {
 		case <-ticker.C:
-			logx.Debug("tunnel", "keepalive tick")
+			log.LogInfo("tunnel", "keepalive tick")
 			if t.conn == nil {
 				return
 			}

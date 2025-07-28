@@ -15,4 +15,10 @@ Pops:
     RpcClient:
       Target: localhost:8080
       Timeout: 30000
-CurrentArea: Korea
+    NodeAccessPoints:
+       "China": "ws://localhost:41005/ws/node"
+       "Default": "ws://localhost:41005/ws/node"
+DefaultArea: Korea
+Geo: 
+ API: https://api.ipdatacloud.com/v2/query
+ Key: e9603c01152311ef81f700163e167ffb

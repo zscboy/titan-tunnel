@@ -35,14 +35,14 @@ func NewServiceContext(c config.Config) *ServiceContext {
 
 // TODO: can not get server info in here, server may be stop
 func newServers(c config.Config) map[string]*Server {
-	apis := make(map[string]*Server)
+	servers := make(map[string]*Server)
 	for _, pop := range c.Pops {
 		api := serverapi.NewServerAPI(zrpc.MustNewClient(pop.RpcClient))
 		resp, err := api.GetServerInfo(context.Background(), &serverapi.Empty{})
 		if err != nil {
 			panic("Get server info failed:" + err.Error())
 		}
-		apis[pop.Id] = &Server{API: api, Socks5Addr: resp.Socks5Addr, WSServerURL: resp.WsServerUrl, Area: pop.Area}
+		servers[pop.Id] = &Server{API: api, Socks5Addr: resp.Socks5Addr, WSServerURL: resp.WsServerUrl, Area: pop.Area}
 	}
-	return apis
+	return servers
 }

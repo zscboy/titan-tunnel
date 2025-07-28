@@ -12,9 +12,15 @@ type JwtAuth struct {
 }
 
 type Pop struct {
-	Id        string
-	Area      string
-	RpcClient zrpc.RpcClientConf
+	Id               string
+	Area             string
+	RpcClient        zrpc.RpcClientConf
+	NodeAccessPoints map[string]string
+}
+
+type Geo struct {
+	API string
+	Key string
 }
 
 type Config struct {
@@ -23,5 +29,6 @@ type Config struct {
 	JwtAuth JwtAuth
 	// todo: will move to center server
 	Pops        []Pop
-	CurrentArea string
+	DefaultArea string
+	Geo         Geo
 }

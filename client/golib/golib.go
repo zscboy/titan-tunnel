@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"titan-tunnel/client/bootstrap"
+	"titan-tunnel/client/log"
 	"titan-tunnel/client/tunnel"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -16,14 +18,14 @@ const (
 
 // var globalCancel context.CancelFunc
 var mytunnel *tunnel.Tunnel
+var bootstrapMgr *bootstrap.BootstrapMgr
 
 func startTunnel(jsonParams string) *JSONCallResult {
+	log.LogInfo("golib", "startTunnel: "+jsonParams)
 	var input = struct {
-		ServerURL  string `json:"server_url"`
-		UUID       string `json:"uuid"`
-		UDPTimeout int    `json:"udp_timeout"`
-		TCPTimeout int    `json:"tcp_timeout"`
-		Debug      bool   `json:"debug"`
+		UUID   string `json:"uuid"`
+		Debug  bool   `json:"debug"`
+		AppDir string `json:"app_dir"`
 	}{}
 
 	err := json.Unmarshal([]byte(jsonParams), &input)
@@ -40,19 +42,26 @@ func startTunnel(jsonParams string) *JSONCallResult {
 		logx.SetLevel(logx.InfoLevel)
 	}
 
-	if len(input.ServerURL) == 0 || len(input.UUID) == 0 {
-		return &JSONCallResult{Code: -1, Msg: "Params need server_url or uuid"}
+	if len(input.UUID) == 0 {
+		return &JSONCallResult{Code: -1, Msg: "Params need uuid"}
 	}
 
-	if input.UDPTimeout == 0 {
-		input.UDPTimeout = defaultUDPTimeout
+	if len(input.AppDir) == 0 {
+		return &JSONCallResult{Code: -1, Msg: "Params need app_dir"}
 	}
 
-	if input.TCPTimeout == 0 {
-		input.TCPTimeout = defaultTCPTimeout
+	if bootstrapMgr == nil {
+		bootstrapMgr, err = bootstrap.NewBootstrapMgr(input.AppDir)
+		if err != nil {
+			return &JSONCallResult{Code: -1, Msg: err.Error()}
+		}
 	}
 
-	tun, err := tunnel.NewTunnel(input.ServerURL, input.UUID, input.UDPTimeout, input.TCPTimeout)
+	if len(bootstrapMgr.Bootstraps()) == 0 {
+		return &JSONCallResult{Code: -1, Msg: "No bootstrap nodes found"}
+	}
+
+	tun, err := tunnel.NewTunnel(input.UUID, defaultUDPTimeout, defaultTCPTimeout, bootstrapMgr.Bootstraps())
 	if err != nil {
 		logx.Error("NewTunnel error:", err)
 		return &JSONCallResult{Code: -1, Msg: err.Error()}
