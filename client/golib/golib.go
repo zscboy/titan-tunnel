@@ -22,6 +22,10 @@ var mytunnel *tunnel.Tunnel
 var bootstrapMgr *bootstrap.BootstrapMgr
 
 func startTunnel(jsonParams string) *JSONCallResult {
+	if mytunnel != nil {
+		return &JSONCallResult{Code: -1, Msg: "IP service already running, no need to start again"}
+	}
+
 	log.LogInfo("golib", "version: "+version)
 	log.LogInfo("golib", "startTunnel: "+jsonParams)
 	var input = struct {
