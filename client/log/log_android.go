@@ -5,6 +5,7 @@ package log
 /*
 #cgo LDFLAGS: -llog
 #include <android/log.h>
+#include <stdlib.h>
 */
 import "C"
 import "unsafe"
