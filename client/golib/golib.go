@@ -25,7 +25,7 @@ func startTunnel(jsonParams string) *JSONCallResult {
 	var input = struct {
 		UUID   string `json:"uuid"`
 		Debug  bool   `json:"debug"`
-		AppDir string `json:"app_dir"`
+		AppDir string `json:"appDir"`
 	}{}
 
 	err := json.Unmarshal([]byte(jsonParams), &input)
@@ -47,7 +47,7 @@ func startTunnel(jsonParams string) *JSONCallResult {
 	}
 
 	if len(input.AppDir) == 0 {
-		return &JSONCallResult{Code: -1, Msg: "Params need app_dir"}
+		return &JSONCallResult{Code: -1, Msg: "Params need appDir"}
 	}
 
 	if bootstrapMgr == nil {
