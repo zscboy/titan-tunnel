@@ -6,6 +6,11 @@ package log
 #cgo LDFLAGS: -llog
 #include <android/log.h>
 #include <stdlib.h>
+
+
+static void android_log_info(const char* tag, const char* msg) {
+    __android_log_print(ANDROID_LOG_INFO, tag, "%s", msg);
+}
 */
 import "C"
 import "unsafe"
@@ -15,5 +20,5 @@ func logInfo(tag, msg string) {
 	cMsg := C.CString(msg)
 	defer C.free(unsafe.Pointer(cTag))
 	defer C.free(unsafe.Pointer(cMsg))
-	C.__android_log_print(C.ANDROID_LOG_INFO, cTag, C.CString("%s"), cMsg)
+	C.android_log_info(cTag, cMsg)
 }
