@@ -14,6 +14,7 @@ import (
 const (
 	defaultUDPTimeout = 120
 	defaultTCPTimeout = 3
+	version           = "0.0.1"
 )
 
 // var globalCancel context.CancelFunc
@@ -21,6 +22,7 @@ var mytunnel *tunnel.Tunnel
 var bootstrapMgr *bootstrap.BootstrapMgr
 
 func startTunnel(jsonParams string) *JSONCallResult {
+	log.LogInfo("golib", "version: "+version)
 	log.LogInfo("golib", "startTunnel: "+jsonParams)
 	var input = struct {
 		UUID   string `json:"uuid"`
