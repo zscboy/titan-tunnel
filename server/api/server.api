@@ -1,0 +1,55 @@
+// server.api
+type (
+	NodeWSReq {
+		NodeId string `form:"id"`
+		OS     string `form:"os"`
+	}
+	WebWSReq {
+		NodeId string `form:"id"`
+		OS     string `form:"os"`
+	}
+	DeleteUserCache {
+		UserName string `json:"user_name"`
+	}
+	ServerInfo {
+		Socks5Addr  string `json:"socks5_addr"`
+		WSServerURL string `json:"ws_server_url"`
+	}
+	AccessTokenReq {
+		NodeId string `form:"nodeid"`
+	}
+	AccessTokenResp {
+		Token string `json:"token"`
+	}
+	GetNodePopReq {
+		NodeId string `form:"nodeid"`
+	}
+	GetNodePopResp {
+		ServerURL   string `json:"server_url"`
+		AccessToken string `json:"access_token"`
+	}
+)
+
+@server (
+	middleware: JwtMiddleware // Enable jwt authentication
+)
+service server-api {
+	@handler nodeWS
+	get /ws/node
+
+	@handler deleteUserCache
+	post /user/cache/delete (DeleteUserCache)
+
+	@handler getServerInfo
+	get /server/info returns (ServerInfo)
+
+	@handler getNodeAccessToken
+	get /node/access/token (AccessTokenReq) returns (AccessTokenResp)
+}
+
+// TODO: will remove next version
+service server-api {
+	@handler getNodePop
+	get /node/pop (GetNodePopReq) returns (GetNodePopResp)
+}
+

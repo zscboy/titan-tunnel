@@ -1,0 +1,5 @@
+# Go 编译文件
+*.exe
+*.exe~
+bin/
+test*
