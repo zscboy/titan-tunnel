@@ -1,0 +1,34 @@
+APIServer:
+  Name: titan-tunnel-server
+  Host: 0.0.0.0
+  Port: 41005
+  MaxConns: 20000
+  JwtAuth:
+    AccessSecret: 5c92f1c4-5c70-11f0-a38c-339a56c61685
+    AccessExpire: 2592000
+  Socks5:
+    Addr: 0.0.0.0:41003
+    ServerIP: 192.168.0.104
+    UDPPortStart: 40101
+    UDPPortEnd: 41000
+    EnableAuth: true
+    ## 4 seconds
+    ### example: dail dest timeout
+    TCPTimeout: 4
+    ### 120 seconds
+    ### udp proxy timeout if no data transfer
+    ### client udp proxy timeout is 60s
+    UDPTimeout: 120
+
+RPCServer:
+  Name: server.rpc
+  ListenOn: 127.0.0.1:8080
+  # APIServer: localhost:8888
+Redis:
+  Host: 127.0.0.1:6379
+HTTPProxy: 0.0.0.0:8001
+Log:
+  Mode: file
+  stat: false
+  level: debug   
+
