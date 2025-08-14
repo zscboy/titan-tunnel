@@ -12,6 +12,7 @@ import (
 	"titan-ipoverlay/manager/internal/config"
 	"titan-ipoverlay/manager/internal/svc"
 	"titan-ipoverlay/manager/internal/types"
+	"titan-ipoverlay/manager/model"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -51,21 +52,9 @@ func NewGetNodePopLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetNod
 }
 
 func (l *GetNodePopLogic) GetNodePop(req *types.GetNodePopReq) (resp *types.GetNodePopResp, err error) {
-	remoteIP := l.ctx.Value("Remote-IP")
-	// logx.Debugf("remoteIP:%s", remoteIP)
-	location, err := l.getLocalInfo(remoteIP.(string))
+	podConfig, err := l.allocatePop(req)
 	if err != nil {
-		return nil, fmt.Errorf("getLocalInfo failed:%v", err)
-	}
-
-	logx.Debugf("GetNodePop, location:%v", *location)
-	if location.Province == "Hong Kong" {
-		location.Country = "HongKong"
-	}
-
-	podConfig := l.getPodConfig(location.Country)
-	if podConfig == nil {
-		return nil, fmt.Errorf("not found pop config for node %s", req.NodeId)
+		return nil, err
 	}
 
 	server := l.getPodServer(podConfig.Id)
@@ -78,18 +67,69 @@ func (l *GetNodePopLogic) GetNodePop(req *types.GetNodePopReq) (resp *types.GetN
 		return nil, err
 	}
 
-	accessPoint, ok := podConfig.NodeAccessPoints[location.Country]
-	if ok {
-		return &types.GetNodePopResp{ServerURL: accessPoint, AccessToken: getTokenResp.Token}, nil
+	logx.Debugf("GetNodePop, %s accessPoint %s", req.NodeId, podConfig.WSURL)
+	return &types.GetNodePopResp{ServerURL: podConfig.WSURL, AccessToken: getTokenResp.Token}, nil
+}
+
+func (l *GetNodePopLogic) allocatePop(req *types.GetNodePopReq) (*config.Pop, error) {
+	popIDBytes, err := model.GetNodePop(l.svcCtx.Redis, req.NodeId)
+	if err != nil {
+		return nil, err
 	}
 
-	accessPoint, ok = podConfig.NodeAccessPoints[NodeAccessPointDefaultKey]
-	if !ok {
-		return nil, fmt.Errorf("no default access point found")
+	if popIDBytes != nil {
+		popID := string(popIDBytes)
+		for _, pop := range l.svcCtx.Config.Pops {
+			if pop.Id == popID {
+				logx.Debugf("node %s already exist pop %s", req.NodeId, pop.Id)
+				return &pop, nil
+			}
+		}
+		return nil, fmt.Errorf("pop %s not found", string(popIDBytes))
 	}
 
-	logx.Debugf("GetNodePop, accessPoint:%s", accessPoint)
-	return &types.GetNodePopResp{ServerURL: accessPoint, AccessToken: getTokenResp.Token}, nil
+	remoteIP := l.ctx.Value("Remote-IP")
+	location, err := l.getLocalInfo(remoteIP.(string))
+	if err != nil {
+		return nil, fmt.Errorf("getLocalInfo failed:%v", err)
+	}
+
+	if location.Province == "Hong Kong" {
+		location.Country = "HongKong"
+	}
+
+	for _, pop := range l.svcCtx.Config.Pops {
+		if pop.Area == location.Country {
+			count, err := model.NodeCountOfPop(l.svcCtx.Redis, pop.Id)
+			if err != nil {
+				continue
+			}
+
+			if count >= int64(pop.MaxCount) {
+				continue
+			}
+
+			if err := model.SetNodePop(l.svcCtx.Redis, req.NodeId, pop.Id); err != nil {
+				logx.Errorf("allocatePop SetNodePop error %v", err)
+			}
+
+			logx.Debugf("new node %s location %v, allocate pop:%s", req.NodeId, location, pop.Id)
+			return &pop, nil
+		}
+	}
+
+	for _, pop := range l.svcCtx.Config.Pops {
+		if pop.Area == l.svcCtx.Config.DefaultArea {
+			if err := model.SetNodePop(l.svcCtx.Redis, req.NodeId, pop.Id); err != nil {
+				logx.Errorf("allocatePop SetNodePop error %v", err)
+			}
+
+			logx.Debugf("new node %s with defaul area %v, allocate pop:%s", req.NodeId, l.svcCtx.Config.DefaultArea, pop.Id)
+			return &pop, nil
+		}
+	}
+
+	return nil, fmt.Errorf("no pop found for %s, location:%v", req.NodeId, location)
 }
 
 func (l *GetNodePopLogic) getPodServer(id string) *svc.Server {

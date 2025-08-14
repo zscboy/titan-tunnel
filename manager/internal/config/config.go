@@ -12,10 +12,11 @@ type JwtAuth struct {
 }
 
 type Pop struct {
-	Id               string
-	Area             string
-	RpcClient        zrpc.RpcClientConf
-	NodeAccessPoints map[string]string
+	Id        string
+	Area      string
+	RpcClient zrpc.RpcClientConf
+	WSURL     string
+	MaxCount  int
 }
 
 type Geo struct {
